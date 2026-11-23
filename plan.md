@@ -601,7 +601,7 @@ flowchart TD
 | Class (load target) | p95 response time | Error rate (HTTP + body checks) | Timeout |
 |---|---|---|---|
 | Read (`GET /accounts/{id}`) | ≤ 1000 ms | < 1 % | 5 s |
-| Money write (`POST /transfer`) | ≤ 1500 ms | < 1 % | 5 s |
+| Write (`POST /transfer`) | ≤ 1500 ms | < 1 % | 5 s |
 
 p95 is judged per scenario and endpoint only with ≥ 20 requests; there is no per-request pass/fail (only timeouts count as errors).
 

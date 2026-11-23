@@ -4,7 +4,12 @@
   "type": "module",
   "scripts": {
     "register": "node scripts/register-user.mjs",
-    "test:all": "./run-all.sh"
+    "test:all": "./run-all.sh",
+    "test:smoke": "./start-smoke.sh",
+    "test:journey": "./start-journey.sh",
+    "test:suites": "./start-suites.sh",
+    "test:stage3": "./start-all.sh",
+    "setup": "node --env-file=.env scripts/stage0-setup.mjs"
   },
   "devDependencies": {
     "playwright": "1.49.1"

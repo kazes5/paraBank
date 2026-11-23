@@ -121,9 +121,9 @@ Score = impact (1–5) × likelihood (1–3). Higher score = tested first. Likel
 | Class | Endpoints | p95 response time | Error rate | Timeout |
 |---|---|---|---|---|
 | Read | All GET (load target: `GET /accounts/{id}`) | ≤ 1000 ms | < 1 % | 5 s |
-| Money write | transfer, deposit, withdraw, bill pay, request loan (load target: `POST /transfer`) | ≤ 1500 ms | < 1 % | 5 s |
+| Write | All POST: transfer, deposit, withdraw, bill pay, request loan, and the extended writes (open account, buy/sell, profile update). Load target: `POST /transfer` | ≤ 1500 ms | < 1 % | 5 s |
 
-- **Why these numbers (O7):** unloaded reads measured p95 670 ms, so the read target leaves about 1.5× headroom. Writes measured p95 295 ms, but they lock database rows and slow down fastest under concurrent load, so their target is looser. The measurements come from a small sample on a shared site; Stage 5 records a fresh baseline before the higher load.
+- **Why these numbers (O7):** unloaded reads measured p95 670 ms, so the read target leaves about 1.5× headroom. Money writes measured p95 295 ms, but writes lock database rows and slow down fastest under concurrent load, so their target is looser. The measurements come from a small sample on a shared site; Stage 5 records a fresh baseline before the higher load.
 - **How it's measured:** p95 per endpoint over all requests of a run, measured from the client.
   - An *error* is an unexpected HTTP status, a timeout, or a business failure in the body (e.g. 200 without the success text).
   - There is **no pass/fail per single request**: only timeouts (> 5 s) count as errors, and requests slower than the class p95 are listed as outliers.
@@ -381,4 +381,4 @@ Each one asks R&D to confirm a **proposed rule** (A#), explain an **observation*
 12. Is the 100.00 opening amount for new accounts intended, and should the create response show it? *(O1)*
 13. Should sending the same transfer twice be blocked? *(TRF-08)*
 14. May we use our two own users to test whether one customer can reach the other's accounts? *(A6)*
-15. Are the proposed response-time targets (reads p95 ≤ 1 s, money writes p95 ≤ 1.5 s) acceptable, or are there official SLAs? *(SLA model)*
+15. Are the proposed response-time targets (reads p95 ≤ 1 s, writes p95 ≤ 1.5 s) acceptable, or are there official SLAs? *(SLA model)*

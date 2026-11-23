@@ -1,0 +1,21 @@
+{
+  "runId": "2026-11-23T16-04-00-002Z",
+  "user": "Rktest2",
+  "phases": [
+    {
+      "phase": "smoke",
+      "exitCode": 0,
+      "seconds": 16
+    },
+    {
+      "phase": "suites",
+      "exitCode": 1,
+      "seconds": 179
+    },
+    {
+      "phase": "journey",
+      "exitCode": 1,
+      "seconds": 80
+    }
+  ]
+}

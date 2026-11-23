@@ -1,0 +1,700 @@
+---
+kind: postman-cli-collection-run-executions
+schemaVersion: 1
+runId: a8f9b4b7-16f2-4382-8e2d-2b96c79e6d44
+summaryFile: parabank-qa-2026-11-23-18-04-00.collection-run-summary.yaml
+collection:
+  id: b6f1c0de-7a1e-4c55-9d1a-parabankqa01
+  name: ParaBank QA
+generatedAt: '2026-11-23T16:04:00.639Z'
+---
+iteration: 0
+cursorRef: 36eeacf0-0184-4d38-b447-7c4ddcf2315e
+item:
+  id: 15de6add-fcdf-4276-a992-71ce666adc14
+  name: AUTH-01 · login
+  folders:
+    - 00 Smoke
+    - AUTH-01 · login
+  fullName: 00 Smoke / AUTH-01 · login
+  parent:
+    id: 41286c4c-95c3-4e4c-ad22-489475940a7b
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - login
+      - Rktest2
+      - <REDACTED>
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: f8a7b455-f8d8-4670-a3c7-93cc015fad82
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 86060460-00c8-4f2c-a997-2ee6880b102d
+  code: 200
+  status: OK
+  responseTime: 759
+  responseSize: 198
+  headers:
+    - key: Date
+      value: Mon, 23 Nov 2026 16:04:03 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f1684c7a9799ca-LHR
+  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+tests:
+  - name: AUTH-01 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: AUTH-01 [C1] customer schema
+    status: passed
+  - name: AUTH-01 [A7] profile = registration data
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 8fef2c5b-185a-4d80-b000-b69004a8a209
+item:
+  id: b8d114b0-9b9f-47bb-af4f-dbe73de51aac
+  name: CUST-01 · get customer
+  folders:
+    - 00 Smoke
+    - CUST-01 · get customer
+  fullName: 00 Smoke / CUST-01 · get customer
+  parent:
+    id: 41286c4c-95c3-4e4c-ad22-489475940a7b
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '37409'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 080b5693-82a9-4ec9-99ce-fbdd468f0457
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 7084ac85-b310-4300-bd93-9ed2e7db42ac
+  code: 200
+  status: OK
+  responseTime: 229
+  responseSize: 198
+  headers:
+    - key: Date
+      value: Mon, 23 Nov 2026 16:04:04 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f16859a88c99ca-LHR
+  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+tests:
+  - name: CUST-01 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: CUST-01 [C1] customer schema
+    status: passed
+  - name: CUST-01 [A7] same details as the login response
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 47e9baa5-f14d-4112-8add-5894a4f36873
+item:
+  id: 6736342a-69f0-4a99-99bf-9c877906c936
+  name: ACCT-01 · list accounts
+  folders:
+    - 00 Smoke
+    - ACCT-01 · list accounts
+  fullName: 00 Smoke / ACCT-01 · list accounts
+  parent:
+    id: 41286c4c-95c3-4e4c-ad22-489475940a7b
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '37409'
+      - accounts
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 783dfc08-5bcb-40dd-9954-768d62ec62fa
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: a7c6243e-b5ba-4b71-9faf-f80adb429c3b
+  code: 200
+  status: OK
+  responseTime: 240
+  responseSize: 2371
+  headers:
+    - key: Date
+      value: Mon, 23 Nov 2026 16:04:06 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f16864bd2e99ca-LHR
+  body: '[{"id":54192,"customerId":37409,"type":"CHECKING","balance":3169.50},{"id":54414,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":62850,"customerId":37409,"type":"CHECKING","balance":-999.00},{"id":62961,"customerId":37409,"type":"CHECKING","balance":1199.00},{"id":63072,"customerId":37409,"type":"CHECKING","balance":95.00},{"id":63183,"customerId":37409,"type":"CHECKING","balance":-995.00},{"id":63294,"customerId":37409,"type":"CHECKING","balance":-996.00},{"id":63405,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":64182,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":64515,"customerId":37409,"type":"CHECKING","balance":105.00},{"id":64626,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":64737,"customerId":37409,"type":"CHECKING","balance":1199.00},{"id":64848,"customerId":37409,"type":"CHECKING","balance":95.00},{"id":64959,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":65070,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":65181,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":65625,"customerId":37409,"type":"CHECKING","balance":-1000.00},{"id":65847,"customerId":37409,"type":"LOAN","balance":500.00},{"id":66402,"customerId":37409,"type":"LOAN","balance":10.00},{"id":66624,"customerId":37409,"type":"LOAN","balance":1000.00},{"id":66735,"customerId":37409,"type":"CHECKING","balance":105.00},{"id":67401,"customerId":37409,"type":"SAVINGS","balance":230.00},{"id":67623,"customerId":37409,"type":"LOAN","balance":500.00},{"id":67845,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":67956,"customerId":37409,"type":"CHECKING","balance":1199.00},{"id":68289,"customerId":37409,"type":"CHECKING","balance":95.00},{"id":69288,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":70176,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":70287,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":70398,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":70620,"customerId":37409,"type":"LOAN","balance":500.00},{"id":70953,"customerId":37409,"type":"LOAN","balance":10.00},{"id":71064,"customerId":37409,"type":"LOAN","balance":1000.00},{"id":71175,"customerId":37409,"type":"CHECKING","balance":105.00},{"id":71397,"customerId":37409,"type":"SAVINGS","balance":230.00},{"id":71841,"customerId":37409,"type":"LOAN","balance":500.00}]'
+tests:
+  - name: ACCT-01 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: ACCT-01 [C1] list of account
+    status: passed
+  - name: ACCT-01 [C1] at least one account
+    status: passed
+  - name: ACCT-01 [A6] every account belongs to the customer
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: ede13635-d916-4926-a4f2-e82681958e3c
+item:
+  id: 41a769dc-bec3-4f93-8043-8894e424b00d
+  name: ACCT-02 · account details of A
+  folders:
+    - 00 Smoke
+    - ACCT-02 · account details of A
+  fullName: 00 Smoke / ACCT-02 · account details of A
+  parent:
+    id: 41286c4c-95c3-4e4c-ad22-489475940a7b
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '54192'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: aadabe64-383f-4ab6-a2eb-aea879f79543
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 321ac60d-8ed3-4da4-9aa5-bbaca257ee83
+  code: 200
+  status: OK
+  responseTime: 321
+  responseSize: 67
+  headers:
+    - key: Date
+      value: Mon, 23 Nov 2026 16:04:08 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f1686fcb6999ca-LHR
+  body: '{"id":54192,"customerId":37409,"type":"CHECKING","balance":3169.50}'
+tests:
+  - name: ACCT-02 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: ACCT-02 [C1] account schema
+    status: passed
+  - name: ACCT-02 [A7] same values as the account list
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 97de2131-7937-4300-b7dc-5c798329952c
+item:
+  id: b9994546-8c1c-4a1a-ad4b-a23840664007
+  name: DEP-01 · baseline transactions of A
+  folders:
+    - 00 Smoke
+    - DEP-01 · baseline transactions of A
+  fullName: 00 Smoke / DEP-01 · baseline transactions of A
+  parent:
+    id: 41286c4c-95c3-4e4c-ad22-489475940a7b
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '54192'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: a7c248eb-4690-4cbe-bc94-72e1e6ef9092
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 8916645e-b05a-4625-ab4c-a2c45ea58bc9
+  code: 200
+  status: OK
+  responseTime: 265
+  responseSize: 7074
+  headers:
+    - key: Date
+      value: Mon, 23 Nov 2026 16:04:10 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f1687b9ea099ca-LHR
+  body: '[{"id":64759,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":78412,"accountId":54192,"type":"Credit","date":1795392000000,"amount":10.00,"description":"Deposit via Web Service"},{"id":79411,"accountId":54192,"type":"Credit","date":1795392000000,"amount":10.00,"description":"Deposit via Web Service"},{"id":79522,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":79633,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":79855,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":81409,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":81520,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":81964,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":82075,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":82741,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":82852,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":83074,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":85738,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":85849,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":86293,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":86404,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":87736,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":87847,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":88069,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":89734,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":89845,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":90289,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":90400,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":91177,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":91288,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":91510,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":92731,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":92842,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":94729,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":94840,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":97171,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":97948,"accountId":54192,"type":"Credit","date":1795392000000,"amount":50.00,"description":"Funds Transfer Received"},{"id":98059,"accountId":54192,"type":"Debit","date":1795392000000,"amount":30.00,"description":"Bill Payment to City Utilities"},{"id":98503,"accountId":54192,"type":"Debit","date":1795392000000,"amount":50.00,"description":"Down Payment for Loan # 67623"},{"id":98614,"accountId":54192,"type":"Debit","date":1795392000000,"amount":20.00,"description":"Funds Transfer Sent"},{"id":98725,"accountId":54192,"type":"Credit","date":1795392000000,"amount":12.00,"description":"Funds Transfer Received"},{"id":99280,"accountId":54192,"type":"Credit","date":1795392000000,"amount":10.00,"description":"Deposit via Web Service"},{"id":99391,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":99502,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":99724,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":101833,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":101944,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":102832,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":103165,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":105496,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":105607,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":105829,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":106606,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":106717,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":108049,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":108160,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":108604,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":109159,"accountId":54192,"type":"Credit","date":1795392000000,"amount":50.00,"description":"Funds Transfer Received"},{"id":109270,"accountId":54192,"type":"Debit","date":1795392000000,"amount":30.00,"description":"Bill Payment to City Utilities"},{"id":109381,"accountId":54192,"type":"Debit","date":1795392000000,"amount":50.00,"description":"Down Payment for Loan # 71841"},{"id":109492,"accountId":54192,"type":"Debit","date":1795392000000,"amount":20.00,"description":"Funds Transfer Sent"},{"id":109603,"accountId":54192,"type":"Credit","date":1795392000000,"amount":12.00,"description":"Funds Transfer Received"}]'
+tests:
+  - name: DEP-01 [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: c78cd3e8-29b3-4193-8ae8-2c751ece4893
+item:
+  id: bf2c0e59-e4e5-4efb-9322-6d8623b9f57f
+  name: DEP-01 · deposit 10.00 into A
+  folders:
+    - 00 Smoke
+    - DEP-01 · deposit 10.00 into A
+  fullName: 00 Smoke / DEP-01 · deposit 10.00 into A
+  parent:
+    id: 41286c4c-95c3-4e4c-ad22-489475940a7b
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - deposit
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: accountId
+        value: '54192'
+      - key: amount
+        value: '10'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 4c3f38f6-1de0-4dd2-b840-57592c0d1fcc
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: ebd1413f-8daf-4f2a-82f2-4a2806a337ff
+  code: 200
+  status: OK
+  responseTime: 250
+  responseSize: 44
+  headers:
+    - key: Date
+      value: Mon, 23 Nov 2026 16:04:12 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Content-Length
+      value: '44'
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: CF-RAY
+      value: a5f168868eea99ca-LHR
+  body: 'Successfully deposited $10 to account #54192'
+tests:
+  - name: DEP-01 [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: aad10816-278a-48ed-8ad3-5f11e6f5b300
+item:
+  id: c363f73e-b286-4dbc-a230-7fe79f238742
+  name: DEP-01 · balances after deposit
+  folders:
+    - 00 Smoke
+    - DEP-01 · balances after deposit
+  fullName: 00 Smoke / DEP-01 · balances after deposit
+  parent:
+    id: 41286c4c-95c3-4e4c-ad22-489475940a7b
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '37409'
+      - accounts
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 8988bbae-85de-486c-b151-4c3f61b7cabb
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 270dd6f8-16b0-4422-92e6-934a651559a7
+  code: 200
+  status: OK
+  responseTime: 228
+  responseSize: 2371
+  headers:
+    - key: Date
+      value: Mon, 23 Nov 2026 16:04:13 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f168919d7599ca-LHR
+  body: '[{"id":54192,"customerId":37409,"type":"CHECKING","balance":3179.50},{"id":54414,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":62850,"customerId":37409,"type":"CHECKING","balance":-999.00},{"id":62961,"customerId":37409,"type":"CHECKING","balance":1199.00},{"id":63072,"customerId":37409,"type":"CHECKING","balance":95.00},{"id":63183,"customerId":37409,"type":"CHECKING","balance":-995.00},{"id":63294,"customerId":37409,"type":"CHECKING","balance":-996.00},{"id":63405,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":64182,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":64515,"customerId":37409,"type":"CHECKING","balance":105.00},{"id":64626,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":64737,"customerId":37409,"type":"CHECKING","balance":1199.00},{"id":64848,"customerId":37409,"type":"CHECKING","balance":95.00},{"id":64959,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":65070,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":65181,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":65625,"customerId":37409,"type":"CHECKING","balance":-1000.00},{"id":65847,"customerId":37409,"type":"LOAN","balance":500.00},{"id":66402,"customerId":37409,"type":"LOAN","balance":10.00},{"id":66624,"customerId":37409,"type":"LOAN","balance":1000.00},{"id":66735,"customerId":37409,"type":"CHECKING","balance":105.00},{"id":67401,"customerId":37409,"type":"SAVINGS","balance":230.00},{"id":67623,"customerId":37409,"type":"LOAN","balance":500.00},{"id":67845,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":67956,"customerId":37409,"type":"CHECKING","balance":1199.00},{"id":68289,"customerId":37409,"type":"CHECKING","balance":95.00},{"id":69288,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":70176,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":70287,"customerId":37409,"type":"CHECKING","balance":100.00},{"id":70398,"customerId":37409,"type":"CHECKING","balance":0.00},{"id":70620,"customerId":37409,"type":"LOAN","balance":500.00},{"id":70953,"customerId":37409,"type":"LOAN","balance":10.00},{"id":71064,"customerId":37409,"type":"LOAN","balance":1000.00},{"id":71175,"customerId":37409,"type":"CHECKING","balance":105.00},{"id":71397,"customerId":37409,"type":"SAVINGS","balance":230.00},{"id":71841,"customerId":37409,"type":"LOAN","balance":500.00}]'
+tests:
+  - name: DEP-01 [C1] account list readable (got 200)
+    status: passed
+  - name: DEP-01 [A2] account 54192 changed by 1000 cents (316950 -> 317950)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: f14a7d28-cc56-4676-af1b-65bb80efc3df
+item:
+  id: 1c301a90-2936-4dc3-8d82-78964bc98af9
+  name: HIST-01 · transactions of A
+  folders:
+    - 00 Smoke
+    - HIST-01 · transactions of A
+  fullName: 00 Smoke / HIST-01 · transactions of A
+  parent:
+    id: 41286c4c-95c3-4e4c-ad22-489475940a7b
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '54192'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: c4997c6a-91f5-4f35-80de-878d32ac128d
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: a5314801-2d22-4347-925b-5e146ac1f42d
+  code: 200
+  status: OK
+  responseTime: 231
+  responseSize: 7198
+  headers:
+    - key: Date
+      value: Mon, 23 Nov 2026 16:04:15 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f1689c9b7999ca-LHR
+  body: '[{"id":64759,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":78412,"accountId":54192,"type":"Credit","date":1795392000000,"amount":10.00,"description":"Deposit via Web Service"},{"id":79411,"accountId":54192,"type":"Credit","date":1795392000000,"amount":10.00,"description":"Deposit via Web Service"},{"id":79522,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":79633,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":79855,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":81409,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":81520,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":81964,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":82075,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":82741,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":82852,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":83074,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":85738,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":85849,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":86293,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":86404,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":87736,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":87847,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":88069,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":89734,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":89845,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":90289,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":90400,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":91177,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":91288,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":91510,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":92731,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":92842,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":94729,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":94840,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":97171,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":97948,"accountId":54192,"type":"Credit","date":1795392000000,"amount":50.00,"description":"Funds Transfer Received"},{"id":98059,"accountId":54192,"type":"Debit","date":1795392000000,"amount":30.00,"description":"Bill Payment to City Utilities"},{"id":98503,"accountId":54192,"type":"Debit","date":1795392000000,"amount":50.00,"description":"Down Payment for Loan # 67623"},{"id":98614,"accountId":54192,"type":"Debit","date":1795392000000,"amount":20.00,"description":"Funds Transfer Sent"},{"id":98725,"accountId":54192,"type":"Credit","date":1795392000000,"amount":12.00,"description":"Funds Transfer Received"},{"id":99280,"accountId":54192,"type":"Credit","date":1795392000000,"amount":10.00,"description":"Deposit via Web Service"},{"id":99391,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":99502,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":99724,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":101833,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":101944,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":102832,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":103165,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":105496,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":105607,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":105829,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":106606,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":106717,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":108049,"accountId":54192,"type":"Credit","date":1795392000000,"amount":300.00,"description":"Deposit via Web Service"},{"id":108160,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":108604,"accountId":54192,"type":"Debit","date":1795392000000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":109159,"accountId":54192,"type":"Credit","date":1795392000000,"amount":50.00,"description":"Funds Transfer Received"},{"id":109270,"accountId":54192,"type":"Debit","date":1795392000000,"amount":30.00,"description":"Bill Payment to City Utilities"},{"id":109381,"accountId":54192,"type":"Debit","date":1795392000000,"amount":50.00,"description":"Down Payment for Loan # 71841"},{"id":109492,"accountId":54192,"type":"Debit","date":1795392000000,"amount":20.00,"description":"Funds Transfer Sent"},{"id":109603,"accountId":54192,"type":"Credit","date":1795392000000,"amount":12.00,"description":"Funds Transfer Received"},{"id":109714,"accountId":54192,"type":"Credit","date":1795392000000,"amount":10.00,"description":"Deposit via Web Service"}]'
+tests:
+  - name: HIST-01 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: HIST-01 [C1] list of transaction
+    status: passed
+  - name: 'HIST-01 [A2] exactly one new transaction: Credit 1000 cents (got ["Credit 1000"])'
+    status: passed
+  - name: HIST-01 [A2] new transaction dated today, UTC (got 2026-11-23)
+    status: passed
+errors: []
