@@ -50,7 +50,7 @@
 | # | Rule | Source | Confidence | Exploration showed |
 |---|---|---|---|---|
 | A1 | A transfer takes money from one account and adds the same amount to the other | Banking norm | High | Holds for positive amounts |
-| A2 | Every money movement creates one matching transaction on each account it touches | Banking norm | High | Holds for transfer, deposit, withdraw, bill pay; **not** for loans (O4) |
+| A2 | Every money movement creates one matching transaction on each account it touches | Banking norm | High | Holds for transfer, deposit, withdraw, bill pay and the loan down payment; the loan itself is not recorded in the loan account (O4) |
 | A3 | Amounts must be greater than zero | Banking norm (Swagger: any number) | High | Broken: 0 and negatives accepted |
 | A4 | You can't take out more money than the account holds | Banking norm (no overdraft policy documented) | Medium | Broken: any overdraft accepted |
 | A5 | Amounts have at most 2 decimals | Banking norm | High | Broken: 0.005 accepted |
@@ -60,7 +60,7 @@
 | A9 | A failed login gives no hint whether the username exists | Security norm | High | Holds |
 | A10 | You can't transfer to the same account | Banking norm | Medium | Broken: accepted |
 | A11 | Bill pay needs a payee name | Banking norm; web UI form *(cross-check pending)* | Medium | Broken: empty payee accepted |
-| A12 | An approved loan is recorded and the down payment is taken from the source account, both visible in the transaction history; a denied loan changes nothing | Banking norm; web UI loan page *(cross-check pending)* | Medium | Partly: down payment taken, but no transactions (O4) |
+| A12 | An approved loan is recorded and the down payment is taken from the source account, both visible in the transaction history; a denied loan changes nothing | Banking norm; the web UI shows the same as the API (Stage 3 cross-check) | Medium | Partly: down payment taken and recorded on the source account; loan account history empty in the API and the UI (O4) |
 
 ### 2.3 Observed behavior — used for test data, not as requirements
 
@@ -69,7 +69,7 @@
 | O1 | Opening an account moves 100.00 from the source account into the new one; the create response shows balance 0 | `observations.json` J06, J06b | Expected balances after J06 |
 | O2 | Date filters accept only `MM-dd-yyyy` (ISO dates return an empty list); month accepts a name, number or `All`; type accepts `Credit`, `Debit`, `All` (case-sensitive); `Transaction.date` is epoch ms at 00:00 UTC of the booking day | `observations.json` J11, J12a–i | Filter test data; how a row's date is read |
 | O3 | A new customer starts with one checking account of 515.50 | Stage 0, `observations.json` J04 | Funding of test accounts |
-| O4 | Loan of 500 with 50 down was approved: a LOAN account was created holding 500.00, the source account went down by 50, and **no transactions** appeared on either account | `observations.json` J13, J13b; loan account transactions = `[]` | Loan test data; the ledger gap is evidence E14 |
+| O4 | Loan of 500 with 50 down was approved: a LOAN account was created holding 500.00; the source account went down by 50 and shows a "Down Payment for Loan # &lt;L&gt;" debit; the loan account has **no transactions**. The web UI shows the same. *(Stage 1 recorded no transactions on either account; Stage 3 corrected this: the down payment row exists.)* | `observations.json` J13, J13b; Stage 3 J13e; `evidence/stage3-ui/crosscheck.md` | Loan test data; the ledger gap is evidence E14 |
 | O5 | Successful money calls answer 200 with plain text starting "Successfully …" (bill pay and loan answer JSON) | `observations.json` J07–J10 | Success-message checks |
 | O6 | The public site rate-limits bursts (HTTP 429); a 1.5 s pause between calls avoids it | Stage 1 run log | Request pacing; a 429 makes a test BLOCKED |
 | O7 | Unloaded response times: reads p50 241 ms / p95 670 ms, money writes p50 244 ms / p95 295 ms | `evidence/stage1/latency-baseline.md` | Basis for the SLA model (§4) |
@@ -358,7 +358,7 @@ Requests are shown with credentials removed. Amounts and balances are copied fro
 | E11 | Transfer to the same account accepted | A10 | TRF-05 | `POST /transfer?fromAccountId=23001&toAccountId=23001&amount=1` | 200 "Successfully transferred $1…" | 23001 unchanged | 12:58:51 | `observations.json` probe E-TRF4 |
 | E12 | Empty payee accepted | A11 | BILL-03 | `POST /billpay?accountId=23223&amount=1`, body `{}` | 200 `{"payeeName":null,"amount":1,…}` | 23223: −199,900.00 → −199,901.00; transaction "Bill Payment to null" | 13:06:29 | `observations-from-E-DEP1.json` probe E-BIL2 |
 | E13 | Missing amount or `CREDIT` filter gives a server error | C1, A8 | TRF-07, HIST-04 | `POST /transfer?fromAccountId=23001&toAccountId=21780` · `GET /accounts/21780/transactions/month/November/type/CREDIT` | 500 HTML error page (both) | unchanged | 12:58:53 · 12:58:37 | `observations.json` probes E-TRF6, J12g |
-| E14 | Approved loan records no transactions | A12 (proposed) | LOAN-01 | `POST /requestLoan?customerId=17096&amount=500&downPayment=50&fromAccountId=21780` | 200 `approved: true`, loan account 24666 | 21780: 335.50 → 285.50; loan account 24666 = 500.00 with **0 transactions** | 12:58:39 | `observations.json` probes J13, J13b; `GET /accounts/24666/transactions` = `[]` |
+| E14 | Approved loan is not recorded in the loan account history (the down payment debit on the source account is recorded) | A12 (proposed) | LOAN-01, JRN-01 J13e | `POST /requestLoan?customerId=17096&amount=500&downPayment=50&fromAccountId=21780` | 200 `approved: true`, loan account 24666 | 21780: 335.50 → 285.50; loan account 24666 = 500.00 with **0 transactions** | 12:58:39 | `observations.json` probes J13, J13b; `GET /accounts/24666/transactions` = `[]`. Confirmed in Stage 3 (loan account 75726, API and web UI: no transactions) — `evidence/stage3-ui/activity-L-75726.png` |
 | E15 | New-account response shows a different balance than the account | A7 | JRN-01 (J06) | `POST /createAccount?customerId=17096&newAccountType=1&fromAccountId=21780` | 200 `{"id":24555,…,"balance":0}`; `GET /accounts/24555` → 100.00 | 21780: 415.50 → 315.50 | 12:58:30 | `observations.json` probes J06, J06b |
 
 All evidence files are in `evidence/stage1/`. The `.md` files list every probe in one table; the `.json` files hold the full requests and responses, with passwords and SSNs removed. Latency samples: `latency-baseline.md`.

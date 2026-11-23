@@ -9,7 +9,8 @@
     "test:journey": "./start-journey.sh",
     "test:suites": "./start-suites.sh",
     "test:stage3": "./start-all.sh",
-    "setup": "node --env-file=.env scripts/stage0-setup.mjs"
+    "setup": "node --env-file=.env scripts/stage0-setup.mjs",
+    "test:manual": "./start-manual.sh"
   },
   "devDependencies": {
     "playwright": "1.49.1"

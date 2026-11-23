@@ -524,7 +524,7 @@ Each suite folder can be run alone (`--folder "14 TRF Transfer"`) after `10 Suit
 1. Run `00 Smoke` from the command line (`postman collection run` / `newman run`) with a JSON report. **Fail → stop**, record BLOCKED.
 2. Run `10` + all suites (P1 first, then P2/P3).
 3. Run `01 Customer Journey`. A failing step is compared with its mapped suite (§2.5).
-4. Cross-check J09, J10, J13 and TRF-01 in the web UI.
+4. Cross-check J09, J10, J13 and TRF-01 in the web UI — `node --env-file=.env scripts/stage3-ui-crosscheck.mjs` (local Chrome via Playwright; compares every page with the API; report and screenshots in `evidence/stage3-ui/`).
 5. Record results per case: PASS / FAIL / BLOCKED / NEEDS-CLARIFICATION.
 
 ```mermaid
