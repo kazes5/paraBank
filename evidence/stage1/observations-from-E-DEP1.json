@@ -1,0 +1,325 @@
+{
+  "user": "Rktest1",
+  "customerId": 17762,
+  "accounts": {
+    "A": 23112,
+    "F": 23223
+  },
+  "observations": [
+    {
+      "id": "E-DEP1",
+      "purpose": "deposit 0",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=23223&amount=0",
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 228,
+      "body": "Successfully deposited $0 to account #23223",
+      "before": {
+        "23223": 100
+      },
+      "after": {
+        "23223": 100
+      },
+      "at": "2026-11-23T13:05:53.230Z"
+    },
+    {
+      "id": "E-DEP2",
+      "purpose": "deposit -5",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=23223&amount=-5",
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 237,
+      "body": "Successfully deposited $-5 to account #23223",
+      "before": {
+        "23223": 100
+      },
+      "after": {
+        "23223": 95
+      },
+      "at": "2026-11-23T13:05:58.473Z"
+    },
+    {
+      "id": "E-DEP3",
+      "purpose": "deposit to account -1",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=-1&amount=1",
+      "accept": "application/json",
+      "status": 400,
+      "contentType": "text/plain;charset=UTF-8",
+      "ms": 272,
+      "body": "Could not find account number -1",
+      "at": "2026-11-23T13:06:00.247Z"
+    },
+    {
+      "id": "E-WDR1",
+      "purpose": "withdraw > balance (100000)",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=23223&amount=100000",
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 247,
+      "body": "Successfully withdrew $100000 from account #23223",
+      "before": {
+        "23223": 95
+      },
+      "after": {
+        "23223": -99905
+      },
+      "at": "2026-11-23T13:06:05.455Z"
+    },
+    {
+      "id": "E-WDR2",
+      "purpose": "withdraw -5",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=23223&amount=-5",
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 220,
+      "body": "Successfully withdrew $-5 from account #23223",
+      "before": {
+        "23223": -99905
+      },
+      "after": {
+        "23223": -99900
+      },
+      "at": "2026-11-23T13:06:10.719Z"
+    },
+    {
+      "id": "E-WDR3",
+      "purpose": "withdraw 0",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=23223&amount=0",
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 265,
+      "body": "Successfully withdrew $0 from account #23223",
+      "before": {
+        "23223": -99900
+      },
+      "after": {
+        "23223": -99900
+      },
+      "at": "2026-11-23T13:06:15.971Z"
+    },
+    {
+      "id": "E-BIL1",
+      "purpose": "billpay > balance (100000)",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=23223&amount=100000",
+      "requestBody": {
+        "name": "City Utilities",
+        "address": {
+          "street": "1 Main St",
+          "city": "Springfield",
+          "state": "IL",
+          "zipCode": "62701"
+        },
+        "phoneNumber": "5551234567",
+        "accountNumber": 23112
+      },
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 221,
+      "body": "{\"payeeName\":\"City Utilities\",\"amount\":100000,\"accountId\":23223}",
+      "before": {
+        "23112": 215.5,
+        "23223": -99900
+      },
+      "after": {
+        "23112": 215.5,
+        "23223": -199900
+      },
+      "at": "2026-11-23T13:06:24.689Z"
+    },
+    {
+      "id": "E-BIL2",
+      "purpose": "billpay with empty payee {}",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=23223&amount=1",
+      "requestBody": {},
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 244,
+      "body": "{\"payeeName\":null,\"amount\":1,\"accountId\":23223}",
+      "before": {
+        "23223": -199900
+      },
+      "after": {
+        "23223": -199901
+      },
+      "at": "2026-11-23T13:06:29.943Z"
+    },
+    {
+      "id": "E-BIL3",
+      "purpose": "billpay -5",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=23223&amount=-5",
+      "requestBody": {
+        "name": "City Utilities",
+        "address": {
+          "street": "1 Main St",
+          "city": "Springfield",
+          "state": "IL",
+          "zipCode": "62701"
+        },
+        "phoneNumber": "5551234567",
+        "accountNumber": 23112
+      },
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 284,
+      "body": "{\"payeeName\":\"City Utilities\",\"amount\":-5,\"accountId\":23223}",
+      "before": {
+        "23112": 215.5,
+        "23223": -199901
+      },
+      "after": {
+        "23112": 215.5,
+        "23223": -199896
+      },
+      "at": "2026-11-23T13:06:38.641Z"
+    },
+    {
+      "id": "E-LON1",
+      "purpose": "loan amount -100",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=17762&amount=-100&downPayment=10&fromAccountId=23223",
+      "accept": "application/json",
+      "status": 500,
+      "contentType": "text/html;charset=UTF-8",
+      "ms": 223,
+      "body": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\"><img src=\"images/clear.gif;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\"><img src=\"images/logo.gif;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=7DCA760213B99E92075D5C7B9AA024EC) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\">About Us</a></li>\r\n  <li><a href=\"services.htm;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm;jsessionid=7DCA760213B99E92075D5C7B9AA024EC\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"index.htm;jsessionid",
+      "before": {
+        "23223": -199896
+      },
+      "after": {
+        "23223": -199896
+      },
+      "at": "2026-11-23T13:06:43.882Z"
+    },
+    {
+      "id": "E-LON2",
+      "purpose": "loan down payment > balance",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=17762&amount=1000&downPayment=100000&fromAccountId=23223",
+      "accept": "application/json",
+      "status": 500,
+      "contentType": "text/html;charset=UTF-8",
+      "ms": 218,
+      "body": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\"><img src=\"images/clear.gif;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\"><img src=\"images/logo.gif;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\">About Us</a></li>\r\n  <li><a href=\"services.htm;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm;jsessionid=87C2B7036EC36D4EB234335FD8A5F23A\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"index.htm;jsessionid",
+      "before": {
+        "23223": -199896
+      },
+      "after": {
+        "23223": -199896
+      },
+      "at": "2026-11-23T13:06:49.123Z"
+    },
+    {
+      "id": "E-LON3",
+      "purpose": "loan down payment > loan amount",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=17762&amount=10&downPayment=20&fromAccountId=23223",
+      "accept": "application/json",
+      "status": 500,
+      "contentType": "text/html;charset=UTF-8",
+      "ms": 223,
+      "body": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\"><img src=\"images/clear.gif;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\"><img src=\"images/logo.gif;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\">About Us</a></li>\r\n  <li><a href=\"services.htm;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm;jsessionid=BBFAF28FCD9BC98C87AE38A8DFD54DE3\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"index.htm;jsessionid",
+      "before": {
+        "23223": -199896
+      },
+      "after": {
+        "23223": -199896
+      },
+      "at": "2026-11-23T13:06:54.368Z"
+    },
+    {
+      "id": "E-LON4",
+      "purpose": "loan amount 0",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=17762&amount=0&downPayment=0&fromAccountId=23223",
+      "accept": "application/json",
+      "status": 500,
+      "contentType": "text/html;charset=UTF-8",
+      "ms": 234,
+      "body": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\"><img src=\"images/clear.gif;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\"><img src=\"images/logo.gif;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=FC7200B27B066905AF5B7F377EA9DD53) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\">About Us</a></li>\r\n  <li><a href=\"services.htm;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm;jsessionid=FC7200B27B066905AF5B7F377EA9DD53\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"index.htm;jsessionid",
+      "before": {
+        "23223": -199896
+      },
+      "after": {
+        "23223": -199896
+      },
+      "at": "2026-11-23T13:06:59.609Z"
+    },
+    {
+      "id": "E-OPN1",
+      "purpose": "create account from non-existent source -1",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=17762&newAccountType=0&fromAccountId=-1",
+      "accept": "application/json",
+      "status": 400,
+      "contentType": "text/plain;charset=UTF-8",
+      "ms": 279,
+      "body": "Could not create new account for customer 17762 from account -1",
+      "at": "2026-11-23T13:07:01.390Z"
+    },
+    {
+      "id": "E-TRX1",
+      "purpose": "filter invalid date format",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/23112/transactions/onDate/not-a-date",
+      "accept": "application/json",
+      "status": 400,
+      "contentType": "text/plain;charset=UTF-8",
+      "ms": 219,
+      "body": "Unable to parse date not-a-date",
+      "at": "2026-11-23T13:07:03.112Z"
+    },
+    {
+      "id": "E-TRX2",
+      "purpose": "filter by amount non-numeric",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/23112/transactions/amount/abc",
+      "accept": "application/json",
+      "status": 404,
+      "contentType": null,
+      "ms": 238,
+      "body": "",
+      "at": "2026-11-23T13:07:04.852Z"
+    },
+    {
+      "id": "E-PRF1",
+      "purpose": "update profile missing lastName",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17762?username=Rktest1&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&street=some+address&city=some+city&state=some+state&zipCode=zipzipzipzip&phoneNumber=0987654321",
+      "accept": "application/json",
+      "status": 500,
+      "contentType": "text/html;charset=UTF-8",
+      "ms": 279,
+      "body": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\"><img src=\"images/clear.gif;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\"><img src=\"images/logo.gif;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\">About Us</a></li>\r\n  <li><a href=\"services.htm;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm;jsessionid=A3885661E92A7FE27FF417E3F6A5DF03\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"index.htm;jsessionid",
+      "at": "2026-11-23T13:07:06.633Z"
+    },
+    {
+      "id": "E-PRF2",
+      "purpose": "customer after failed update",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/17762",
+      "accept": "application/json",
+      "status": 200,
+      "contentType": "application/json",
+      "ms": 218,
+      "body": "{\"id\":17762,\"firstName\":\"Roy\",\"lastName\":\"Kazes\",\"address\":{\"street\":\"some address\",\"city\":\"some city\",\"state\":\"some state\",\"zipCode\":\"zipzipzipzip\"},\"phoneNumber\":\"0987654321\",\"ssn\":\"<REDACTED>\"}",
+      "at": "2026-11-23T13:07:08.353Z"
+    }
+  ]
+}

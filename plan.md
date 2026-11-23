@@ -4,19 +4,28 @@
 **System under test:** ParaBank REST API — `https://parabank.parasoft.com/parabank/services/bank`
 **Goal:** Decide, with evidence, whether the API is ready for release, and deliver the six artifacts the exercise asks for.
 
-### Test architecture: two layers
+### Test architecture: three layers
 
 | Layer | What it is | Purpose | When it runs |
 |---|---|---|---|
-| **1. Customer journey (smoke)** | One end-to-end scenario simulating a real customer's lifecycle — onboarding, opening an account, managing money, paying bills, applying for a loan, investing, updating the profile. Every step verifies the data produced by the previous steps. | **Detect**: fast signal that the system works as a whole; a broken data link points at the failing endpoint. | First, at the start of every session and before load tests |
-| **2. Endpoint test suites** | One suite per endpoint with its own fresh fixtures: positive, negative, boundary, security and data-integrity cases. | **Isolate and document**: confirm which endpoint is at fault and under which inputs, collect logs and evidence, and give depth of coverage the journey can't. | After the journey; a journey failure triggers the matching suite first |
+| **1. Smoke** | 6 short, stable checks on in-scope endpoints only: login, profile, account list, account details, one small deposit and its transaction (STD §5.8). | **Gate**: proves the user, the site and the money path work before anything else runs. | First, every session and before load tests. Fail → stop, everything BLOCKED |
+| **2. Endpoint test suites** | One suite per endpoint with its own fresh fixtures: positive, negative, boundary, security and data-integrity cases. | **Depth and isolation**: which endpoint is at fault and under which inputs; logs and evidence. | After smoke. Suites are independent of each other and of the journey |
+| **3. Customer journey (JRN-01)** | One end-to-end scenario simulating a real customer's lifecycle — onboarding, opening an account, managing money, paying bills, applying for a loan, investing, updating the profile. Every step verifies the data produced by the previous steps. | **Integration**: finds problems that only appear when operations are combined. | After smoke; non-blocking. A failing step is compared with its mapped suite |
 
-```
- Journey (detect)                 Endpoint suites (isolate)            Defect (document)
- J01 → J02 → … → Jn  ──FAIL at Jk──▶  suite mapped to Jk (fresh data)  ──▶  bug report + logs
-        │                              • positive case reproduces?          + evidence bundle
-        └──PASS──▶ run all suites      • which inputs fail?
-                   (full regression)   • data or endpoint at fault?
+The journey is deliberately **not** the smoke test: it is long, depends on extended endpoints and chains data, so one early failure would hide the health of everything else.
+
+```mermaid
+flowchart LR
+    S["Layer 1: Smoke<br/>6 stable checks"] --> R{Pass?}
+    R -- No --> STOP["Stop: everything BLOCKED<br/>fix user / wait for site"]
+    R -- Yes --> SUITES["Layer 2: endpoint suites<br/>(independent, fresh data)"]
+    R -- Yes --> J["Layer 3: customer journey<br/>J02 → J17 (non-blocking)"]
+    J -- "fails at step Jk" --> CMP{"Mapped suite<br/>passed?"}
+    CMP -- No --> EP["Endpoint defect<br/>(suite already isolates it)"]
+    CMP -- Yes --> SEQ["Sequence defect<br/>(only when steps combine)"]
+    SUITES --> DOC["Bug reports<br/>+ logs + evidence"]
+    EP --> DOC
+    SEQ --> DOC
 ```
 
 ---
@@ -71,7 +80,24 @@ Extended endpoints are included because the journey needs them. Their defects ar
 | 7 | Optional automation (bonus) | Coded journey + suite tests + README | Runs with one command |
 | 8 | Packaging and submission | One folder / email | Deliverables checklist complete |
 
-Order: 0 → 1 → 2 → 3 sequential. Stage 4 runs alongside Stage 3 (triggered by failures). Stage 5 only after the journey's money steps (J07–J10) and the TRF/ACC suites pass. Stage 7 only after Stages 0–6.
+Order: 0 → 1 → 2 → 3 sequential. Stage 4 runs alongside Stage 3 (triggered by failures). Stage 5 only after the smoke suite and the TRF-01 / ACCT-02 cases pass. Stage 7 only after Stages 0–6.
+
+```mermaid
+flowchart TD
+    S0[Stage 0: Setup] --> S1[Stage 1: Exploration and business rules]
+    S1 --> S2[Stage 2: Test design - journey + endpoint suites]
+    S2 --> S3[Stage 3: Postman build and execute]
+    S3 -. failures .-> S4[Stage 4: Isolation, logs, bug reports]
+    S4 -. re-run after triage .-> S3
+    S3 --> G5{"Smoke passes and<br/>TRF-01 / ACCT-02 pass?"}
+    G5 -- Yes --> S5[Stage 5: Load and performance]
+    G5 -- No --> S4
+    S4 --> S6[Stage 6: Test Summary Report]
+    S5 --> S6
+    S6 --> S7["Stage 7: Optional automation"]
+    S7 --> S8[Stage 8: Packaging and submission]
+    S6 -. if time is short, skip 7 .-> S8
+```
 
 ---
 
@@ -90,6 +116,21 @@ Order: 0 → 1 → 2 → 3 sequential. Stage 4 runs alongside Stage 3 (triggered
    | `fallbackAccountId` | account opened in step 3 |
 
    All other IDs are captured at run time, never typed in.
+
+```mermaid
+flowchart TD
+    A[Read user from .env] --> B{API login works?}
+    B -- Yes --> D
+    B -- No --> C[Register via web UI form] --> C2{Login works now?}
+    C2 -- No --> X[Stop: fix .env credentials or username]
+    C2 -- Yes --> D{"Profile = registration data?<br/>(exit gate)"}
+    D -- No --> X2[Stop: exit gate failed]
+    D -- Yes --> E[Note default account]
+    E --> F{Fallback CHECKING account exists?}
+    F -- No --> G[Open fallback account]
+    F -- Yes --> H
+    G --> H[Snapshot balances, write IDs to .env]
+```
 
 **Exit gate:** `GET /login` returns a customer whose name matches the registration.
 
@@ -129,6 +170,21 @@ Order: 0 → 1 → 2 → 3 sequential. Stage 4 runs alongside Stage 3 (triggered
 
 7. Every Swagger/UI/API conflict → **spec ambiguities list** (feeds Stage 4).
 
+```mermaid
+flowchart LR
+    SW[OpenAPI contract] --> OBS
+    UI[Web UI behavior] --> OBS
+    API["API probes on own accounts<br/>(status, body, balances before/after)"] --> OBS[Observations]
+    NORM[Banking and REST norms] --> RULE
+    OBS --> RULE{Do the sources agree<br/>with the expected rule?}
+    RULE -- Yes --> C["Rule confirmed<br/>(becomes a test oracle)"]
+    RULE -- "No, rule is clear" --> V["Rule violated<br/>(candidate defect)"]
+    RULE -- "No reliable rule" --> Q["Spec question<br/>(NEEDS-CLARIFICATION)"]
+    C --> L[Business-rules ledger]
+    V --> L
+    Q --> L
+```
+
 **Exit gate:** every endpoint exercised; rules ledger complete; every assertion planned in Stage 2 has a rule behind it.
 
 ---
@@ -157,23 +213,84 @@ One scenario, 17 steps in order. Each step names the data it **captures** and th
 | J02 | Onboarding | `GET /login/{u}/{p}` | `customerId` | name, address, phone, SSN = registration data |
 | J03 | Onboarding | `GET /customers/{customerId}` | — | all fields = J02 response |
 | J04 | Onboarding | `GET /customers/{customerId}/accounts` | `accountA`, `A0` | `customerId` on each account = J02; contains the default account |
-| J05 | Onboarding | `GET /accounts/{accountA}` | — | id, type, balance, customerId = J04 entry |
+| J05 | Onboarding | `GET /accounts/{accountA}`, `GET /accounts/{accountA}/transactions` | `baseline` row IDs | id, type, balance, customerId = J04 entry; existing rows ignored later |
 | J06 | Open account | `POST /createAccount` SAVINGS funded from A | `accountB`, `B0` | owner = J02; type SAVINGS; A = A0 − B0; list now contains B |
 | J07 | Manage money | `POST /deposit` 200.00 → B | — | B = B0 + 200 |
 | J08 | Manage money | `POST /withdraw` 20.00 ← B | — | B = B0 + 180 |
 | J09 | Manage money | `POST /transfer` 50.00 B → A | — | B −50, A +50; A + B unchanged |
 | J10 | Pay bills | `POST /billpay` 30.00 from A, payee "City Utilities" | — | response echoes payee, account, amount; A −30 |
 | J11 | Statement | `GET /accounts/{A}/transactions`, `/{B}/transactions`, `GET /transactions/{id}` | `trxTransferIn` | A: funding debit, transfer credit 50, bill debit 30; B: funding credit, deposit 200, withdraw 20, transfer debit 50; dated today; single transaction = its list entry |
-| J12 | Statement | Filters on A: amount/50, onDate, fromDate–toDate, month/type | — | amount filter → only the 50 credit; date filters → same set as J11; type filter → only that type |
-| J13 | Loan | `POST /requestLoan` 500, down payment 50, from A | `loanAccountId` | approved → new owned account with 500, A −50; denied → no new account, A unchanged, reason given |
+| J12 | Statement | Filters on A: `/amount/50`, `/onDate/{today}`, `/fromDate/{today}/toDate/{today}`, `/month/{month}/type/Debit` | — | each filter result = the matching subset of A's unfiltered list read in the same run (amount 50; dated today, UTC date; month + type Debit) |
+| J13 | Loan | `POST /requestLoan` 500, down payment 50, from A; then accounts list, `GET /accounts/{A}`, `/{L}`, transactions of A and L | `loanAccountId` | approved → new owned LOAN account with 500, A −50, transactions recorded (assumed); denied → no new account, A unchanged, reason given |
 | J14 | Invest | `buyPosition` 2 × 10.00 from A, symbol `QATS` | `positionId` | A −20; positions list contains it; `GET /positions/{id}` shares 2, price 10 |
 | J15 | Invest | `sellPosition` 1 × 12.00 to A | — | A +12; position shares = 1 |
-| J16 | Update profile | `POST /customers/update/{id}` new street + phone | — | customer shows new values, others unchanged; login still works and returns updated profile |
-| J17 | Reconciliation | accounts list + each account | — | each balance = expected-state ledger; total = A0 + 592 (loan approved) or A0 + 142 (denied) |
+| J16 | Update profile | `POST /customers/update/{id}` new street + phone; `GET /customers/{id}`; `GET /login`; restore original values | — | customer shows new values, others unchanged; login still works and returns updated profile; profile restored |
+| J17 | Reconciliation | accounts list + each account | — | A and B = expected-state ledger; A + B = A0 + 92 (loan approved) or A0 + 142 (denied); loan account balance reported, not judged (STD O4, Q9) |
+
+```mermaid
+flowchart TD
+    subgraph Onboarding
+        J01[J01 Register in web UI] --> J02["J02 Login<br/>captures customerId"]
+        J02 --> J03["J03 Get customer<br/>= login response"]
+        J03 --> J04["J04 List accounts<br/>captures accountA, A0"]
+        J04 --> J05["J05 Get account A<br/>= list entry"]
+    end
+    subgraph Open_account[Open account]
+        J06["J06 Create SAVINGS B from A<br/>captures accountB, B0<br/>A = A0 - B0"]
+    end
+    subgraph Manage_money[Manage money]
+        J07["J07 Deposit 200 to B<br/>B +200"] --> J08["J08 Withdraw 20 from B<br/>B -20"]
+        J08 --> J09["J09 Transfer 50 B to A<br/>A+B unchanged"]
+    end
+    subgraph Pay_bills[Pay bills]
+        J10["J10 Bill pay 30 from A<br/>A -30, echo payee"]
+    end
+    subgraph Statement
+        J11["J11 Transactions A and B<br/>every movement once"] --> J12["J12 Filters<br/>only matching rows"]
+    end
+    subgraph Loan
+        J13["J13 Loan 500, down 50<br/>loan account, A -50"]
+    end
+    subgraph Invest
+        J14["J14 Buy 2 x 10<br/>A -20, position listed"] --> J15["J15 Sell 1 x 12<br/>A +12, shares = 1"]
+    end
+    subgraph Update_profile[Update profile]
+        J16["J16 Update street + phone<br/>saved, login still works"]
+    end
+    J05 --> J06 --> J07
+    J09 --> J10 --> J11
+    J12 --> J13 --> J14
+    J15 --> J16 --> J17["J17 Reconciliation<br/>every balance = expected ledger"]
+```
+
+**Money-step verification pattern** (used by every journey money step and every endpoint-suite money case):
+
+```mermaid
+sequenceDiagram
+    participant T as Test script
+    participant API as ParaBank API
+    participant L as Expected-state ledger
+    T->>API: GET /accounts/{id} (before)
+    API-->>T: balance before
+    T->>API: POST action (deposit / withdraw / transfer / billpay ...)
+    API-->>T: status + body
+    T->>T: assert status and body (200 alone is not success)
+    T->>L: update expected balance (in cents)
+    T->>API: GET /accounts/{id} (after)
+    API-->>T: balance after
+    T->>L: compare actual vs expected
+    alt match
+        T->>T: PASS, store captured IDs
+    else mismatch
+        T->>T: FAIL, log failure signal, later dependent steps BLOCKED
+    end
+```
+
+Every individual API call, its read-backs and its verification are listed in **`STD.md` §5.6** (call table J01–J17 and a coverage matrix of all 21 intended operations).
 
 **Expected-state ledger** (collection variables; each money step updates the expected value, then reads the actual one):
 
-| After | Expected A | Expected B | Loan |
+| After | Expected A | Expected B | Loan account (observed only) |
 |---|---|---|---|
 | J04 | A0 | — | — |
 | J06 | A0 − B0 | B0 | — |
@@ -181,9 +298,9 @@ One scenario, 17 steps in order. Each step names the data it **captures** and th
 | J08 | A0 − B0 | B0 + 180 | — |
 | J09 | A0 − B0 + 50 | B0 + 130 | — |
 | J10 | A0 − B0 + 20 | B0 + 130 | — |
-| J13 (approved) | A0 − B0 − 30 | B0 + 130 | 500 |
-| J14 | A0 − B0 − 50 | B0 + 130 | 500 |
-| J15 | A0 − B0 − 38 | B0 + 130 | 500 |
+| J13 (approved) | A0 − B0 − 30 | B0 + 130 | 500 seen in Stage 1 — reported, not asserted |
+| J14 | A0 − B0 − 50 | B0 + 130 | — |
+| J15 | A0 − B0 − 38 | B0 + 130 | — |
 
 **Journey verification rules**
 - Balances compared in cents (`Math.round(x * 100)`).
@@ -191,11 +308,23 @@ One scenario, 17 steps in order. Each step names the data it **captures** and th
 - Variables set only after the step's assertions pass; downstream steps needing missing data → **BLOCKED**, and the journey continues with the independent steps.
 - Every failed step logs a **failure signal**: step, endpoint, mapped suite, expected vs. actual (see §2.5).
 
-### 2.3 Journey as smoke suite
-- Smoke = the journey run end-to-end (≈ 25 requests, < 1 min). Covers every endpoint and the core data links.
-- Runs first in every session, and before load tests.
-- **Pass** → run the endpoint suites as full regression.
-- **Fail** → run the mapped endpoint suite(s) first to isolate the cause (§2.5).
+### 2.3 Smoke suite and journey robustness
+- **Smoke** = AUTH-01, CUST-01, ACCT-01, ACCT-02, DEP-01, HIST-01 (≈ 8 requests, one write, in-scope endpoints only). Runs first in every session and before load tests. **Fail → stop**: everything else is BLOCKED until the user or the site is healthy.
+- **Journey** runs after smoke and never blocks other tests. To keep it from collapsing on one failure:
+  - extended steps are non-blocking: J06 fails → use the spare own account as B; J14–J16 fail → BLOCKED, their amounts are left out of J17;
+  - steps that need data from a failed step are BLOCKED, not FAIL;
+  - expected balances are computed from balances actually read during the run.
+
+```mermaid
+flowchart TD
+    START[Start of session] --> SMOKE[Run smoke: 6 checks]
+    SMOKE --> OK{Pass?}
+    OK -- No --> STOP[Stop: everything BLOCKED]
+    OK -- Yes --> REG[Run endpoint suites]
+    OK -- Yes --> JRN[Run journey - non-blocking]
+    OK -- Yes --> LOAD[Load tests allowed]
+    JRN -- step fails --> CMP[Compare with mapped suite result - see 2.5]
+```
 
 ### 2.4 Layer 2 — Endpoint test suites
 
@@ -319,8 +448,26 @@ Coverage: positive ✔, negative ✔, boundary ✔, security/authorization ✔, 
    - Reproduction: minimal request sequence that triggers the failure.
 6. **Document.** Jira-style bug report (Stage 4) referencing the journey step, the isolating suite case and the evidence bundle.
 
+```mermaid
+flowchart TD
+    SIG["1. Signal: journey step Jk fails<br/>(step, endpoint, expected vs actual)"] --> MAP["2. Map Jk to its suite<br/>+ suite of previous data-producing step"]
+    MAP --> RUN["3. Run suite positive case on fresh data"]
+    RUN --> R{Result?}
+    R -- "Fails on fresh data" --> EP["Endpoint defect:<br/>run other suite cases to find failing inputs"]
+    R -- "Passes on fresh data" --> SEQ["Sequence / state defect:<br/>re-run journey up to Jk,<br/>narrow down the earlier step"]
+    R -- "Fails sometimes" --> INT["Intermittent:<br/>repeat 3x, record frequency,<br/>check site health"]
+    EP --> CHK
+    SEQ --> CHK
+    INT --> CHK
+    CHK{"4. Is the assertion backed<br/>by the rules ledger and the UI?"}
+    CHK -- "No, rule unclear" --> NC[NEEDS-CLARIFICATION<br/>add spec question]
+    CHK -- "No, test is wrong" --> FIX[Fix the test, re-run]
+    CHK -- Yes --> LOGS["5. Collect logs and evidence bundle"]
+    LOGS --> BUG["6. Bug report<br/>(journey step + isolating case + bundle)"]
+```
+
 ### 2.6 Automation note
-- **Automate:** the whole journey (smoke, repeatable, fast) and all P1 endpoint cases (money validation that must never regress); P2 cases as time allows.
+- **Automate:** the smoke set, the whole journey (repeatable on fresh data) and all P1 endpoint cases (money validation that must never regress); P2 cases as time allows.
 - **Keep manual:** web-UI cross-checks, cross-user authorization (would need another person's data — not allowed), exploratory precision cases, intermittent-failure reproduction.
 
 **Exit gate:** journey and ledger fully specified; every in-scope endpoint has a suite; isolation workflow defined; ≥ 12 cases marked for automation.
@@ -334,7 +481,8 @@ Coverage: positive ✔, negative ✔, boundary ✔, security/authorization ✔, 
 ### 3.1 Collection structure
 ```
 ParaBank QA
-├── 00 Smoke — Customer Journey (JRN-01)     J02 … J17 in order
+├── 00 Smoke                                 AUTH-01, CUST-01, ACCT-01, ACCT-02, DEP-01, HIST-01 (gate)
+├── 01 Customer Journey (JRN-01)             J02 … J17 in order, non-blocking
 │   ├── Onboarding       J02–J05
 │   ├── Open account     J06
 │   ├── Manage money     J07–J09
@@ -356,7 +504,7 @@ ParaBank QA
 ├── 19 TRX   Transactions & filters
 └── 20 EXT   OPN / INV / PRF (extended)
 ```
-Each suite folder can be run alone (`--folder "14 TRF Transfer"`) after `10 Suite fixtures` — this is how a journey failure is isolated.
+Each suite folder can be run alone (`--folder "14 TRF Transfer"`) after `10 Suite fixtures` — this is how a journey failure is isolated. Suggested run order: `00` → `10`–`19` → `01` → `20`.
 
 ### 3.2 Build steps
 1. Import the OpenAPI file for request skeletons; keep only planned requests.
@@ -373,11 +521,24 @@ Each suite folder can be run alone (`--folder "14 TRF Transfer"`) after `10 Suit
 9. Run sequentially — never parallel.
 
 ### 3.3 Execution
-1. Run `00 Smoke` from the command line (`postman collection run` / `newman run`) with a JSON report.
-2. Journey **pass** → run `10` + all suites (P1 first, then P2/P3).
-   Journey **fail** → run `10` + the mapped suite(s) first (§2.5), then the rest.
-3. Cross-check J09, J10, J13 and TRF-01 in the web UI.
-4. Record results per case: PASS / FAIL / BLOCKED / NEEDS-CLARIFICATION.
+1. Run `00 Smoke` from the command line (`postman collection run` / `newman run`) with a JSON report. **Fail → stop**, record BLOCKED.
+2. Run `10` + all suites (P1 first, then P2/P3).
+3. Run `01 Customer Journey`. A failing step is compared with its mapped suite (§2.5).
+4. Cross-check J09, J10, J13 and TRF-01 in the web UI.
+5. Record results per case: PASS / FAIL / BLOCKED / NEEDS-CLARIFICATION.
+
+```mermaid
+flowchart TD
+    A["Run 00 Smoke (CLI, JSON report)"] --> B{Smoke pass?}
+    B -- No --> X["Stop: record BLOCKED,<br/>fix user or wait for site"]
+    B -- Yes --> C["Run 10 Suite fixtures"]
+    C --> D["Run all suites: P1 first, then P2/P3"]
+    D --> J["Run 01 Customer Journey (non-blocking)"]
+    J --> F["Failing steps: compare with mapped suite (2.5)"]
+    F --> G["Cross-check J09, J10, J13, TRF-01 in web UI"]
+    G --> H["Record verdicts:<br/>PASS / FAIL / BLOCKED / NEEDS-CLARIFICATION"]
+    H --> I[Export collection + blanked environment]
+```
 
 ### 3.4 Export
 - Collection (v2.1 JSON).
@@ -411,6 +572,22 @@ Each suite folder can be run alone (`--folder "14 TRF Transfer"`) after `10 Suit
 
 6. Spec ambiguities list: every Swagger/UI/API conflict and unclear rule as a question for R&D (overdraft policy, error codes, loan approval criteria, date formats, `CREDIT` vs `Credit`, authentication, update-profile required fields).
 
+```mermaid
+flowchart TD
+    F[Failure from journey or suite] --> SRC{From journey?}
+    SRC -- Yes --> ISO[Isolation workflow 2.5]
+    SRC -- No --> REP[Reproduce once in isolation]
+    ISO --> CL
+    REP --> CL{Classify}
+    CL -- Endpoint defect --> SEV
+    CL -- Sequence defect --> SEV
+    CL -- Intermittent --> SEV
+    CL -- Test issue --> FIX[Fix test, re-run]
+    CL -- Needs clarification --> Q[Spec ambiguities list]
+    SEV["Assign severity + priority<br/>tag in-scope / extended"] --> EV["Evidence bundle<br/>evidence/defect-id/"]
+    EV --> BUG[Jira-style bug report]
+```
+
 **Exit gate:** every failure isolated to an endpoint + input (or classified otherwise), with an evidence bundle and a report.
 
 ---
@@ -419,12 +596,14 @@ Each suite folder can be run alone (`--folder "14 TRF Transfer"`) after `10 Suit
 
 **Objective:** Deliverable 4 — basic load test of `POST /transfer` and `GET /accounts/{accountId}`.
 
-**SLAs (self-defined)**
+**SLAs (self-defined)** — the same endpoint-class model as `STD.md` §4, based on the measured baseline in `evidence/stage1/latency-baseline.md` (reads p95 670 ms, money writes p95 295 ms):
 
-| Metric | `GET /accounts/{id}` | `POST /transfer` |
-|---|---|---|
-| p95 response time | < 1000 ms | < 2000 ms |
-| Error rate (HTTP + business) | < 1 % | < 1 % |
+| Class (load target) | p95 response time | Error rate (HTTP + body checks) | Timeout |
+|---|---|---|---|
+| Read (`GET /accounts/{id}`) | ≤ 1000 ms | < 1 % | 5 s |
+| Money write (`POST /transfer`) | ≤ 1500 ms | < 1 % | 5 s |
+
+p95 is judged per scenario and endpoint only with ≥ 20 requests; there is no per-request pass/fail (only timeouts count as errors).
 
 **Load model**
 
@@ -438,12 +617,32 @@ Each suite folder can be run alone (`--folder "14 TRF Transfer"`) after `10 Suit
 Rationale: well below the 20-VU cap; 1.00 transfers between two own accounts; fewer VUs for writes than reads.
 
 **Steps**
-1. Run the journey smoke first; use its accounts A and B (or suite fixtures).
+1. Run the smoke suite first; use two fresh suite-fixture accounts for the transfers.
 2. Two k6 scripts with checks on status **and** body, thresholds = SLAs.
 3. Record A + B before; run the four scenarios sequentially; record A + B after — total unchanged and per-account deltas = successful transfers × 1.00.
 4. Report per scenario: requests, p50/p95/max, error rate, SLA pass/fail; latency growth baseline → higher; suspected bottlenecks.
 5. If errors appear under load, run the TRF/ACC suites afterwards to check whether functional behavior is still correct.
 6. Limitations: shared-environment noise, small samples, no capacity limits or production SLAs can be established.
+
+```mermaid
+flowchart TD
+    A[Run smoke suite] --> B{Pass?}
+    B -- No --> STOP[Do not load test: fix or report first]
+    B -- Yes --> C[Record A + B balances before]
+    C --> D[Baseline GET: 1 VU, 1 min]
+    D --> E[Higher GET: 10 VUs, 2 min]
+    E --> F[Baseline transfer: 1 VU, 1 min]
+    F --> G[Higher transfer: 5 VUs, 2 min]
+    G --> H[Record A + B balances after]
+    H --> I{"Total unchanged and deltas =<br/>successful transfers x 1.00?"}
+    I -- Yes --> J[Report p50 / p95 / max, error rate, SLA verdict]
+    I -- No --> K[Data-integrity defect under load]
+    K --> J
+    J --> L{Errors under load?}
+    L -- Yes --> M[Re-run TRF / ACC suites to check functional behavior]
+    L -- No --> N[Analysis + limitations]
+    M --> N
+```
 
 **Exit gate:** 4 runs done, results and analysis written, balances reconciled.
 
@@ -464,12 +663,24 @@ Deliverable 5 — 1–2 pages for R&D and management:
    - **Go** only if the journey passes, all P1 suite cases pass, and no High/Critical defects remain.
 8. Next steps.
 
+```mermaid
+flowchart TD
+    A{Any Critical defect open?} -- Yes --> NOGO[NO-GO]
+    A -- No --> B{"Journey breaks on an in-scope money step<br/>isolated to an endpoint defect?"}
+    B -- Yes --> NOGO
+    B -- No --> C{"Journey passes, all P1 suite cases pass,<br/>no High defects?"}
+    C -- Yes --> GO[GO]
+    C -- No --> D{"Only Medium/Low or<br/>extended-scope issues remain?"}
+    D -- Yes --> COND[CONDITIONAL GO]
+    D -- No --> NOGO
+```
+
 ---
 
 ## Stage 7 — Optional automation
 
 Deliverable 6 (bonus): 4–5 coded tests (e.g. pytest + requests, or Newman over the exported collection), covering both layers:
-1. Journey smoke — onboarding through reconciliation (J02–J17) as one test
+1. Customer journey — onboarding through reconciliation (J02–J17) as one test
 2. TRF-01 — transfer conserves total balance (fresh fixtures)
 3. TRF-04 — negative transfer leaves balances unchanged
 4. DEP-01 — deposit increases balance exactly and creates a transaction
@@ -508,6 +719,15 @@ Credentials from environment variables; on failure, write the request/response l
    - [ ] Load test scripts and results
    - [ ] Test Summary Report (STR)
    - [ ] (Optional) Automation code
+```mermaid
+flowchart LR
+    A[Redact credentials in exports, reports, logs, evidence] --> B[Search files for password and SSN]
+    B --> C[Search scripts for forbidden endpoints]
+    C --> D[Assemble submission folder]
+    D --> E[Tick deliverables checklist]
+    E --> F[Send + prepare walkthrough]
+```
+
 5. Send in one email or shared folder; prepare a short walkthrough (journey run → a failure → isolating suite → bug report).
 
 ---
