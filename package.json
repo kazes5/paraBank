@@ -1,0 +1,12 @@
+{
+  "name": "parabank-qa",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "register": "node scripts/register-user.mjs",
+    "test:all": "./run-all.sh"
+  },
+  "devDependencies": {
+    "playwright": "1.49.1"
+  }
+}

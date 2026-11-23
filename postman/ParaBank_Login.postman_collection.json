@@ -1,0 +1,1329 @@
+{
+  "info": {
+    "name": "ParaBank API",
+    "description": "Login scenario tests for GET /login/{username}/{password}.\n\nDerived rules:\n- R1: Valid credentials return 200 with a Customer object (id, firstName, lastName, address, phoneNumber, ssn) per the OpenAPI schema.\n- R2: Invalid credentials are rejected with a 4xx and return no customer data.\n- R3: Unknown user and wrong password produce the same response (no user enumeration).\n- R4: Injection-style input is rejected cleanly (4xx, never 5xx or a customer record).\n- R5: Failed login should use 401 Unauthorized (REST convention; spec documents only a 'default' response).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Response time under 3000 ms', () => {",
+          "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "TC-L02 Wrong password is rejected",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services/bank/login/:username/:password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services",
+            "bank",
+            "login",
+            ":username",
+            ":password"
+          ],
+          "variable": [
+            {
+              "key": "username",
+              "value": "{{username}}"
+            },
+            {
+              "key": "password",
+              "value": "wrong_{{$timestamp}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 4xx', () => pm.expect(pm.response.code).to.be.within(400, 499));",
+              "pm.test('No customer data returned', () => {",
+              "    pm.expect(pm.response.text()).to.not.match(/\"ssn\"|\"firstName\"|<ssn>/);",
+              "});",
+              "pm.test('Error message is shown', () => {",
+              "    pm.expect(pm.response.text()).to.include('Invalid username and/or password');",
+              "});",
+              "pm.environment.set('_wrongPwBody', pm.response.text());",
+              "pm.environment.set('_wrongPwCode', String(pm.response.code));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-L03 Unknown user gets same response as wrong password",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services/bank/login/:username/:password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services",
+            "bank",
+            "login",
+            ":username",
+            ":password"
+          ],
+          "variable": [
+            {
+              "key": "username",
+              "value": "nouser_{{$timestamp}}"
+            },
+            {
+              "key": "password",
+              "value": "whatever"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 4xx', () => pm.expect(pm.response.code).to.be.within(400, 499));",
+              "pm.test('Same status as wrong password (no user enumeration)', () => {",
+              "    pm.expect(String(pm.response.code)).to.eql(pm.environment.get('_wrongPwCode'));",
+              "});",
+              "pm.test('Same body as wrong password (no user enumeration)', () => {",
+              "    pm.expect(pm.response.text()).to.eql(pm.environment.get('_wrongPwBody'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-L04 SQL-injection style input is rejected cleanly",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services/bank/login/:username/:password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services",
+            "bank",
+            "login",
+            ":username",
+            ":password"
+          ],
+          "variable": [
+            {
+              "key": "username",
+              "value": "%27%20OR%20%271%27%3D%271"
+            },
+            {
+              "key": "password",
+              "value": "%27%20OR%20%271%27%3D%271"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 4xx (not 2xx, not 5xx)', () => pm.expect(pm.response.code).to.be.within(400, 499));",
+              "pm.test('No customer data returned', () => {",
+              "    pm.expect(pm.response.text()).to.not.match(/\"ssn\"|\"firstName\"|<ssn>/);",
+              "});",
+              "pm.test('No stack trace or SQL error leaked', () => {",
+              "    pm.expect(pm.response.text()).to.not.match(/SQL|Exception|at org\\.|at java\\./i);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-L05 Failed login uses 401 Unauthorized",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services/bank/login/:username/:password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services",
+            "bank",
+            "login",
+            ":username",
+            ":password"
+          ],
+          "variable": [
+            {
+              "key": "username",
+              "value": "{{username}}"
+            },
+            {
+              "key": "password",
+              "value": "wrong_{{$timestamp}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 401 Unauthorized', () => pm.response.to.have.status(401));",
+              "pm.test('Honors Accept: application/json on error', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type') || '').to.include('application/json');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-L01 Valid login returns customer",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services/bank/login/:username/:password",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services",
+            "bank",
+            "login",
+            ":username",
+            ":password"
+          ],
+          "variable": [
+            {
+              "key": "username",
+              "value": "{{username}}"
+            },
+            {
+              "key": "password",
+              "value": "{{password}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Content-Type is JSON', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "const schema = {",
+              "  type: 'object',",
+              "  required: ['id', 'firstName', 'lastName', 'address', 'phoneNumber', 'ssn'],",
+              "  properties: {",
+              "    id: { type: 'integer' },",
+              "    firstName: { type: 'string' },",
+              "    lastName: { type: 'string' },",
+              "    phoneNumber: { type: 'string' },",
+              "    ssn: { type: 'string' },",
+              "    address: {",
+              "      type: 'object',",
+              "      required: ['street', 'city', 'state', 'zipCode'],",
+              "      properties: {",
+              "        street: { type: 'string' }, city: { type: 'string' },",
+              "        state: { type: 'string' }, zipCode: { type: 'string' }",
+              "      }",
+              "    }",
+              "  }",
+              "};",
+              "",
+              "let body;",
+              "try { body = pm.response.json(); } catch (e) { body = null; }",
+              "",
+              "pm.test('Body matches Customer schema', () => {",
+              "    pm.expect(body, 'response is not JSON').to.be.an('object');",
+              "    pm.expect(body).to.have.jsonSchema(schema);",
+              "});",
+              "pm.test('Customer id is a positive integer', () => {",
+              "    pm.expect(body.id).to.be.a('number').and.above(0);",
+              "});",
+              "pm.test('Customer id matches configured customerId (if set)', () => {",
+              "    const expected = pm.environment.get('customerId');",
+              "    if (expected) pm.expect(String(body.id)).to.eql(String(expected));",
+              "});",
+              "",
+              "if (body && body.id) { pm.environment.set('customerId', String(body.id)); pm.environment.set('loginCustomerId', String(body.id)); }"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.unset('loginCustomerId');"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-A01 Get customer accounts (customerId from login)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services/bank/customers/:customerId/accounts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services",
+            "bank",
+            "customers",
+            ":customerId",
+            "accounts"
+          ],
+          "variable": [
+            {
+              "key": "customerId",
+              "value": "{{customerId}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Content-Type is JSON', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "let body;",
+              "try { body = pm.response.json(); } catch (e) { body = null; }",
+              "",
+              "pm.test('Body is a non-empty array (new customer gets an account on registration)', () => {",
+              "    pm.expect(body).to.be.an('array').that.is.not.empty;",
+              "});",
+              "pm.test('Every item matches Account schema', () => {",
+              "    pm.expect(body).to.have.jsonSchema({",
+              "        type: 'array',",
+              "        items: {",
+              "            type: 'object',",
+              "            required: ['id', 'customerId', 'type', 'balance'],",
+              "            properties: {",
+              "                id: { type: 'integer' },",
+              "                customerId: { type: 'integer' },",
+              "                type: { type: 'string', enum: ['CHECKING', 'SAVINGS', 'LOAN'] },",
+              "                balance: { type: 'number' }",
+              "            }",
+              "        }",
+              "    });",
+              "});",
+              "pm.test('Every account belongs to the customer returned by login', () => {",
+              "    const loginId = pm.environment.get('loginCustomerId');",
+              "    pm.expect(loginId, 'login did not run first / did not store id').to.be.ok;",
+              "    body.forEach(a => pm.expect(String(a.customerId)).to.eql(loginId));",
+              "});",
+              "pm.test('Account ids are unique', () => {",
+              "    const ids = body.map(a => a.id);",
+              "    pm.expect(new Set(ids).size).to.eql(ids.length);",
+              "});",
+              "",
+              "if (Array.isArray(body) && body.length) {",
+              "    pm.environment.set('fromAccountId', String(body[0].id));",
+              "    if (body[1]) pm.environment.set('toAccountId', String(body[1].id));",
+              "}",
+              "if (Array.isArray(body) && body.length) pm.environment.set('listedAccount', JSON.stringify(body[0]));"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.unset('fromAccountId'); pm.environment.unset('toAccountId'); pm.environment.unset('listedAccount');",
+              "// Chained from TC-L01: skip if login did not return a customer id",
+              "if (!pm.environment.get('loginCustomerId')) {",
+              "    console.warn('TC-A01 skipped: login did not return a customer id');",
+              "    pm.execution.skipRequest();",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-A02 Get account details (accountId from accounts list)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services/bank/accounts/:accountId",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services",
+            "bank",
+            "accounts",
+            ":accountId"
+          ],
+          "variable": [
+            {
+              "key": "accountId",
+              "value": "{{fromAccountId}}"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Chained from TC-A01: skip if no account id was captured",
+              "if (!pm.environment.get('fromAccountId') || !pm.environment.get('listedAccount')) {",
+              "    console.warn('TC-A02 skipped: TC-A01 did not capture an account');",
+              "    pm.execution.skipRequest();",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Content-Type is JSON', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "let body;",
+              "try { body = pm.response.json(); } catch (e) { body = null; }",
+              "const listed = JSON.parse(pm.environment.get('listedAccount') || 'null');",
+              "",
+              "pm.test('Body matches Account schema', () => {",
+              "    pm.expect(body).to.have.jsonSchema({",
+              "        type: 'object',",
+              "        required: ['id', 'customerId', 'type', 'balance'],",
+              "        properties: {",
+              "            id: { type: 'integer' },",
+              "            customerId: { type: 'integer' },",
+              "            type: { type: 'string', enum: ['CHECKING', 'SAVINGS', 'LOAN'] },",
+              "            balance: { type: 'number' }",
+              "        }",
+              "    });",
+              "});",
+              "pm.test('Returned id equals requested accountId', () => {",
+              "    pm.expect(String(body.id)).to.eql(pm.environment.get('fromAccountId'));",
+              "});",
+              "pm.test('Account belongs to the logged-in customer', () => {",
+              "    pm.expect(String(body.customerId)).to.eql(pm.environment.get('loginCustomerId'));",
+              "});",
+              "pm.test('Details match the customer accounts list (type, balance)', () => {",
+              "    pm.expect(listed, 'TC-A01 did not store the listed account').to.be.an('object');",
+              "    pm.expect(body.type).to.eql(listed.type);",
+              "    pm.expect(body.balance).to.eql(listed.balance);",
+              "});",
+              "pm.test('Balance has at most 2 decimal places', () => {",
+              "    pm.expect(Math.round(body.balance * 100) / 100).to.eql(body.balance);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smoke - all in-scope endpoints",
+      "description": "Reaches every in-scope endpoint on the tester's OWN accounts with small amounts. Run after TC-L01 and TC-A01 (they set loginCustomerId and fromAccountId).",
+      "item": [
+        {
+          "name": "S01 GET customer by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/customers/:customerId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "customers",
+                ":customerId"
+              ],
+              "variable": [
+                {
+                  "key": "customerId",
+                  "value": "{{loginCustomerId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "pm.test('Returns the logged-in customer', () => {",
+                  "    pm.expect(String(body.id)).to.eql(pm.environment.get('loginCustomerId'));",
+                  "    pm.expect(body).to.include.keys('firstName', 'lastName', 'address', 'phoneNumber', 'ssn');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S02 Setup - create second (SAVINGS) account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/createAccount?customerId={{loginCustomerId}}&newAccountType=1&fromAccountId={{fromAccountId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "createAccount"
+              ],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{loginCustomerId}}"
+                },
+                {
+                  "key": "newAccountType",
+                  "value": "1"
+                },
+                {
+                  "key": "fromAccountId",
+                  "value": "{{fromAccountId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('toAccountId');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "pm.test('New account is SAVINGS for this customer', () => {",
+                  "    pm.expect(body.type).to.eql('SAVINGS');",
+                  "    pm.expect(String(body.customerId)).to.eql(pm.environment.get('loginCustomerId'));",
+                  "});",
+                  "if (body && body.id) pm.environment.set('toAccountId', String(body.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S03 POST deposit 10.00",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/deposit?accountId={{fromAccountId}}&amount=10.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "deposit"
+              ],
+              "query": [
+                {
+                  "key": "accountId",
+                  "value": "{{fromAccountId}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "10.00"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('fromAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    if (!err && res.code === 200) pm.environment.set('balBefore', String(res.json().balance));",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "pm.test('Confirmation message', () => pm.expect(pm.response.text()).to.match(/Successfully deposited \\$10/));",
+                  "",
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('fromAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    pm.test('Balance increased by exactly 10.00', () => {",
+                  "        pm.expect(err).to.be.null;",
+                  "        const before = Number(pm.environment.get('balBefore'));",
+                  "        const after = res.json().balance;",
+                  "        pm.expect(Math.round((after - before) * 100) / 100).to.eql(10);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S04 POST withdraw 5.00",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/withdraw?accountId={{fromAccountId}}&amount=5.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "withdraw"
+              ],
+              "query": [
+                {
+                  "key": "accountId",
+                  "value": "{{fromAccountId}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "5.00"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('fromAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    if (!err && res.code === 200) pm.environment.set('balBefore', String(res.json().balance));",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "pm.test('Confirmation message', () => pm.expect(pm.response.text()).to.match(/Successfully withdrew \\$5/));",
+                  "",
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('fromAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    pm.test('Balance decreased by exactly 5.00', () => {",
+                  "        pm.expect(err).to.be.null;",
+                  "        const before = Number(pm.environment.get('balBefore'));",
+                  "        const after = res.json().balance;",
+                  "        pm.expect(Math.round((after - before) * 100) / 100).to.eql(-5);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S05 POST transfer 5.00 between own accounts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/transfer?fromAccountId={{fromAccountId}}&toAccountId={{toAccountId}}&amount=5.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "transfer"
+              ],
+              "query": [
+                {
+                  "key": "fromAccountId",
+                  "value": "{{fromAccountId}}"
+                },
+                {
+                  "key": "toAccountId",
+                  "value": "{{toAccountId}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "5.00"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.environment.get('toAccountId')) { console.warn('skipped: no second account'); pm.execution.skipRequest(); }",
+                  "",
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('fromAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    if (!err && res.code === 200) pm.environment.set('balBefore', String(res.json().balance));",
+                  "});",
+                  "",
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('toAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    if (!err && res.code === 200) pm.environment.set('balToBefore', String(res.json().balance));",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "pm.test('Confirmation message', () => pm.expect(pm.response.text()).to.match(/Successfully transferred \\$5/));",
+                  "",
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('fromAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    pm.test('Source balance decreased by 5.00', () => {",
+                  "        pm.expect(err).to.be.null;",
+                  "        const before = Number(pm.environment.get('balBefore'));",
+                  "        const after = res.json().balance;",
+                  "        pm.expect(Math.round((after - before) * 100) / 100).to.eql(-5);",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('toAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    pm.test('Destination balance increased by 5.00', () => {",
+                  "        pm.expect(err).to.be.null;",
+                  "        const before = Number(pm.environment.get('balToBefore'));",
+                  "        const after = res.json().balance;",
+                  "        pm.expect(Math.round((after - before) * 100) / 100).to.eql(5);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S06 POST billpay 5.00 to own savings account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/billpay?accountId={{fromAccountId}}&amount=5.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "billpay"
+              ],
+              "query": [
+                {
+                  "key": "accountId",
+                  "value": "{{fromAccountId}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "5.00"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"QA Test Payee\",\n  \"address\": {\n    \"street\": \"1 Test St\",\n    \"city\": \"Testville\",\n    \"state\": \"TS\",\n    \"zipCode\": \"12345\"\n  },\n  \"phoneNumber\": \"0000000000\",\n  \"accountNumber\": {{toAccountId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.environment.get('toAccountId')) { console.warn('skipped: no second account'); pm.execution.skipRequest(); }",
+                  "",
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('fromAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    if (!err && res.code === 200) pm.environment.set('balBefore', String(res.json().balance));",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "pm.test('Response echoes payee, amount and account', () => {",
+                  "    pm.expect(body.payeeName).to.eql('QA Test Payee');",
+                  "    pm.expect(Number(body.amount)).to.eql(5);",
+                  "    pm.expect(String(body.accountId)).to.eql(pm.environment.get('fromAccountId'));",
+                  "});",
+                  "",
+                  "pm.sendRequest({ url: pm.environment.get('baseUrl') + '/services/bank/accounts/' + pm.environment.get('fromAccountId'),",
+                  "                  header: { Accept: 'application/json' } }, (err, res) => {",
+                  "    pm.test('Source balance decreased by 5.00', () => {",
+                  "        pm.expect(err).to.be.null;",
+                  "        const before = Number(pm.environment.get('balBefore'));",
+                  "        const after = res.json().balance;",
+                  "        pm.expect(Math.round((after - before) * 100) / 100).to.eql(-5);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S07 POST requestLoan 100.00 (down payment 10.00)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/requestLoan?customerId={{loginCustomerId}}&amount=100.00&downPayment=10.00&fromAccountId={{fromAccountId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "requestLoan"
+              ],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{loginCustomerId}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "100.00"
+                },
+                {
+                  "key": "downPayment",
+                  "value": "10.00"
+                },
+                {
+                  "key": "fromAccountId",
+                  "value": "{{fromAccountId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "pm.test('Body matches LoanResponse schema', () => {",
+                  "    pm.expect(body).to.have.jsonSchema({ type: 'object', required: ['loanProviderName', 'approved'],",
+                  "        properties: { loanProviderName: { type: 'string' }, approved: { type: 'boolean' },",
+                  "                      message: { type: ['string', 'null'] }, accountId: { type: ['integer', 'null'] } } });",
+                  "});",
+                  "pm.test('Approved loan has a new account id; denied loan has a reason', () => {",
+                  "    if (body.approved) pm.expect(body.accountId).to.be.a('number');",
+                  "    else pm.expect(body.message).to.be.a('string').and.not.empty;",
+                  "});",
+                  "console.log('Loan approved:', body && body.approved, '| message:', body && body.message);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S08 GET account transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/accounts/:accountId/transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "accounts",
+                ":accountId",
+                "transactions"
+              ],
+              "variable": [
+                {
+                  "key": "accountId",
+                  "value": "{{fromAccountId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "const txnSchema = { type: 'array', items: { type: 'object',",
+                  "    required: ['id', 'accountId', 'type', 'date', 'amount', 'description'],",
+                  "    properties: { id: { type: 'integer' }, accountId: { type: 'integer' },",
+                  "                  type: { type: 'string', enum: ['Credit', 'Debit'] },",
+                  "                  date: {}, amount: { type: 'number' }, description: { type: 'string' } } } };",
+                  "pm.test('Body is an array of Transactions', () => pm.expect(body).to.have.jsonSchema(txnSchema));",
+                  "pm.test('All transactions belong to the requested account', () => {",
+                  "    body.forEach(t => pm.expect(String(t.accountId)).to.eql(pm.environment.get('fromAccountId')));",
+                  "});",
+                  "",
+                  "pm.test('Contains the 10.00 deposit made in this run', () => {",
+                  "    pm.expect(body.some(t => t.type === 'Credit' && t.amount === 10)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S09 GET transactions by amount (10)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/accounts/:accountId/transactions/amount/:amount",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "accounts",
+                ":accountId",
+                "transactions",
+                "amount",
+                ":amount"
+              ],
+              "variable": [
+                {
+                  "key": "accountId",
+                  "value": "{{fromAccountId}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "const txnSchema = { type: 'array', items: { type: 'object',",
+                  "    required: ['id', 'accountId', 'type', 'date', 'amount', 'description'],",
+                  "    properties: { id: { type: 'integer' }, accountId: { type: 'integer' },",
+                  "                  type: { type: 'string', enum: ['Credit', 'Debit'] },",
+                  "                  date: {}, amount: { type: 'number' }, description: { type: 'string' } } } };",
+                  "pm.test('Body is an array of Transactions', () => pm.expect(body).to.have.jsonSchema(txnSchema));",
+                  "pm.test('All transactions belong to the requested account', () => {",
+                  "    body.forEach(t => pm.expect(String(t.accountId)).to.eql(pm.environment.get('fromAccountId')));",
+                  "});",
+                  "",
+                  "pm.test('Non-empty, and every transaction has amount 10', () => {",
+                  "    pm.expect(body).to.not.be.empty;",
+                  "    body.forEach(t => pm.expect(t.amount).to.eql(10));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S10 GET transactions by month/type (All/Credit)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/accounts/:accountId/transactions/month/:month/type/:type",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "accounts",
+                ":accountId",
+                "transactions",
+                "month",
+                ":month",
+                "type",
+                ":type"
+              ],
+              "variable": [
+                {
+                  "key": "accountId",
+                  "value": "{{fromAccountId}}"
+                },
+                {
+                  "key": "month",
+                  "value": "All"
+                },
+                {
+                  "key": "type",
+                  "value": "Credit"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "const txnSchema = { type: 'array', items: { type: 'object',",
+                  "    required: ['id', 'accountId', 'type', 'date', 'amount', 'description'],",
+                  "    properties: { id: { type: 'integer' }, accountId: { type: 'integer' },",
+                  "                  type: { type: 'string', enum: ['Credit', 'Debit'] },",
+                  "                  date: {}, amount: { type: 'number' }, description: { type: 'string' } } } };",
+                  "pm.test('Body is an array of Transactions', () => pm.expect(body).to.have.jsonSchema(txnSchema));",
+                  "pm.test('All transactions belong to the requested account', () => {",
+                  "    body.forEach(t => pm.expect(String(t.accountId)).to.eql(pm.environment.get('fromAccountId')));",
+                  "});",
+                  "",
+                  "pm.test('Non-empty, and every transaction is a Credit', () => {",
+                  "    pm.expect(body).to.not.be.empty;",
+                  "    body.forEach(t => pm.expect(t.type).to.eql('Credit'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S11 GET transactions fromDate/toDate (today)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/accounts/:accountId/transactions/fromDate/:fromDate/toDate/:toDate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "accounts",
+                ":accountId",
+                "transactions",
+                "fromDate",
+                ":fromDate",
+                "toDate",
+                ":toDate"
+              ],
+              "variable": [
+                {
+                  "key": "accountId",
+                  "value": "{{fromAccountId}}"
+                },
+                {
+                  "key": "fromDate",
+                  "value": "{{today}}"
+                },
+                {
+                  "key": "toDate",
+                  "value": "{{today}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const d = new Date(), p = n => String(n).padStart(2, '0');",
+                  "pm.environment.set('today', `${p(d.getMonth() + 1)}-${p(d.getDate())}-${d.getFullYear()}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "const txnSchema = { type: 'array', items: { type: 'object',",
+                  "    required: ['id', 'accountId', 'type', 'date', 'amount', 'description'],",
+                  "    properties: { id: { type: 'integer' }, accountId: { type: 'integer' },",
+                  "                  type: { type: 'string', enum: ['Credit', 'Debit'] },",
+                  "                  date: {}, amount: { type: 'number' }, description: { type: 'string' } } } };",
+                  "pm.test('Body is an array of Transactions', () => pm.expect(body).to.have.jsonSchema(txnSchema));",
+                  "pm.test('All transactions belong to the requested account', () => {",
+                  "    body.forEach(t => pm.expect(String(t.accountId)).to.eql(pm.environment.get('fromAccountId')));",
+                  "});",
+                  "pm.test('Includes today\\'s transactions', () => pm.expect(body).to.not.be.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "S12 GET transactions onDate (today)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/bank/accounts/:accountId/transactions/onDate/:onDate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "bank",
+                "accounts",
+                ":accountId",
+                "transactions",
+                "onDate",
+                ":onDate"
+              ],
+              "variable": [
+                {
+                  "key": "accountId",
+                  "value": "{{fromAccountId}}"
+                },
+                {
+                  "key": "onDate",
+                  "value": "{{today}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "let body; try { body = pm.response.json(); } catch (e) { body = null; }",
+                  "",
+                  "const txnSchema = { type: 'array', items: { type: 'object',",
+                  "    required: ['id', 'accountId', 'type', 'date', 'amount', 'description'],",
+                  "    properties: { id: { type: 'integer' }, accountId: { type: 'integer' },",
+                  "                  type: { type: 'string', enum: ['Credit', 'Debit'] },",
+                  "                  date: {}, amount: { type: 'number' }, description: { type: 'string' } } } };",
+                  "pm.test('Body is an array of Transactions', () => pm.expect(body).to.have.jsonSchema(txnSchema));",
+                  "pm.test('All transactions belong to the requested account', () => {",
+                  "    body.forEach(t => pm.expect(String(t.accountId)).to.eql(pm.environment.get('fromAccountId')));",
+                  "});",
+                  "pm.test('Includes today\\'s transactions', () => pm.expect(body).to.not.be.empty);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
