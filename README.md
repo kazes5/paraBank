@@ -37,7 +37,7 @@ cp .env.example .env        # fill in the test users (never committed)
 | `./run.sh ui [apiRunId]` | Web UI cross-check of an API run (default: the latest) | ~1 min |
 | `./run.sh manual [AUTH-03 …]` | Manual cases in a visible Chrome window, with captioned screenshots (`--headless` to hide it) | ~2 min |
 | `./run.sh repro [--publish]` | Reproduce every known defect on fresh throwaway users | ~5 min |
-| `./run.sh web` | Web page at http://127.0.0.1:4321: choose steps, live progress, verdict, links to reports, bugs, evidence and deliverables | — |
+| `./run.sh web` | Test runner web page at http://127.0.0.1:4321 (see [below](#test-runner-web-page)) | — |
 | `./run.sh auto` | Coded tests, pytest + requests: JRN-01, TRF-01, TRF-03, DEP-01, ACCT-03 ([`tests/automation/README.md`](tests/automation/README.md)) | ~2 min |
 | `./run.sh cycle [--keep]` | One full test cycle: all → ui → manual (headless) → auto → load → report | ~45 min |
 | `./run.sh report [--kept] [--publish]` | Test Summary Report (Markdown + PDF) from the latest runs; `--publish` updates `STR.md` / `STR.pdf` | ~20 s |
@@ -48,6 +48,60 @@ cp .env.example .env        # fill in the test users (never committed)
 - `--keep`: keep the run (see below).
 
 The npm aliases (`npm run test:all`, …) call the same commands.
+
+## Test runner web page
+
+A local page for running the tests without the command line: choose what to run, watch the progress live, and get the verdict with links to every report, bug, piece of evidence and deliverable.
+
+**Start it:**
+
+```bash
+./run.sh web                 # or: npm run web
+# open http://127.0.0.1:4321      (another port: ./run.sh web --port 5000)
+```
+
+Stop the page with Ctrl+C in the terminal. It needs the same `.env` and tools as the commands above.
+
+**Run tests:**
+1. Tick the steps to run, or pick a preset:
+
+   | Preset | Steps | Time |
+   |---|---|---|
+   | Quick check | Set up users → API smoke → coded tests | ~4 min |
+   | Full cycle | Set up users → API tests → UI cross-check → manual cases → coded tests → defect reproduction → load test → report | ~45 min |
+   | Defects + report | Set up users → defect reproduction → report | ~8 min |
+   | Report only | Report from the latest runs (no traffic to the site) | ~1 min |
+
+   Steps always run in that order, whatever order you tick them in. "API tests" already includes smoke.
+2. Choose the options:
+   - **Run as:** the `.env` user (`PARABANK` or `PARABANK2`).
+   - **Keep the runs:** move each run to `results/kept/`, ready to commit.
+   - **Publish the deliverables:** also replace `STR.md` / `STR.pdf` and `evidence/bugs/` in the repo root. Turns on Keep, and builds the report from kept runs only.
+   - **Show the browser for manual cases:** a visible Chrome window instead of headless.
+3. Press **Run**. **Stop** ends the running step at once and skips the rest.
+
+Keep "Set up test users" ticked: the public site resets now and then and wipes the users, which shows up as BLOCKED.
+
+**While it runs:** an overall bar with time left; each step's status (pending, running, PASS, FAIL, BLOCKED, STOPPED, SKIPPED), the line it is printing now, and its result counts and report links as soon as it finishes; and a live log (passwords and SSNs hidden). You can close the tab: the job keeps running and the page catches up when you reopen it. One job runs at a time.
+
+**The verdict:**
+
+| Result | Meaning |
+|---|---|
+| PASS | Every selected step passed |
+| FAIL | Failures were found. Today the known defects make the API tests, coded tests and defect reproduction fail by design; check the report for anything new |
+| BLOCKED | A step could not run: smoke failed, login failed after a site reset, or the site rate-limited. Run "Set up test users" and try again |
+| ERROR / STOPPED | A step stopped with an error, or you pressed Stop |
+
+When the report step ran, the page also shows the STR's release recommendation (GO, GO WITH CONDITIONS or NO-GO) with a link to the PDF.
+
+**Links:** this job's reports, the deliverables (STR, STD, bug reports, Postman collection, load plan and more), the bug reports and every defect evidence bundle, and the latest run of each kind. Files open in a read-only viewer: Markdown is rendered, folders are listed.
+
+**Security:**
+- The page listens on 127.0.0.1 only and refuses other host names and requests from other sites.
+- It runs only the `./run.sh` commands listed above.
+- It never serves `.env`, `.git` or other dotfiles.
+- The code is in `tests/web/` (`server.mjs`, `index.html`).
 
 ## Results
 
@@ -105,5 +159,6 @@ evidence/                              exploration/ (Stage 1), bugs/BUG-0NN/ (St
 | 3 Postman build and execution | `tests/postman/`, `results/kept/*-api`, `*-ui`, `*-manual` |
 | 4 Failure isolation and bug reports | `Bug_Reports.md`, `evidence/bugs/` |
 | 5 Load test | `tests/load/`, `results/kept/*-load` |
-| 7 Optional automation | `tests/automation/` (pytest), `results/kept/*-auto` |
 | 6 Test summary report | `STR.md`, `STR.pdf` (generated by `tests/scripts/build-str.mjs` for every cycle) |
+| 7 Optional automation | `tests/automation/` (pytest), `results/kept/*-auto` |
+| Tooling | `tests/web/`: test runner web page (`./run.sh web`) |
