@@ -1,5 +1,5 @@
 {
-  "user": "Rktest2",
+  "user": "<USERNAME>",
   "customerId": 17096,
   "accounts": {
     "A": 21780,
@@ -31,12 +31,12 @@
       "id": "J02",
       "purpose": "login with valid credentials",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/<REDACTED>",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>",
       "accept": "application/json",
       "status": 200,
       "contentType": "application/json",
       "ms": 812,
-      "body": "{\"id\":17096,\"firstName\":\"Roy\",\"lastName\":\"Kazes\",\"address\":{\"street\":\"some address\",\"city\":\"some city\",\"state\":\"some state\",\"zipCode\":\"zipzipzipzip\"},\"phoneNumber\":\"0987654321\",\"ssn\":\"<REDACTED>\"}",
+      "body": "{\"id\":17096,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"<STREET>\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"<PHONE>\",\"ssn\":\"<REDACTED>\"}",
       "at": "2026-11-23T12:58:28.777Z"
     },
     {
@@ -48,7 +48,7 @@
       "status": 200,
       "contentType": "application/json",
       "ms": 231,
-      "body": "{\"id\":17096,\"firstName\":\"Roy\",\"lastName\":\"Kazes\",\"address\":{\"street\":\"some address\",\"city\":\"some city\",\"state\":\"some state\",\"zipCode\":\"zipzipzipzip\"},\"phoneNumber\":\"0987654321\",\"ssn\":\"<REDACTED>\"}",
+      "body": "{\"id\":17096,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"<STREET>\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"<PHONE>\",\"ssn\":\"<REDACTED>\"}",
       "at": "2026-11-23T12:58:29.010Z"
     },
     {
@@ -442,7 +442,7 @@
       "id": "J16",
       "purpose": "update profile: new street + phone",
       "method": "POST",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17096?username=Rktest2&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&lastName=Kazes&street=99+New+Street&city=some+city&state=some+state&zipCode=zipzipzipzip&phoneNumber=1112223333",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17096?username=<USERNAME>&password=<REDACTED>&ssn=<REDACTED>&firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=99+New+Street&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=1112223333",
       "accept": "application/json",
       "status": 200,
       "contentType": "application/json",
@@ -459,26 +459,26 @@
       "status": 200,
       "contentType": "application/json",
       "ms": 657,
-      "body": "{\"id\":17096,\"firstName\":\"Roy\",\"lastName\":\"Kazes\",\"address\":{\"street\":\"99 New Street\",\"city\":\"some city\",\"state\":\"some state\",\"zipCode\":\"zipzipzipzip\"},\"phoneNumber\":\"1112223333\",\"ssn\":\"<REDACTED>\"}",
+      "body": "{\"id\":17096,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"99 New Street\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"1112223333\",\"ssn\":\"<REDACTED>\"}",
       "at": "2026-11-23T12:58:42.887Z"
     },
     {
       "id": "J16c",
       "purpose": "login after update",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/<REDACTED>",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>",
       "accept": "application/json",
       "status": 200,
       "contentType": "application/json",
       "ms": 223,
-      "body": "{\"id\":17096,\"firstName\":\"Roy\",\"lastName\":\"Kazes\",\"address\":{\"street\":\"99 New Street\",\"city\":\"some city\",\"state\":\"some state\",\"zipCode\":\"zipzipzipzip\"},\"phoneNumber\":\"1112223333\",\"ssn\":\"<REDACTED>\"}",
+      "body": "{\"id\":17096,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"99 New Street\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"1112223333\",\"ssn\":\"<REDACTED>\"}",
       "at": "2026-11-23T12:58:43.111Z"
     },
     {
       "id": "J16d",
       "purpose": "restore original profile",
       "method": "POST",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17096?username=Rktest2&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&lastName=Kazes&street=some+address&city=some+city&state=some+state&zipCode=zipzipzipzip&phoneNumber=0987654321",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17096?username=<USERNAME>&password=<REDACTED>&ssn=<REDACTED>&firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=<STREET>&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=<PHONE>",
       "accept": "application/json",
       "status": 200,
       "contentType": "application/json",
@@ -502,7 +502,7 @@
       "id": "E-AUTH1",
       "purpose": "wrong password",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/wrong_1795438723579",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/wrong_1795438723579",
       "accept": "application/json",
       "status": 400,
       "contentType": "text/plain;charset=UTF-8",
@@ -538,12 +538,12 @@
       "id": "E-AUTH4",
       "purpose": "login with XML Accept",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/<REDACTED>",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>",
       "accept": "application/xml",
       "status": 200,
       "contentType": "application/xml",
       "ms": 670,
-      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><customer><id>17096</id><firstName>Roy</firstName><lastName>Kazes</lastName><address><street>some address</street><city>some city</city><state>some state</state><zipCode>zipzipzipzip</zipCode></address><phoneNumber>0987654321</phoneNumber><ssn><REDACTED></ssn></customer>",
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><customer><id>17096</id><firstName><FIRST_NAME></firstName><lastName><LAST_NAME></lastName><address><street><STREET></street><city><CITY></city><state><STATE></state><zipCode><ZIP></zipCode></address><phoneNumber><PHONE></phoneNumber><ssn><REDACTED></ssn></customer>",
       "at": "2026-11-23T12:58:44.857Z"
     },
     {
@@ -555,7 +555,7 @@
       "status": 200,
       "contentType": "application/json",
       "ms": 295,
-      "body": "{\"id\":17096,\"firstName\":\"Roy\",\"lastName\":\"Kazes\",\"address\":{\"street\":\"some address\",\"city\":\"some city\",\"state\":\"some state\",\"zipCode\":\"zipzipzipzip\"},\"phoneNumber\":\"0987654321\",\"ssn\":\"<REDACTED>\"}",
+      "body": "{\"id\":17096,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"<STREET>\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"<PHONE>\",\"ssn\":\"<REDACTED>\"}",
       "at": "2026-11-23T12:58:45.154Z"
     },
     {
@@ -1099,7 +1099,7 @@
       "id": "E-PRF1",
       "purpose": "update profile missing lastName",
       "method": "POST",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17096?username=Rktest2&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&street=some+address&city=some+city&state=some+state&zipCode=zipzipzipzip&phoneNumber=0987654321",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17096?username=<USERNAME>&password=<REDACTED>&ssn=<REDACTED>&firstName=<FIRST_NAME>&street=<STREET>&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=<PHONE>",
       "accept": "application/json",
       "status": 429,
       "contentType": "application/json; charset=utf-8",

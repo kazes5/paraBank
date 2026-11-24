@@ -1,5 +1,5 @@
 {
-  "user": "Rktest1",
+  "user": "<USERNAME>",
   "customerId": 17762,
   "accounts": {
     "A": 23112,
@@ -301,7 +301,7 @@
       "id": "E-PRF1",
       "purpose": "update profile missing lastName",
       "method": "POST",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17762?username=Rktest1&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&street=some+address&city=some+city&state=some+state&zipCode=zipzipzipzip&phoneNumber=0987654321",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/update/17762?username=<USERNAME>&password=<REDACTED>&ssn=<REDACTED>&firstName=<FIRST_NAME>&street=<STREET>&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=<PHONE>",
       "accept": "application/json",
       "status": 500,
       "contentType": "text/html;charset=UTF-8",
@@ -318,7 +318,7 @@
       "status": 200,
       "contentType": "application/json",
       "ms": 218,
-      "body": "{\"id\":17762,\"firstName\":\"Roy\",\"lastName\":\"Kazes\",\"address\":{\"street\":\"some address\",\"city\":\"some city\",\"state\":\"some state\",\"zipCode\":\"zipzipzipzip\"},\"phoneNumber\":\"0987654321\",\"ssn\":\"<REDACTED>\"}",
+      "body": "{\"id\":17762,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"<STREET>\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"<PHONE>\",\"ssn\":\"<REDACTED>\"}",
       "at": "2026-11-23T13:07:08.353Z"
     }
   ]

@@ -62,17 +62,97 @@ const encodings = (s) => [
     JSON.stringify(s).slice(1, -1),
   ]),
 ];
-// Replaces every secret, in every encoding, with <REDACTED> in a string.
-export const redact = (t) =>
-  secrets.reduce((acc, s) => encodings(s).reduce((u, e) => u.split(e).join('<REDACTED>'), acc), String(t ?? ''));
+// The test users' profile (username, name, address, phone) is personal data and the repo is public:
+// every value is replaced by a placeholder such as <FIRST_NAME>. Whole words only (case-sensitive),
+// so a short value like a 3-letter first name never mangles other words.
+const PROFILE_FIELDS = ['USERNAME', 'FIRST_NAME', 'LAST_NAME', 'STREET', 'CITY', 'STATE', 'ZIP', 'PHONE'];
+export const PROFILE = ['PARABANK', 'PARABANK2'].flatMap((p) =>
+  PROFILE_FIELDS.map((k) => [process.env[`${p}_${k}`], `<${k}>`]).filter(([v]) => v),
+);
+const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const profileForms = new Map(PROFILE.flatMap(([v, label]) => encodings(v).map((e) => [e, label])));
+const profileRe = profileForms.size
+  ? new RegExp(
+      `(?<![A-Za-z0-9])(${[...profileForms.keys()]
+        .sort((a, b) => b.length - a.length)
+        .map(escRe)
+        .join('|')})(?![A-Za-z0-9])`,
+      'g',
+    )
+  : null;
 
-// Redacts every text file under a folder in place (Postman reports, logs); images are skipped.
+// Replaces every secret, in every encoding, with <REDACTED>, then every profile value with its placeholder.
+export const redact = (t) => {
+  const out = secrets.reduce(
+    (acc, s) => encodings(s).reduce((u, e) => u.split(e).join('<REDACTED>'), acc),
+    String(t ?? ''),
+  );
+  return profileRe ? out.replace(profileRe, (m) => profileForms.get(m)) : out;
+};
+
+// Redacts one text file in place. In XML (e.g. JUnit reports) the placeholders are escaped (&lt;…&gt;)
+// so the file stays valid XML.
+export function redactFile(p) {
+  let t = redact(readFileSync(p, 'utf8'));
+  if (/\.xml$/i.test(p))
+    t = t.replace(/<(REDACTED|[A-Z_]+)>/g, (m, k) =>
+      k === 'REDACTED' || PROFILE_FIELDS.includes(k) ? `&lt;${k}&gt;` : m,
+    );
+  writeFileSync(p, t);
+}
+
+// Redacts every text file under a folder in place (Postman reports, logs); images and PDFs are skipped.
 export function redactTree(dir) {
   if (!existsSync(dir)) return;
   for (const f of readdirSync(dir)) {
     const p = join(dir, f);
     if (statSync(p).isDirectory()) redactTree(p);
-    else if (!/\.(png|jpe?g)$/i.test(f)) writeFileSync(p, redact(readFileSync(p, 'utf8')));
+    else if (!/\.(png|jpe?g|pdf)$/i.test(f)) redactFile(p);
+  }
+}
+
+// Takes a screenshot with the test users' profile masked: every text node and form value containing a
+// profile value shows the placeholder, the screenshot is taken, then the page is restored exactly
+// (so a later step never submits a placeholder). Used by the UI cross-check and the manual tests.
+export async function maskedScreenshot(page, options) {
+  const pairs = [...profileForms.entries()];
+  if (!pairs.length) return page.screenshot(options);
+  await page.evaluate((pairs) => {
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const map = new Map(pairs);
+    const re = new RegExp(
+      `(?<![A-Za-z0-9])(${pairs
+        .map(([v]) => v)
+        .sort((a, b) => b.length - a.length)
+        .map(esc)
+        .join('|')})(?![A-Za-z0-9])`,
+      'g',
+    );
+    const fix = (s) => s.replace(re, (m) => map.get(m));
+    const undo = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      const v = n.nodeValue;
+      const f = fix(v);
+      if (f !== v) {
+        undo.push(() => (n.nodeValue = v));
+        n.nodeValue = f;
+      }
+    }
+    for (const el of document.querySelectorAll('input, textarea')) {
+      const v = el.value;
+      const f = fix(v);
+      if (f !== v) {
+        undo.push(() => (el.value = v));
+        el.value = f;
+      }
+    }
+    window.__unmask = () => undo.forEach((u) => u());
+  }, pairs);
+  try {
+    return await page.screenshot(options);
+  } finally {
+    await page.evaluate(() => window.__unmask?.()).catch(() => {});
   }
 }
 
@@ -168,7 +248,7 @@ export function newRun(kind, meta = {}) {
   const dir = join(RUNS, id);
   mkdirSync(dir, { recursive: true });
   const run = { id, kind, started: new Date().toISOString(), commit: gitCommit(), ...meta };
-  writeFileSync(join(dir, 'run.json'), `${JSON.stringify(run, null, 2)}\n`);
+  writeFileSync(join(dir, 'run.json'), redact(`${JSON.stringify(run, null, 2)}\n`)); // never the raw username
   writeFileSync(join('results', '.last-run'), `${id}\n`);
   const sub = (name) => {
     const p = join(dir, name);
@@ -177,7 +257,7 @@ export function newRun(kind, meta = {}) {
   };
   const update = (fields) => {
     const cur = JSON.parse(readFileSync(join(dir, 'run.json'), 'utf8'));
-    writeFileSync(join(dir, 'run.json'), `${JSON.stringify({ ...cur, ...fields }, null, 2)}\n`);
+    writeFileSync(join(dir, 'run.json'), redact(`${JSON.stringify({ ...cur, ...fields }, null, 2)}\n`));
   };
   return { id, dir, sub, update };
 }

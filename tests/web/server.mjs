@@ -117,8 +117,9 @@ const STEP = Object.fromEntries(STEPS.map((s) => [s.id, s]));
 
 // Root documents and folders shown under "Deliverables" (only those that exist are listed).
 const DELIVERABLES = [
-  ['STR.pdf', 'Test Summary Report (PDF)'],
-  ['STR.md', 'Test Summary Report (Markdown)'],
+  ['STR.pdf', 'Test Summary Report, 2 pages (PDF)'],
+  ['STR_Detailed.pdf', 'STR detailed annex (PDF)'],
+  ['SUBMISSION.md', 'Submission guide'],
   ['STD.md', 'Software Test Description'],
   ['Bug_Reports.md', 'Bug reports'],
   ['Business_Rules.md', 'Business rules'],
@@ -250,7 +251,7 @@ async function runJob(ids, options) {
 function runInfo(id) {
   const r = allRuns().find((x) => x.id === id);
   if (!r) return { id };
-  const files = ['summary.md', 'STR.pdf', 'STR.md'].filter((f) => existsSync(join(ROOT, r.dir, f)));
+  const files = ['summary.md', 'STR.pdf', 'STR_Detailed.pdf'].filter((f) => existsSync(join(ROOT, r.dir, f)));
   return {
     id: r.id,
     kind: r.kind,

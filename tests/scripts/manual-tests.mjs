@@ -17,7 +17,7 @@ import { chromium } from 'playwright';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { randomBytes, randomInt } from 'node:crypto';
-import { BASE, API, readUser, redact, addSecret, newRun, rebuildIndex } from './lib/common.mjs';
+import { BASE, API, readUser, redact, addSecret, newRun, rebuildIndex, maskedScreenshot } from './lib/common.mjs';
 
 // Which cases to run (default: all four), as which user, and this run's folder.
 const ALL = ['AUTH-03', 'AUTH-05', 'TRF-08', 'TRF-09'];
@@ -64,7 +64,7 @@ async function shot(step, caption) {
     [current.id, redact(caption), new Date().toISOString()],
   );
   const file = `${String(++n).padStart(2, '0')}-${current.id}-${step}.png`;
-  await page.screenshot({ path: join(OUT, file), fullPage: true });
+  await maskedScreenshot(page, { path: join(OUT, file), fullPage: true }); // profile masked
   current.screenshots.push(file);
   await page.evaluate(() => {
     document.getElementById('qa-caption')?.remove();

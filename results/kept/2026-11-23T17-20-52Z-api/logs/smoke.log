@@ -8,7 +8,7 @@ ParaBank QA
 Folder 00 Smoke
 Sub-folder AUTH-01 · login
 
-  GET https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/**** [200 OK, 407 B, 675 ms]
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/**** [200 OK, 407 B, 675 ms]
   Pass  AUTH-01 [C1] HTTP 200 (got 200)
   Pass  AUTH-01 [C1] customer schema
   Pass  AUTH-01 [A7] profile = registration data

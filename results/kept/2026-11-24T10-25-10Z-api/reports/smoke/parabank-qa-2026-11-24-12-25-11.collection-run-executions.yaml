@@ -1,0 +1,700 @@
+---
+kind: postman-cli-collection-run-executions
+schemaVersion: 1
+runId: a0b30a14-baf8-45f5-be8b-a267ae37cd66
+summaryFile: parabank-qa-2026-11-24-12-25-11.collection-run-summary.yaml
+collection:
+  id: b6f1c0de-7a1e-4c55-9d1a-parabankqa01
+  name: ParaBank QA
+generatedAt: '2026-11-24T10:25:11.467Z'
+---
+iteration: 0
+cursorRef: bb166f7a-2612-441d-bb6d-7f04f1f2fec6
+item:
+  id: 9177c7e2-2d57-4b13-8030-6d950e7eafb2
+  name: AUTH-01 · login
+  folders:
+    - 00 Smoke
+    - AUTH-01 · login
+  fullName: 00 Smoke / AUTH-01 · login
+  parent:
+    id: ddaf68dc-a36c-4523-b352-d353db9d96b5
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - login
+      - <USERNAME>
+      - <REDACTED>
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 1c3a62fa-750c-4508-bc54-557636240a5b
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: a7720a60-dd36-403e-81c1-7e8ecbf552ea
+  code: 200
+  status: OK
+  responseTime: 733
+  responseSize: 198
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:25:13 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7b55b2f3b218d-LHR
+  body: '{"id":13877,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
+tests:
+  - name: AUTH-01 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: AUTH-01 [C1] customer schema
+    status: passed
+  - name: AUTH-01 [A7] profile = registration data
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 7731edf3-6b6d-448b-b3a4-4f2f087e2e78
+item:
+  id: e37f56a7-1418-4a34-a27d-93893c272bd2
+  name: CUST-01 · get customer
+  folders:
+    - 00 Smoke
+    - CUST-01 · get customer
+  fullName: 00 Smoke / CUST-01 · get customer
+  parent:
+    id: ddaf68dc-a36c-4523-b352-d353db9d96b5
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: a596e5b5-5e48-4d7c-ae1c-62c145b5c116
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 3bc7451c-2149-4014-bda2-3ed19f4788a7
+  code: 200
+  status: OK
+  responseTime: 251
+  responseSize: 198
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:25:15 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7b5683918218d-LHR
+  body: '{"id":13877,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
+tests:
+  - name: CUST-01 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: CUST-01 [C1] customer schema
+    status: passed
+  - name: CUST-01 [A7] same details as the login response
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: ed5e0234-759a-45e0-8088-d3cb3dc9e32a
+item:
+  id: cb9ab236-27e5-44a1-9758-86afddee89d9
+  name: ACCT-01 · list accounts
+  folders:
+    - 00 Smoke
+    - ACCT-01 · list accounts
+  fullName: 00 Smoke / ACCT-01 · list accounts
+  parent:
+    id: ddaf68dc-a36c-4523-b352-d353db9d96b5
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - accounts
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 1d4e54c9-1128-4698-863f-f3693e9802f6
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 836adc68-f732-4a09-be75-84b0dd9671ea
+  code: 200
+  status: OK
+  responseTime: 231
+  responseSize: 135
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:25:17 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7b5735c06218d-LHR
+  body: '[{"id":15564,"customerId":13877,"type":"CHECKING","balance":315.50},{"id":15675,"customerId":13877,"type":"CHECKING","balance":200.00}]'
+tests:
+  - name: ACCT-01 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: ACCT-01 [C1] list of account
+    status: passed
+  - name: ACCT-01 [C1] at least one account
+    status: passed
+  - name: ACCT-01 [A6] every account belongs to the customer
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 1c51f039-06a4-4508-9cab-4ec48b3a495b
+item:
+  id: e1e5ccb0-3f13-4cd8-86a1-618e5bb515c8
+  name: ACCT-02 · account details of A
+  folders:
+    - 00 Smoke
+    - ACCT-02 · account details of A
+  fullName: 00 Smoke / ACCT-02 · account details of A
+  parent:
+    id: ddaf68dc-a36c-4523-b352-d353db9d96b5
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 80160d89-f529-48e4-80a9-a173e4783351
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 72c0a389-2960-4017-81d7-a5ba0b49054f
+  code: 200
+  status: OK
+  responseTime: 283
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:25:19 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7b57e5b42218d-LHR
+  body: '{"id":15564,"customerId":13877,"type":"CHECKING","balance":315.50}'
+tests:
+  - name: ACCT-02 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: ACCT-02 [C1] account schema
+    status: passed
+  - name: ACCT-02 [A7] same values as the account list
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 5b371eac-de69-479d-96db-9ec89b61f300
+item:
+  id: 7102f670-325d-4599-a88d-312393cc685e
+  name: DEP-01 · baseline transactions of A
+  folders:
+    - 00 Smoke
+    - DEP-01 · baseline transactions of A
+  fullName: 00 Smoke / DEP-01 · baseline transactions of A
+  parent:
+    id: ddaf68dc-a36c-4523-b352-d353db9d96b5
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: a289ad0b-15ab-451b-bbb5-e18f77207abf
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: c37e2de1-731d-4091-80d5-4631ef9dfb47
+  code: 200
+  status: OK
+  responseTime: 284
+  responseSize: 120
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:25:21 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7b589e8a5218d-LHR
+  body: '[{"id":17140,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"}]'
+tests:
+  - name: DEP-01 [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 43f8876b-ea68-4f91-aaac-4b17a8fbe138
+item:
+  id: e4738a1d-2a4f-4b22-8dd2-58b093264636
+  name: DEP-01 · deposit 10.00 into A
+  folders:
+    - 00 Smoke
+    - DEP-01 · deposit 10.00 into A
+  fullName: 00 Smoke / DEP-01 · deposit 10.00 into A
+  parent:
+    id: ddaf68dc-a36c-4523-b352-d353db9d96b5
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - deposit
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: accountId
+        value: '15564'
+      - key: amount
+        value: '10'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 8176da1b-19a1-4672-a290-3a08b91200be
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: 2c8b80df-0d33-41c2-8e94-d441eb6d49cb
+  code: 200
+  status: OK
+  responseTime: 322
+  responseSize: 44
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:25:22 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Content-Length
+      value: '44'
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: CF-RAY
+      value: a5f7b5950d6d218d-LHR
+  body: 'Successfully deposited $10 to account #15564'
+tests:
+  - name: DEP-01 [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: c3d841c9-e6a7-497a-a54f-98d1e4be3439
+item:
+  id: acebdf19-5c32-4dce-a282-2605a56699f5
+  name: DEP-01 · balances after deposit
+  folders:
+    - 00 Smoke
+    - DEP-01 · balances after deposit
+  fullName: 00 Smoke / DEP-01 · balances after deposit
+  parent:
+    id: ddaf68dc-a36c-4523-b352-d353db9d96b5
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - accounts
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 07dd5686-adda-49de-a82e-03848fcf5b79
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 50346e67-c506-4008-9990-b766d6677178
+  code: 200
+  status: OK
+  responseTime: 276
+  responseSize: 135
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:25:24 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7b5a0dbb2218d-LHR
+  body: '[{"id":15564,"customerId":13877,"type":"CHECKING","balance":325.50},{"id":15675,"customerId":13877,"type":"CHECKING","balance":200.00}]'
+tests:
+  - name: DEP-01 [C1] account list readable (got 200)
+    status: passed
+  - name: DEP-01 [A2] account 15564 changed by 1000 cents (31550 -> 32550)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: fdcf5d86-1555-4883-ac44-17c0b1ad5600
+item:
+  id: 93215120-b685-4b6c-a30a-8115b5da4389
+  name: HIST-01 · transactions of A
+  folders:
+    - 00 Smoke
+    - HIST-01 · transactions of A
+  fullName: 00 Smoke / HIST-01 · transactions of A
+  parent:
+    id: ddaf68dc-a36c-4523-b352-d353db9d96b5
+    name: 00 Smoke
+    folders:
+      - 00 Smoke
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: ca94a5df-c839-4390-a675-5326fe9ab3a9
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 371210af-75fe-4c8c-9c8d-bc061ce63c0c
+  code: 200
+  status: OK
+  responseTime: 230
+  responseSize: 243
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:25:26 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7b5abcc7a218d-LHR
+  body: '[{"id":17140,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":17584,"accountId":15564,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"}]'
+tests:
+  - name: HIST-01 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: HIST-01 [C1] list of transaction
+    status: passed
+  - name: 'HIST-01 [A2] exactly one new transaction: Credit 1000 cents (got ["Credit 1000"])'
+    status: passed
+  - name: HIST-01 [A2] new transaction dated today, UTC (got 2026-11-24)
+    status: passed
+errors: []

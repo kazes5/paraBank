@@ -74,13 +74,33 @@ USER = {
 SECRETS = [s for s in (USER["password"], USER["ssn"]) if s]
 
 
-# Replaces each secret in every form it can take: raw, URL path-encoded, query-encoded, JSON-escaped.
+# The test users' profile is personal data and the repo is public: each value (in every encoding)
+# becomes a placeholder such as <FIRST_NAME>. Whole words only, so short values never mangle other words.
+_PROFILE_FORMS = {}
+for _p in ("PARABANK", "PARABANK2"):
+    for _k in ("USERNAME", "FIRST_NAME", "LAST_NAME", "STREET", "CITY", "STATE", "ZIP", "PHONE"):
+        _v = os.environ.get(_p + "_" + _k, "")
+        if _v:
+            for _form in {_v, quote(_v, safe=""), quote_plus(_v), json.dumps(_v)[1:-1]}:
+                _PROFILE_FORMS[_form] = "<%s>" % _k
+_PROFILE_RE = (
+    re.compile(
+        r"(?<![A-Za-z0-9])(%s)(?![A-Za-z0-9])"
+        % "|".join(re.escape(f) for f in sorted(_PROFILE_FORMS, key=len, reverse=True))
+    )
+    if _PROFILE_FORMS
+    else None
+)
+
+
+# Replaces each secret in every form it can take (raw, URL path-encoded, query-encoded, JSON-escaped)
+# with <REDACTED>, then each profile value with its placeholder.
 def redact(text):
     text = str(text)
     for secret in SECRETS:
         for form in {secret, quote(secret, safe=""), quote_plus(secret), json.dumps(secret)[1:-1]}:
             text = text.replace(form, "<REDACTED>")
-    return text
+    return _PROFILE_RE.sub(lambda m: _PROFILE_FORMS[m.group(0)], text) if _PROFILE_RE else text
 
 
 # ---------------------------------------------------------------- run folder
@@ -121,7 +141,7 @@ def pytest_configure(config):
             "kind": "auto",
             "started": datetime.now(timezone.utc).isoformat(),
             "commit": _commit(),
-            "user": USER["username"],
+            "user": redact(USER["username"]),
             "scope": "pytest: JRN-01, TRF-01, TRF-03, DEP-01, ACCT-03",
         }
     )
@@ -319,6 +339,23 @@ def pytest_sessionfinish(session, exitstatus):
     (RUN_DIR / "summary.md").write_text("\n".join(md))
     (RUN_DIR / "results.json").write_text(json.dumps({"outcomes": OUTCOMES}, indent=2) + "\n")
     _write_run_json({"finished": datetime.now(timezone.utc).isoformat(), "counts": counts})
+
+
+# pytest hook, runs after the JUnit report is written: redact it too (placeholders XML-escaped).
+def pytest_unconfigure(config):
+    xml = getattr(config.option, "xmlpath", None)
+    if xml and Path(xml).exists():
+        text = redact(Path(xml).read_text())
+        text = re.sub(
+            r"<(REDACTED|[A-Z_]+)>",
+            lambda m: (
+                "&lt;%s&gt;" % m.group(1)
+                if m.group(1) == "REDACTED" or "<%s>" % m.group(1) in _PROFILE_FORMS.values()
+                else m.group(0)
+            ),
+            text,
+        )
+        Path(xml).write_text(text)
 
 
 # Print the run folder at the end of the console output.

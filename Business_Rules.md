@@ -2,8 +2,8 @@
 
 **System:** ParaBank REST API, `https://parabank.parasoft.com/parabank/services/bank` (public shared instance)
 **Date:** 2026-11-23 (runs 12:58–13:12 UTC)
-**Users (own, registered in Stage 0):** Rktest2 (customer 17096), Rktest1 (customer 17762)
-**Evidence:** `evidence/exploration/observations.json` / `.md` (journey walk + edge probes, Rktest2), `observations-from-E-DEP1.*` (remaining edge probes, Rktest1), `repro-subcent-transfer.log`. Credentials and SSN are redacted.
+**Users (own, registered in Stage 0):** <USERNAME> (customer 17096), <USERNAME> (customer 17762)
+**Evidence:** `evidence/exploration/observations.json` / `.md` (journey walk + edge probes, <USERNAME>), `observations-from-E-DEP1.*` (remaining edge probes, <USERNAME>), `repro-subcent-transfer.log`. Credentials and SSN are redacted.
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## 2. Observed behavior (summary)
 
-### 2.1 Journey walk (Rktest2, account A = 21780) — all steps worked
+### 2.1 Journey walk (<USERNAME>, account A = 21780) — all steps worked
 
 | Step | Result |
 |---|---|
@@ -135,7 +135,7 @@ Status: **Confirmed** = observed behavior matches the rule · **Violated** = can
 
 ## 6. Impact on the next stages
 
-1. **Both test users are partly broken** until ParaBank's next data reset. D-01 made accounts 21780, 23001 (Rktest2) and 28551, 28773 (Rktest1) unreadable, so `GET /customers/{id}/accounts` returns 500 for both customers, which breaks journey step J04 and, probably, loan requests. Single healthy accounts still work (Rktest2: 24555 SAVINGS, 24666 LOAN; Rktest1: 23112, 23223). Stage 3 needs either a fresh user or a reset. **Never run a sub-cent amount except on throwaway accounts, as the very last step.**
+1. **Both test users are partly broken** until ParaBank's next data reset. D-01 made accounts 21780, 23001 (<USERNAME>) and 28551, 28773 (<USERNAME>) unreadable, so `GET /customers/{id}/accounts` returns 500 for both customers, which breaks journey step J04 and, probably, loan requests. Single healthy accounts still work (<USERNAME>: 24555 SAVINGS, 24666 LOAN; <USERNAME>: 23112, 23223). Stage 3 needs either a fresh user or a reset. **Never run a sub-cent amount except on throwaway accounts, as the very last step.**
 2. **Still to verify on a healthy customer:** loan negative cases (E-LON1–4), sell more shares than owned (E-INV1), and whether the loan down payment and position buy/sell create transactions on the source account (BR-02).
 3. **Not yet done:** web UI cross-check of balances/transactions (plan Stage 1 step 3), to be done manually in the browser.
 4. **Test design inputs:** `MM-dd-yyyy` dates; month name or number; type `Credit`/`Debit`/`All`; numeric-ID errors are 400 plain text; success messages are plain text "Successfully …"; loans for small amounts with a 10 % down payment are approved; new accounts get 100.00 from the source.

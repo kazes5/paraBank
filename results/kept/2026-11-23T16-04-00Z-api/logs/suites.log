@@ -8,7 +8,7 @@ ParaBank QA
 Folder 10 Suite fixtures
 Sub-folder FIX · login
 
-  GET https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/**** [200 OK, 407 B, 785 ms]
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/**** [200 OK, 407 B, 785 ms]
   Pass  FIX [C1] HTTP 200 (got 200)
   Pass  FIX [C1] customer schema
   Pass  FIX [A7] profile = registration data
@@ -28,7 +28,7 @@ Sub-folder FIX · accounts
 Folder 11 LOG Login
 Sub-folder AUTH-02 · wrong password
 
-  GET https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/WrongPass-000 [400 Bad Request, 290 B, 251 ms]
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/WrongPass-000 [400 Bad Request, 290 B, 251 ms]
   Pass  AUTH-02 [A9] no id data returned
   Pass  AUTH-02 [A8] no server error (got 400)
   -
@@ -67,14 +67,14 @@ Sub-folder CUST-03 · profile without logging in
   | ET","url":"https://parabank.parasoft.com/parabank/serv
   | ices/bank/customers/37409","requestBody":"","status":2
   | 00,"ms":284,"response":"{\\"id\\":37409,\\"firstName\\
-  | ":\\"Roy\\",\\"lastName\\":\\"Kazes\\",\\"address\\":{
-  | \\"street\\":\\"some address\\",\\"city\\":\\"some cit
-  | y\\",\\"state\\":\\"some state\\",\\"zipCode\\":\\"zip
-  | zipzipzip\\"},\\"phoneNumber\\":\\"0987654321\\",\\"ss
+  | ":\\"<FIRST_NAME>\\",\\"lastName\\":\\"<LAST_NAME>\\",\\"address\\":{
+  | \\"street\\":\\"<STREET>\\",\\"city\\":\\"some cit
+  | y\\",\\"state\\":\\"<STATE>\\",\\"zipCode\\":\\"zip
+  | zipzipzip\\"},\\"phoneNumber\\":\\"<PHONE>\\",\\"ss
   | n\\":\\"<REDACTED>\\"}","failures":["[A6] rejected wit
   | h 401 or 403 (got 200): expected [ 401, 403 ] to inclu
   | de 200","[A6] no SSN in the response: expected '{\\"id
-  | \\":37409,\\"firstName\\":\\"Roy\\",\\"lastNa…' to not
+  | \\":37409,\\"firstName\\":\\"<FIRST_NAME>\\",\\"lastNa…' to not
   |  include '<REDACTED>'"],"snapPrev":{},"snapCur":{"5419
   | 2":317950,"54414":10000,"62850":-99900,"62961":119900,
   | "63072":9500,"63183":-99500,"63294":-99600,"63405":100
@@ -2213,7 +2213,7 @@ Sub-folder HIST-06 · one transaction by id
                       inside "12 CUS Customer / CUST-03 · profile without logging in"          
                                                                                                
  02.  AssertionError  CUST-03 [A6] no SSN in the response                                      
-                      expected '{"id":37409,"firstName":"Roy","lastNa…' to not include '****'  
+                      expected '{"id":37409,"firstName":"<FIRST_NAME>","lastNa…' to not include '****'  
                       at assertion:1 in test-script                                            
                       inside "12 CUS Customer / CUST-03 · profile without logging in"          
                                                                                                

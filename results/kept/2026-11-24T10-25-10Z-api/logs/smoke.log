@@ -1,0 +1,94 @@
+Running your collection...
+Generating run output...
+  ↳ /Users/roy/projects/paraBank/results/runs/2026-11-24T10-25-10Z-api/reports/smoke
+postman
+
+ParaBank QA
+
+Folder 00 Smoke
+Sub-folder AUTH-01 · login
+
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/**** [200 OK, 407 B, 733 ms]
+  Pass  AUTH-01 [C1] HTTP 200 (got 200)
+  Pass  AUTH-01 [C1] customer schema
+  Pass  AUTH-01 [A7] profile = registration data
+  -
+  | '{"kind":"RECORD","case":"AUTH-01","label":"session","
+  | detail":{"setCookie":false}}'
+  -
+
+Sub-folder CUST-01 · get customer
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/13877 [200 OK, 407 B, 251 ms]
+  Pass  CUST-01 [C1] HTTP 200 (got 200)
+  Pass  CUST-01 [C1] customer schema
+  Pass  CUST-01 [A7] same details as the login response
+
+Sub-folder ACCT-01 · list accounts
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/13877/accounts [200 OK, 349 B, 231 ms]
+  Pass  ACCT-01 [C1] HTTP 200 (got 200)
+  Pass  ACCT-01 [C1] list of account
+  Pass  ACCT-01 [C1] at least one account
+  Pass  ACCT-01 [A6] every account belongs to the customer
+
+Sub-folder ACCT-02 · account details of A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/15564 [200 OK, 331 B, 283 ms]
+  Pass  ACCT-02 [C1] HTTP 200 (got 200)
+  Pass  ACCT-02 [C1] account schema
+  Pass  ACCT-02 [A7] same values as the account list
+
+Sub-folder DEP-01 · baseline transactions of A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/15564/transactions [200 OK, 377 B, 284 ms]
+  Pass  DEP-01 [C1] HTTP 200 (got 200)
+
+Sub-folder DEP-01 · deposit 10.00 into A
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=15564&amount=10 [200 OK, 285 B, 322 ms]
+  Pass  DEP-01 [C1] HTTP 200 (got 200)
+  -
+  | '{"kind":"OBSERVED-SAME","case":"DEP-01","label":"[O5]
+  |  success text","detail":"Successfully deposited $10 to
+  |  account #15564"}'
+  -
+
+Sub-folder DEP-01 · balances after deposit
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/13877/accounts [200 OK, 349 B, 276 ms]
+  Pass  DEP-01 [C1] account list readable (got 200)
+  Pass  DEP-01 [A2] account 15564 changed by 1000 cents (31550 -> 32550)
+
+Sub-folder HIST-01 · transactions of A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/15564/transactions [200 OK, 412 B, 230 ms]
+  Pass  HIST-01 [C1] HTTP 200 (got 200)
+  Pass  HIST-01 [C1] list of transaction
+  Pass  HIST-01 [A2] exactly one new transaction: Credit 1000 cents (got ["Credit 1000"])
+  Pass  HIST-01 [A2] new transaction dated today, UTC (got 2026-11-24)
+
+--------------------------------------------------------------------------
+|                         |              executed |               failed |
+--------------------------+-----------------------+-----------------------
+|              iterations |                     1 |                    0 |
+--------------------------+-----------------------+-----------------------
+|                requests |                     8 |                    0 |
+--------------------------+-----------------------+-----------------------
+|            test-scripts |                     8 |                    0 |
+--------------------------+-----------------------+-----------------------
+|      prerequest-scripts |                     8 |                    0 |
+--------------------------+-----------------------+-----------------------
+|              assertions |                    21 |                    0 |
+--------------------------------------------------------------------------
+| total run duration: 14.8 s                                             |
+--------------------------------------------------------------------------
+| total data received: 779 B (approx)                                    |
+--------------------------------------------------------------------------
+| average response time: 326 ms [min: 230 ms, max: 733 ms, s.d.: 156 ms] |
+--------------------------------------------------------------------------
+
+✓ Output generated
+  Folder: /Users/roy/projects/paraBank/results/runs/2026-11-24T10-25-10Z-api/reports/smoke
+    ↳ parabank-qa-2026-11-24-12-25-11.collection-run-summary.yaml
+    ↳ parabank-qa-2026-11-24-12-25-11.collection-run-executions.yaml

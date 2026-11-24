@@ -25,3 +25,6 @@ results/runs/
 results/.last-run
 tests/automation/.venv/
 __pycache__/
+
+# Submission zips (./run.sh package)
+dist/

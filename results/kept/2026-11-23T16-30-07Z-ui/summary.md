@@ -1,6 +1,8 @@
 # Web UI cross-check (Stage 3, step 4)
 
-Run at 2026-11-23T16:30:07.676Z as Rktest2 (customer 37409) with local Chrome via Playwright; each UI page was compared with the REST API read seconds later.
+> **Screenshots removed (2026-11-24):** they showed the test user's personal profile. The same steps with masked screenshots are in [`2026-11-24T10-29-47Z-ui`](../2026-11-24T10-29-47Z-ui/summary.md). The verdicts and the text evidence below are unchanged.
+
+Run at 2026-11-23T16:30:07.676Z as <USERNAME> (customer 37409) with local Chrome via Playwright; each UI page was compared with the REST API read seconds later.
 Accounts from the official run `results/kept/2026-11-23T16-04-00Z-api`: A 54192 (default), B 75504 (journey savings), L 75726 (journey loan), S 72174 / T 72285 (TRF suite).
 
 **24 of 25 checks match; UI/API mismatches: 0.** Results: MATCH, MISMATCH (UI and API disagree), RULE NOT MET (both agree, but a proposed rule fails).
@@ -120,7 +122,7 @@ Accounts from the official run `results/kept/2026-11-23T16-04-00Z-api`: A 54192 
 | 11-23-2026 | Funds Transfer Received |  | $12.00 | 119149 |
 | 11-23-2026 | Deposit via Web Service |  | $10.00 | 126253 |
 
-Screenshot: `screenshots/activity-A-54192.png`
+Screenshot: `activity-A-54192.png` *(removed)*
 
 **B — account 75504** · SAVINGS · balance $230.00 · available $230.00
 
@@ -131,13 +133,13 @@ Screenshot: `screenshots/activity-A-54192.png`
 | 11-23-2026 | Withdraw via Web Service | $20.00 |  | 118483 |
 | 11-23-2026 | Funds Transfer Sent | $50.00 |  | 118594 |
 
-Screenshot: `screenshots/activity-B-75504.png`
+Screenshot: `activity-B-75504.png` *(removed)*
 
 **L — account 75726** · LOAN · balance $500.00 · available $500.00
 
 *No transactions shown.*
 
-Screenshot: `screenshots/activity-L-75726.png`
+Screenshot: `activity-L-75726.png` *(removed)*
 
 **S — account 72174** · CHECKING · balance $0.00 · available $0.00
 
@@ -153,7 +155,7 @@ Screenshot: `screenshots/activity-L-75726.png`
 | 11-23-2026 | Funds Transfer Received |  | $1.00 | 111601 |
 | 11-23-2026 | Deposit via Web Service |  | $999.00 | 111712 |
 
-Screenshot: `screenshots/activity-S-72174.png`
+Screenshot: `activity-S-72174.png` *(removed)*
 
 **T — account 72285** · CHECKING · balance $1199.00 · available $1199.00
 
@@ -166,6 +168,6 @@ Screenshot: `screenshots/activity-S-72174.png`
 | 11-23-2026 | Funds Transfer Received |  | -$1.00 | 111157 |
 | 11-23-2026 | Funds Transfer Received |  | $0.00 | 111379 |
 
-Screenshot: `screenshots/activity-T-72285.png`
+Screenshot: `activity-T-72285.png` *(removed)*
 
-Overview screenshot: `screenshots/overview.png`.
+Overview screenshot: `overview.png` *(removed)*.

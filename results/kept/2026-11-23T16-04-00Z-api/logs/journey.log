@@ -8,7 +8,7 @@ ParaBank QA
 Folder 01 Customer Journey / Onboarding
 Sub-folder JRN-01 J02 · login
 
-  GET https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/**** [200 OK, 407 B, 773 ms]
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/**** [200 OK, 407 B, 773 ms]
   Pass  JRN-01 J02 [C1] HTTP 200 (got 200)
   Pass  JRN-01 J02 [C1] customer schema
   Pass  JRN-01 J02 [A7] profile = registration data
@@ -299,7 +299,7 @@ Sub-folder JRN-01 J15c · read-back A
 Folder 01 Customer Journey / Update profile
 Sub-folder JRN-01 J16a · update street and phone
 
-  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/37409?firstName=Roy&lastName=Kazes&street=QA Street 1&city=some city&state=some state&zipCode=zipzipzipzip&phoneNumber=5550199&ssn=****&username=Rktest2&password=**** [200 OK, 278 B, 220 ms]
+  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/37409?firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=QA Street 1&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=5550199&ssn=****&username=<USERNAME>&password=**** [200 OK, 278 B, 220 ms]
   Pass  JRN-01 J16a [C1] HTTP 200 (got 200)
 
 Sub-folder JRN-01 J16b · customer after update
@@ -311,13 +311,13 @@ Sub-folder JRN-01 J16b · customer after update
 
 Sub-folder JRN-01 J16c · login after update
 
-  GET https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/**** [200 OK, 411 B, 226 ms]
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/**** [200 OK, 411 B, 226 ms]
   Pass  JRN-01 J16c [C1] HTTP 200 (got 200)
   Pass  JRN-01 J16c [A7] login returns the updated profile
 
 Sub-folder JRN-01 J16d · restore original profile
 
-  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/37409?firstName=Roy&lastName=Kazes&street=some address&city=some city&state=some state&zipCode=zipzipzipzip&phoneNumber=0987654321&ssn=****&username=Rktest2&password=**** [200 OK, 278 B, 221 ms]
+  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/37409?firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=<STREET>&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=<PHONE>&ssn=****&username=<USERNAME>&password=**** [200 OK, 278 B, 221 ms]
   Pass  JRN-01 J16d [C1] HTTP 200 (got 200)
 
 Sub-folder JRN-01 J16d · customer after restore

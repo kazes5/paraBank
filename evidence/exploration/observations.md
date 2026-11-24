@@ -1,11 +1,11 @@
-# Stage 1 observations — Rktest2 (customer 17096), A=21780, B=24555, F=23001
+# Stage 1 observations — <USERNAME> (customer 17096), A=21780, B=24555, F=23001
 
 Run: 2026-11-23T12:58:28.777Z → 2026-11-23T12:59:02.091Z. Credentials and SSN redacted.
 
 | ID | Purpose | Request | Status | ms | Balances before → after | Body (excerpt) |
 |---|---|---|---|---|---|---|
-| J02 | login with valid credentials | GET /login/Rktest2/<REDACTED> | 200 | 812 |  | {"id":17096,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzi |
-| J03 | get customer | GET /customers/17096 | 200 | 231 |  | {"id":17096,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzi |
+| J02 | login with valid credentials | GET /login/<USERNAME>/<REDACTED> | 200 | 812 |  | {"id":17096,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"zipzi |
+| J03 | get customer | GET /customers/17096 | 200 | 231 |  | {"id":17096,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"zipzi |
 | J04 | list accounts | GET /customers/17096/accounts | 200 | 229 |  | [{"id":21780,"customerId":17096,"type":"CHECKING","balance":415.50},{"id":23001,"customerId":17096,"type":"CHECKING","balance":100.00}] |
 | J05 | get account A | GET /accounts/21780 | 200 | 242 |  | {"id":21780,"customerId":17096,"type":"CHECKING","balance":415.50} |
 | J06 | open SAVINGS account funded from A (newAccountType=1) | POST /createAccount?customerId=17096&newAccountType=1&fromAccountId=21780 | 200 | 244 | 21780: 415.5 → 315.5 | {"id":24555,"customerId":17096,"type":"SAVINGS","balance":0} |
@@ -33,16 +33,16 @@ Run: 2026-11-23T12:58:28.777Z → 2026-11-23T12:59:02.091Z. Credentials and SSN 
 | J14c | get position by id | GET /positions/13017 | 200 | 301 |  | {"positionId":13017,"customerId":17096,"name":"QA Test Stock","symbol":"QATS","shares":2,"purchasePrice":10.0000} |
 | J15 | sell 1 share x 12.00 to A | POST /customers/17096/sellPosition?accountId=21780&positionId=13017&shares=1&pricePerShare=12 | 200 | 293 | 21780: 265.5 → 277.5 | [{"positionId":13017,"customerId":17096,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000}] |
 | J15b | get position after sell | GET /positions/13017 | 200 | 300 |  | {"positionId":13017,"customerId":17096,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000} |
-| J16 | update profile: new street + phone | POST /customers/update/17096?username=Rktest2&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&lastName=Kazes&street=99+New+Street&city=some+cit | 200 | 222 |  | Successfully updated customer profile |
-| J16b | customer after update | GET /customers/17096 | 200 | 657 |  | {"id":17096,"firstName":"Roy","lastName":"Kazes","address":{"street":"99 New Street","city":"some city","state":"some state","zipCode":"zipz |
-| J16c | login after update | GET /login/Rktest2/<REDACTED> | 200 | 223 |  | {"id":17096,"firstName":"Roy","lastName":"Kazes","address":{"street":"99 New Street","city":"some city","state":"some state","zipCode":"zipz |
-| J16d | restore original profile | POST /customers/update/17096?username=Rktest2&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&lastName=Kazes&street=some+address&city=some+city | 200 | 225 |  | Successfully updated customer profile |
+| J16 | update profile: new street + phone | POST /customers/update/17096?username=<USERNAME>&password=<REDACTED>&ssn=<REDACTED>&firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=99+New+Street&city=some+cit | 200 | 222 |  | Successfully updated customer profile |
+| J16b | customer after update | GET /customers/17096 | 200 | 657 |  | {"id":17096,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"99 New Street","city":"<CITY>","state":"<STATE>","zipCode":"zipz |
+| J16c | login after update | GET /login/<USERNAME>/<REDACTED> | 200 | 223 |  | {"id":17096,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"99 New Street","city":"<CITY>","state":"<STATE>","zipCode":"zipz |
+| J16d | restore original profile | POST /customers/update/17096?username=<USERNAME>&password=<REDACTED>&ssn=<REDACTED>&firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=<STREET>&city=<CITY> | 200 | 225 |  | Successfully updated customer profile |
 | J17 | final accounts list | GET /customers/17096/accounts | 200 | 241 |  | [{"id":21780,"customerId":17096,"type":"CHECKING","balance":277.50},{"id":23001,"customerId":17096,"type":"CHECKING","balance":100.00},{"id" |
-| E-AUTH1 | wrong password | GET /login/Rktest2/wrong_1795438723579 | 400 | 223 |  | Invalid username and/or password |
+| E-AUTH1 | wrong password | GET /login/<USERNAME>/wrong_1795438723579 | 400 | 223 |  | Invalid username and/or password |
 | E-AUTH2 | unknown user | GET /login/nouser_1795438723803/whatever | 400 | 301 |  | Invalid username and/or password |
 | E-AUTH3 | injection-style username | GET /login/'%20OR%20'1'%3D'1/x | 403 | 80 |  | <!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><m |
-| E-AUTH4 | login with XML Accept | GET /login/Rktest2/<REDACTED> | 200 | 670 |  | <?xml version="1.0" encoding="UTF-8" standalone="yes"?><customer><id>17096</id><firstName>Roy</firstName><lastName>Kazes</lastName><address> |
-| E-AUTH5 | read own customer with no session/credentials | GET /customers/17096 | 200 | 295 |  | {"id":17096,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzi |
+| E-AUTH4 | login with XML Accept | GET /login/<USERNAME>/<REDACTED> | 200 | 670 |  | <?xml version="1.0" encoding="UTF-8" standalone="yes"?><customer><id>17096</id><firstName><FIRST_NAME></firstName><lastName><LAST_NAME></lastName><address> |
+| E-AUTH5 | read own customer with no session/credentials | GET /customers/17096 | 200 | 295 |  | {"id":17096,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"zipzi |
 | E-ID1 | customer -1 | GET /customers/-1 | 400 | 262 |  | Could not find customer #-1 |
 | E-ID2 | account -1 | GET /accounts/-1 | 400 | 260 |  | Could not find account #-1 |
 | E-ID3 | account 0 | GET /accounts/0 | 400 | 237 |  | Could not find account #0 |
@@ -74,5 +74,5 @@ Run: 2026-11-23T12:58:28.777Z → 2026-11-23T12:59:02.091Z. Credentials and SSN 
 | E-INV1 | sell more shares than owned (100) | POST /customers/17096/sellPosition?accountId=21780&positionId=13017&shares=100&pricePerShare=10 | 429 | 95 | 21780: HTTP 429 → HTTP 429 | {"type":"https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1015/","title":"Error 1015 |
 | E-TRX1 | filter invalid date format | GET /accounts/21780/transactions/onDate/not-a-date | 429 | 77 |  | {"type":"https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1015/","title":"Error 1015 |
 | E-TRX2 | filter by amount non-numeric | GET /accounts/21780/transactions/amount/abc | 429 | 166 |  | {"type":"https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1015/","title":"Error 1015 |
-| E-PRF1 | update profile missing lastName | POST /customers/update/17096?username=Rktest2&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&street=some+address&city=some+city&state=some+sta | 429 | 76 |  | {"type":"https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1015/","title":"Error 1015 |
+| E-PRF1 | update profile missing lastName | POST /customers/update/17096?username=<USERNAME>&password=<REDACTED>&ssn=<REDACTED>&firstName=<FIRST_NAME>&street=<STREET>&city=<CITY>&state=some+sta | 429 | 76 |  | {"type":"https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1015/","title":"Error 1015 |
 | E-PRF2 | customer after failed update | GET /customers/17096 | 429 | 84 |  | {"type":"https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1015/","title":"Error 1015 |

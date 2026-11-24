@@ -1,7 +1,7 @@
 # BUG-008 — reproduction on fresh data
 
 Throwaway user qa_s4_mwti1l42 (customer 60497), run 2026-11-23T16:48:13.819Z. Requests paced 1.5 s; balances read with `GET /accounts/{id}` before and after each call.
-Related Stage 3 cases: AUTH-03 (manual test: see the screenshots in results/kept/2026-11-23T16-35-57Z-manual/screenshots/).
+Related Stage 3 cases: AUTH-03 (manual test: see the screenshots in results/kept/2026-11-24T10-30-26Z-manual/screenshots/).
 
 | # | Kind | Step | Request | Status | Response | Balances before → after | Expected |
 |---|---|---|---|---|---|---|---|

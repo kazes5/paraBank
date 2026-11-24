@@ -1,4 +1,4 @@
-# Reproduction: sub-cent transfer makes accounts unreadable (user Rktest1, customer 17762, fresh accounts)
+# Reproduction: sub-cent transfer makes accounts unreadable (user <USERNAME>, customer 17762, fresh accounts)
 2026-11-23T13:05:05.046Z POST /createAccount?customerId=17762&newAccountType=0&fromAccountId=23112 -> 200 {"id":28551,"customerId":17762,"type":"CHECKING","balance":0}
 2026-11-23T13:05:06.793Z POST /createAccount?customerId=17762&newAccountType=0&fromAccountId=23112 -> 200 {"id":28773,"customerId":17762,"type":"CHECKING","balance":0}
 2026-11-23T13:05:08.532Z GET /accounts/28551 -> 200 {"id":28551,"customerId":17762,"type":"CHECKING","balance":100.00}
@@ -11,4 +11,4 @@
 2026-11-23T13:05:20.729Z GET /accounts/28773 -> 500 <HTML error page>
 2026-11-23T13:05:22.468Z GET /accounts/28551/transactions -> 500 <HTML error page>
 2026-11-23T13:05:24.205Z GET /customers/17762/accounts -> 500 <HTML error page>
-# First occurrence: user Rktest2, transfer 0.005 from 23001 to 21780 at probe E-TRF7 (observations.json); both accounts and /customers/17096/accounts still 500 ~10 min later.
+# First occurrence: user <USERNAME>, transfer 0.005 from 23001 to 21780 at probe E-TRF7 (observations.json); both accounts and /customers/17096/accounts still 500 ~10 min later.

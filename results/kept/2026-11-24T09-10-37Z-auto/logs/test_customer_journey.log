@@ -1,7 +1,7 @@
 test_journey.py::test_customer_journey — XFAIL (reason: known defects: BUG-009: J06b create response balance = account balance, BUG-015: J13a responseDate is a date-time string, BUG-006: J13e loan recorded in the loan account history — 39/42 checks passed)
 
 api = <conftest.ApiClient object at 0x106f49730>
-customer = {'A': 14343, 'id': 12878, 'login': {'address': {'city': 'some city', 'state': 'some state', 'street': 'some address', 'zipCode': 'zipzipzipzip'}, 'firstName': 'Roy', 'id': 12878, 'lastName': 'Kazes', ...}}
+customer = {'A': 14343, 'id': 12878, 'login': {'address': {'city': '<CITY>', 'state': '<STATE>', 'street': '<STREET>', 'zipCode': '<ZIP>'}, 'firstName': '<FIRST_NAME>', 'id': 12878, 'lastName': '<LAST_NAME>', ...}}
 
     def test_customer_journey(api, customer):
         j = Journey()
@@ -157,11 +157,11 @@ test_journey.py:48: XFailed
 
 Requests:
 
-2026-11-24T09:10:46.755+00:00  GET https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/<REDACTED>  -> 200 (246 ms)
-  response: {"id":12878,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}
+2026-11-24T09:10:46.755+00:00  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>  -> 200 (246 ms)
+  response: {"id":12878,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}
 
 2026-11-24T09:10:48.497+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/12878  -> 200 (240 ms)
-  response: {"id":12878,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}
+  response: {"id":12878,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}
 
 2026-11-24T09:10:50.251+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/12878/accounts  -> 200 (253 ms)
   response: [{"id":14343,"customerId":12878,"type":"CHECKING","balance":315.50},{"id":14454,"customerId":12878,"type":"CHECKING","balance":200.00}]
@@ -269,20 +269,20 @@ Requests:
 2026-11-24T09:11:49.802+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/14343  -> 200 (239 ms)
   response: {"id":14343,"customerId":12878,"type":"CHECKING","balance":77.50}
 
-2026-11-24T09:11:51.554+00:00  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/12878?firstName=Roy&lastName=Kazes&street=QA+Street+1&city=some+city&state=some+state&zipCode=zipzipzipzip&phoneNumber=5550199&ssn=<REDACTED>&username=Rktest2&password=<REDACTED>  -> 200 (248 ms)
+2026-11-24T09:11:51.554+00:00  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/12878?firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=QA+Street+1&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=5550199&ssn=<REDACTED>&username=<USERNAME>&password=<REDACTED>  -> 200 (248 ms)
   response: Successfully updated customer profile
 
 2026-11-24T09:11:53.302+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/12878  -> 200 (243 ms)
-  response: {"id":12878,"firstName":"Roy","lastName":"Kazes","address":{"street":"QA Street 1","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"5550199","ssn":"<REDACTED>"}
+  response: {"id":12878,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"QA Street 1","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"5550199","ssn":"<REDACTED>"}
 
-2026-11-24T09:11:55.043+00:00  GET https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/<REDACTED>  -> 200 (237 ms)
-  response: {"id":12878,"firstName":"Roy","lastName":"Kazes","address":{"street":"QA Street 1","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"5550199","ssn":"<REDACTED>"}
+2026-11-24T09:11:55.043+00:00  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>  -> 200 (237 ms)
+  response: {"id":12878,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"QA Street 1","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"5550199","ssn":"<REDACTED>"}
 
-2026-11-24T09:11:56.786+00:00  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/12878?firstName=Roy&lastName=Kazes&street=some+address&city=some+city&state=some+state&zipCode=zipzipzipzip&phoneNumber=0987654321&ssn=<REDACTED>&username=Rktest2&password=<REDACTED>  -> 200 (238 ms)
+2026-11-24T09:11:56.786+00:00  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/12878?firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=<STREET>&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=<PHONE>&ssn=<REDACTED>&username=<USERNAME>&password=<REDACTED>  -> 200 (238 ms)
   response: Successfully updated customer profile
 
 2026-11-24T09:11:58.556+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/12878  -> 200 (269 ms)
-  response: {"id":12878,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}
+  response: {"id":12878,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}
 
 2026-11-24T09:12:00.292+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/12878/accounts  -> 200 (234 ms)
   response: [{"id":14343,"customerId":12878,"type":"CHECKING","balance":77.50},{"id":14454,"customerId":12878,"type":"CHECKING","balance":200.00},{"id":14898,"customerId":12878,"type":"SAVINGS","balance":330.00},{"id":15120,"customerId":12878,"type":"LOAN","balance":500.00}]

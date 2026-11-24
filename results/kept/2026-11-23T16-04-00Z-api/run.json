@@ -3,7 +3,7 @@
   "kind": "api",
   "started": "2026-11-23T16:04:00Z",
   "commit": "(before reorganization)",
-  "user": "Rktest2",
+  "user": "<USERNAME>",
   "phases": [
     "smoke",
     "suites",

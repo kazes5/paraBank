@@ -14,7 +14,7 @@
         {
           "step": "wrong-password",
           "method": "GET",
-          "url": "https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/NotMyRealPassword-123",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/NotMyRealPassword-123",
           "status": 400,
           "ms": 749,
           "body": "Invalid username and/or password"
@@ -60,10 +60,10 @@
         {
           "step": "customer",
           "method": "GET",
-          "url": "https://parabank.parasoft.com/parabank/services/bank/login/Rktest2/<REDACTED>",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>",
           "status": 200,
           "ms": 772,
-          "body": "{\"id\":37409,\"firstName\":\"Roy\",\"lastName\":\"Kazes\",\"address\":{\"street\":\"some address\",\"city\":\"some city\",\"state\":\"some state\",\"zipCode\":\"zipzipzipzip\"},\"phoneNumber\":\"0987654321\",\"ssn\":\"<REDACTED>\"}"
+          "body": "{\"id\":37409,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"<STREET>\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"<PHONE>\",\"ssn\":\"<REDACTED>\"}"
         },
         {
           "step": "accounts-before",

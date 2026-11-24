@@ -5,7 +5,7 @@
 **Environment (all reports):**
 - ParaBank public sandbox `https://parabank.parasoft.com/parabank/services/bank`, behind Cloudflare.
 - Client: Node 24 `fetch` and Postman CLI 1.93.1, no cookies or auth headers (the API has none).
-- Stage 3 detection run `2026-11-23T16-04-00Z-api` (Rktest2, customer 37409).
+- Stage 3 detection run `2026-11-23T16-04-00Z-api` (<USERNAME>, customer 37409).
 - Stage 5 load run `2026-11-24T07-44-12Z-load` and isolation run `2026-11-24T08-03-30Z-load` (k6 2.4.0 and Node `fetch`, throwaway customers 33746 and 42959) — BUG-016.
 - Stage 4 reproduction run on fresh throwaway users: user R `qa_s4_mwti1l42` (customer 60497) and user L `qa_s4_mwti5prg` (customer 62495), 16:48–16:52 UTC.
 
@@ -115,7 +115,7 @@ web UI Accounts Overview → "An internal error has occurred and has been logged
 **Evidence:**
 - `evidence/bugs/BUG-001/repro.md`
 - `evidence/exploration/repro-subcent-transfer.log`
-- `results/kept/2026-11-23T16-35-57Z-manual/screenshots/19-TRF-09-transfer-0.005.png` … `24-TRF-09-ui-activity.png`
+- `results/kept/2026-11-24T10-30-26Z-manual/screenshots/19-TRF-09-transfer-0.005.png` … `24-TRF-09-ui-activity.png`
 
 **Notes / suspected cause / impact:**
 - Likely cause: the amount is stored with more precision than the balance column allows (or a rounding exception on read), so every later read of those accounts fails.
@@ -302,7 +302,7 @@ GET /parabank/services/bank/accounts/102810/transactions
 ```
 200 []
 source account: [{"id":160219,"type":"Debit","amount":50.00,"description":"Down Payment for Loan # 102810"}]   ← recorded
-web UI activity of a loan account: "No transactions found." (results/kept/2026-11-23T16-30-07Z-ui/screenshots/activity-L-75726.png)
+web UI activity of a loan account: "No transactions found." (results/kept/2026-11-24T10-29-47Z-ui/screenshots/activity-L-18450.png)
 ```
 
 **Expected result:** The loan account history holds at least one entry that explains its balance (loan disbursement / principal). Basis: A2 (every money movement creates a matching transaction) and A12, both proposed rules. How a loan should appear is open question S7/Q9.
@@ -383,8 +383,8 @@ GET /parabank/services/bank/login/qa_s4_mwti1l42/NotMyRealPassword-123
 **Expected result:** Credentials sent in a POST body or an `Authorization` header over HTTPS, never in the URL. Basis: A6 and common security practice (URLs end up in proxy, CDN and server access logs, and in browser history).
 
 **Evidence:**
-- `results/kept/2026-11-23T16-35-57Z-manual/screenshots/01-AUTH-03-swagger.png`
-- `results/kept/2026-11-23T16-35-57Z-manual/screenshots/02-AUTH-03-wrong-password.png`
+- `results/kept/2026-11-24T10-30-26Z-manual/screenshots/01-AUTH-03-swagger.png`
+- `results/kept/2026-11-24T10-30-26Z-manual/screenshots/02-AUTH-03-wrong-password.png`
 - `evidence/bugs/BUG-008/repro.md`
 
 **Notes / suspected cause / impact:**

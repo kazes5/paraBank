@@ -130,7 +130,7 @@ Score = impact (1–5) × likelihood (1–3). Higher score = tested first. Likel
   - **A p95 verdict needs at least 20 requests to the endpoint.** In functional runs (NFR-01) most endpoints have fewer, so p95 is reported for information only; the verdict comes from the load test (NFR-02).
 
 **Test data**
-- Only our own users (Rktest1, Rktest2, or a new one created by `tests/scripts/setup-users.mjs`).
+- Only our own users (<USERNAME>, <USERNAME>, or a new one created by `tests/scripts/setup-users.mjs`).
 - Every run creates fresh accounts, so tests survive the site's data resets.
 - Small amounts (1–200), so the expected results are easy to calculate.
 - The sub-cent test (TRF-09) breaks accounts, so it runs by hand, last, on throwaway accounts.
@@ -341,7 +341,7 @@ Both tests use the SLA model in §4.
 
 **Status:** these are **candidate defects**, not confirmed ones. Each was seen in one exploratory run on our own accounts, on 2026-11-23. Only the sub-cent finding has been reproduced so far. Each will be re-run by its test case and, if it fails again, written up in Stage 4 with full logs. Most break a *proposed* rule (A#), so their severity also depends on R&D confirming that rule.
 
-Requests are shown with credentials removed. Amounts and balances are copied from the evidence files. Rktest2 = customer 17096; Rktest1 = customer 17762.
+Requests are shown with credentials removed. Amounts and balances are copied from the evidence files. <USERNAME> = customer 17096; <USERNAME> = customer 17762.
 
 | # | Finding | Rule broken | Test | Request | Response | Balances before → after | Time (UTC) | Evidence |
 |---|---|---|---|---|---|---|---|---|
@@ -358,7 +358,7 @@ Requests are shown with credentials removed. Amounts and balances are copied fro
 | E11 | Transfer to the same account accepted | A10 | TRF-05 | `POST /transfer?fromAccountId=23001&toAccountId=23001&amount=1` | 200 "Successfully transferred $1…" | 23001 unchanged | 12:58:51 | `observations.json` probe E-TRF4 |
 | E12 | Empty payee accepted | A11 | BILL-03 | `POST /billpay?accountId=23223&amount=1`, body `{}` | 200 `{"payeeName":null,"amount":1,…}` | 23223: −199,900.00 → −199,901.00; transaction "Bill Payment to null" | 13:06:29 | `observations-from-E-DEP1.json` probe E-BIL2 |
 | E13 | Missing amount or `CREDIT` filter gives a server error | C1, A8 | TRF-07, HIST-04 | `POST /transfer?fromAccountId=23001&toAccountId=21780` · `GET /accounts/21780/transactions/month/November/type/CREDIT` | 500 HTML error page (both) | unchanged | 12:58:53 · 12:58:37 | `observations.json` probes E-TRF6, J12g |
-| E14 | Approved loan is not recorded in the loan account history (the down payment debit on the source account is recorded) | A12 (proposed) | LOAN-01, JRN-01 J13e | `POST /requestLoan?customerId=17096&amount=500&downPayment=50&fromAccountId=21780` | 200 `approved: true`, loan account 24666 | 21780: 335.50 → 285.50; loan account 24666 = 500.00 with **0 transactions** | 12:58:39 | `observations.json` probes J13, J13b; `GET /accounts/24666/transactions` = `[]`. Confirmed in Stage 3 (loan account 75726, API and web UI: no transactions) — `results/kept/2026-11-23T16-30-07Z-ui/screenshots/activity-L-75726.png` |
+| E14 | Approved loan is not recorded in the loan account history (the down payment debit on the source account is recorded) | A12 (proposed) | LOAN-01, JRN-01 J13e | `POST /requestLoan?customerId=17096&amount=500&downPayment=50&fromAccountId=21780` | 200 `approved: true`, loan account 24666 | 21780: 335.50 → 285.50; loan account 24666 = 500.00 with **0 transactions** | 12:58:39 | `observations.json` probes J13, J13b; `GET /accounts/24666/transactions` = `[]`. Confirmed in Stage 3 (loan account 75726, API and web UI: no transactions) — `results/kept/2026-11-24T10-29-47Z-ui/screenshots/activity-L-18450.png` |
 | E15 | New-account response shows a different balance than the account | A7 | JRN-01 (J06) | `POST /createAccount?customerId=17096&newAccountType=1&fromAccountId=21780` | 200 `{"id":24555,…,"balance":0}`; `GET /accounts/24555` → 100.00 | 21780: 415.50 → 315.50 | 12:58:30 | `observations.json` probes J06, J06b |
 
 All evidence files are in `evidence/exploration/`. The `.md` files list every probe in one table; the `.json` files hold the full requests and responses, with passwords and SSNs removed. Latency samples: `latency-baseline.md`.

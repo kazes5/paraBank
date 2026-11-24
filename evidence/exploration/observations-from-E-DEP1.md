@@ -1,4 +1,4 @@
-# Stage 1 observations — Rktest1 (customer 17762), A=23112, B=undefined, F=23223
+# Stage 1 observations — <USERNAME> (customer 17762), A=23112, B=undefined, F=23223
 
 Run: 2026-11-23T13:05:53.230Z → 2026-11-23T13:07:08.353Z. Credentials and SSN redacted.
 
@@ -20,5 +20,5 @@ Run: 2026-11-23T13:05:53.230Z → 2026-11-23T13:07:08.353Z. Credentials and SSN 
 | E-OPN1 | create account from non-existent source -1 | POST /createAccount?customerId=17762&newAccountType=0&fromAccountId=-1 | 400 | 279 |  | Could not create new account for customer 17762 from account -1 |
 | E-TRX1 | filter invalid date format | GET /accounts/23112/transactions/onDate/not-a-date | 400 | 219 |  | Unable to parse date not-a-date |
 | E-TRX2 | filter by amount non-numeric | GET /accounts/23112/transactions/amount/abc | 404 | 238 |  |  |
-| E-PRF1 | update profile missing lastName | POST /customers/update/17762?username=Rktest1&password=<REDACTED>&ssn=<REDACTED>&firstName=Roy&street=some+address&city=some+city&state=some+stat | 500 | 279 |  |  <!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns= |
-| E-PRF2 | customer after failed update | GET /customers/17762 | 200 | 218 |  | {"id":17762,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzi |
+| E-PRF1 | update profile missing lastName | POST /customers/update/17762?username=<USERNAME>&password=<REDACTED>&ssn=<REDACTED>&firstName=<FIRST_NAME>&street=<STREET>&city=<CITY>&state=some+stat | 500 | 279 |  |  <!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns= |
+| E-PRF2 | customer after failed update | GET /customers/17762 | 200 | 218 |  | {"id":17762,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"zipzi |

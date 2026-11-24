@@ -1,6 +1,6 @@
 # Coded tests (pytest) — run 2026-11-24T09-10-37Z-auto
 
-pytest + requests against `https://parabank.parasoft.com/parabank/services/bank` as `Rktest2`. Known defects are marked `xfail(strict=True)`: the run stays green while they still reproduce, and fails when one is fixed.
+pytest + requests against `https://parabank.parasoft.com/parabank/services/bank` as `<USERNAME>`. Known defects are marked `xfail(strict=True)`: the run stays green while they still reproduce, and fails when one is fixed.
 
 | Case | Test | Result | Meaning | Known defect | Time (s) | Log |
 |---|---|---|---|---|---|---|

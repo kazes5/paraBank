@@ -14,10 +14,10 @@
 | 3 Postman build and execution | ✅ Done | `457d6db`, `fc94862` | `tests/postman/`, `results/kept/2026-11-23T16-04-00Z-api`, `*-ui`, `*-manual` | API: 19 PASS · 21 FAIL · 1 NEEDS-CLARIFICATION · 5 run outside Postman (4 manual, NFR-02 in Stage 5). Repeat run `2026-11-23T17-20-52Z-api`: identical verdicts. UI cross-check: 24 MATCH, 1 RULE NOT MET (A12). Manual: 2 FAIL, 1 BLOCKED (firewall), 1 NEEDS-CLARIFICATION |
 | 4 Isolation and bug reports | ✅ Done | `1828de4` | `Bug_Reports.md`, `evidence/bugs/` (BUG-001 … BUG-016, S-LOAN) | 15 defects from Stage 3: 3 Critical, 5 High, 7 Medium (BUG-016 added in Stage 5: 4 Critical in total). Every failure isolated and reproduced on fresh throwaway users, with a passing control input. Re-reproduced 2026-11-23 (`./run.sh repro`): all 15 still fail |
 | 5 Load and performance | ✅ Done | — | `tests/load/` (plan, k6 scripts, runner), `results/kept/2026-11-24T07-44-12Z-load`, isolation `results/kept/2026-11-24T08-03-30Z-load` | Speed: every SLA met (read p95 320 → 415 ms at 0.68 → 2 req/s; transfer p95 436 → 574 ms with 5 at once), 0 errors, 0 × 429. **Correctness FAIL:** concurrent transfers lost debits (money created): 32.00 in run 1, 16.00 in re-run `results/kept/2026-11-24T08-22-10Z-load`, and per-test balances place all of it in L4 (5 at once). Sequential L3 and L5 reconcile → **BUG-016 (Critical)**, isolated on a fresh customer. NFR-02 = FAIL |
-| 6 Test summary report | ✅ Done | — | `STR.md`, `STR.pdf`, generator `tests/scripts/build-str.mjs` | **NO-GO**: 4 Critical defects open (BUG-001, BUG-002, BUG-003, BUG-016). Generated from the latest complete runs of each kind, so every cycle gets its own report (`./run.sh report`, or automatically at the end of `./run.sh cycle`) |
+| 6 Test summary report | ✅ Done | — | `STR.md`/`.pdf` (2 pages), `STR_Detailed.md`/`.pdf` (annex), generator `tests/scripts/build-str.mjs` | **NO-GO**: 4 Critical defects open (BUG-001, BUG-002, BUG-003, BUG-016). Generated from the latest complete runs of each kind, so every cycle gets its own report (`./run.sh report`, or automatically at the end of `./run.sh cycle`) |
 | 7 Optional automation | ✅ Done | — | `tests/automation/` (pytest + requests, README), `./run.sh auto`, run `results/kept/2026-11-24T09-10-37Z-auto` | 5 STD cases in code: JRN-01 (J02–J17, 42 checks), TRF-01, TRF-03, DEP-01, ACCT-03. 4 PASS, 2 XFAIL on known defects (journey: BUG-009, BUG-015, BUG-006; TRF-03: BUG-003). Known defects are `xfail(strict=True)`, so a fix turns the run red as a retest signal. Request/response log written on every failure |
 | Tooling: test runner web page | ✅ Done | `f12b53d` | `tests/web/` (`server.mjs`, `index.html`), `./run.sh web`, README *Test runner web page* | Local page (127.0.0.1:4321): choose steps or a preset, live progress per step with a redacted log and Stop, verdict (PASS / FAIL / BLOCKED / STOPPED) plus the STR's GO / NO-GO, links to reports, bugs, evidence and deliverables |
-| 8 Packaging | ⬜ Not started | — | the repository | Credential scan and forbidden-endpoint guard already run on every change |
+| 8 Packaging | ✅ Done | — | `SUBMISSION.md`, `docs/walkthrough.md`, the repository (+ zip) | Full scan of every file and every commit: no password or SSN anywhere, `.env` never committed, no forbidden endpoint called. Test users' profile masked everywhere (text placeholders; masked screenshots, old screenshots removed). STR split into a 2-page report + detailed annex to meet the 1–2 page requirement. Final kept runs: API `2026-11-24T10-25-10Z-api` (same verdicts as before), UI `2026-11-24T10-29-47Z-ui`, manual `2026-11-24T10-30-26Z-manual` |
 
 ### Changes made during execution (vs. the original plan)
 
@@ -35,6 +35,8 @@
 | Bug reproduction | Re-run the failing case | `./run.sh repro`: two fresh throwaway users per run, control input next to each failing input, balances before/after | Proves each defect on clean data |
 | Repo layout | `evidence/<defect-id>/`, outputs per stage | Run folders `results/runs/<UTC>-<kind>/` (local) and `results/kept/` (committed); `results/index.md` + `history.md`; frozen evidence in `evidence/`; scripts in `tests/scripts/`; exercise files in `docs/exercise/` | Tests must run many times; see *Running the tests repeatedly* |
 | Exercise files | In the root | `docs/exercise/` | Deliverables stay in the root |
+| STR length | One report | `STR.md`/`.pdf` (2 pages, as the exercise asks) + `STR_Detailed.md`/`.pdf` (annex with all detail), both generated every cycle | The exercise asks for 1–2 pages; the detail (evidence links, reproduction) stays available |
+| Personal data | Redact passwords and SSNs | Also the test users' profile (username, name, address, phone): placeholders such as `<USERNAME>` in every file, masked in screenshots before capture; screenshots of the first UI and manual runs removed | The repository is public |
 | Running the tests | Command line only | Also a local web page (`./run.sh web`): choose steps, live progress, verdict and links | Partial or full cycles without remembering commands; results and evidence one click away |
 
 ### Open items
@@ -777,17 +779,28 @@ Credentials from environment variables; on failure, write the request/response l
 
 ## Stage 8 — Packaging and submission
 
-**Status:** ⬜ Not started. The repository itself is the submission (layout below); steps 1–2 are already checked on every change (`./run.sh` redaction, collection forbidden-endpoint guard, credential scan).
+**Status:** ✅ Done. The repository is the submission, with [`SUBMISSION.md`](SUBMISSION.md) as the reviewer's start page (deliverable map, how to re-run, review path) and [`docs/walkthrough.md`](docs/walkthrough.md) as the demo script. A zip of the repository is built for email (`git archive`, not committed).
+
+**Checks done (2026-11-24):**
+- Password and SSN (raw, URL-, form- and JSON-encoded): 0 hits in every tracked file and in all commits; `.env` never committed.
+- Forbidden endpoints: only guards and documentation mention them; no request to them in any log.
+- Requirements: STD 47 cases (≥ 25); collection 152 requests (≥ 12), environment secrets blank; 16 bug reports with every Jira field + 15 spec questions; load ≤ 10 VUs (≤ 20); STR 2 pages; automation README.
+- Personal data: the test users' profile replaced by placeholders in all text files; screenshots retaken masked (the site reset three times during the retakes, so runs hit by a reset were discarded).
 
 1. Remove credentials from exports, reports, logs and evidence; search all files for the password and SSN.
 2. Search all scripts for forbidden endpoints.
 3. Submission = the repository (see `README.md`):
    ```
-   README.md  run.sh                 start page · one command per test layer
-   STD.md  Bug_Reports.md  STR.md  Business_Rules.md  plan.md
+   SUBMISSION.md                     reviewer start page: deliverables, re-run, review path
+   README.md  run.sh                 project start page · one command per test layer
+   STD.md  Bug_Reports.md  Business_Rules.md  plan.md
+   STR.md/.pdf  STR_Detailed.md/.pdf two-page STR + detailed annex
+   docs/walkthrough.md               demo: journey failure → suite → bug report
    tests/postman/                    ParaBank_QA collection + environment (secrets blank)
    tests/scripts/                    collection builder, runners, summarizer, UI / manual / repro scripts
    tests/load/                       load_test_plan.md + k6 scripts (Stage 5)
+   tests/automation/                 pytest + requests (Stage 7)
+   tests/web/                        local test-runner web page (./run.sh web)
    results/kept/                     official runs: logs, reports, summaries, screenshots (redacted)
    results/index.md  history.md      every run and verdict history
    evidence/exploration/  bugs/      Stage 1 evidence, one bundle per defect

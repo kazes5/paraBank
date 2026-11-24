@@ -31,7 +31,7 @@ request:
       - services
       - bank
       - login
-      - Rktest2
+      - <USERNAME>
       - <REDACTED>
     host:
       - parabank
@@ -85,7 +85,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1d8e93ca6f4a5-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
 tests:
   - name: AUTH-01 [C1] HTTP 200 (got 200)
     status: passed
@@ -171,7 +171,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1d8f63b56f4a5-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
 tests:
   - name: CUST-01 [C1] HTTP 200 (got 200)
     status: passed

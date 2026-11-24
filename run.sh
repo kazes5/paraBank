@@ -11,6 +11,7 @@
 #   ./run.sh report [--kept] [--publish]             Test Summary Report (STR.md + STR.pdf) from the latest runs
 #   ./run.sh cycle [--keep] [--user PARABANK2]       all → ui → manual (headless) → auto → load → report
 #   ./run.sh web [--port 4321]                       web page: choose steps, live progress, verdict and links
+#   ./run.sh package                                 submission zip in dist/ (committed content)
 #   ./run.sh keep <runId|last>                       move a run to results/kept/ (committed)
 #   ./run.sh list                                    show results/index.md
 #   ./run.sh latest [api|ui|manual|repro|load|auto]  path of the latest summary.md
@@ -21,9 +22,9 @@ cd "$(dirname "$0")"
 
 # ---------------------------------------------------------------- arguments
 
-# Print the usage block above (lines 2-17) without the leading "# ".
+# Print the usage block above (lines 2-18) without the leading "# ".
 usage() {
-  sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
   exit 2
 }
 
@@ -167,6 +168,20 @@ case $cmd in
   # Local web page to choose and run steps, with live progress, the verdict and links (127.0.0.1 only).
   web)
     node tests/web/server.mjs ${rest[@]+"${rest[@]}"}
+    exit
+    ;;
+
+  # Submission zip of the committed repository (git archive: no .env, no local runs, no venv).
+  # Refuses to package while there are uncommitted changes, so the zip always equals a commit.
+  package)
+    if [[ -n $(git status --porcelain) ]]; then
+      echo "Uncommitted changes: commit first, so the zip matches the repository." >&2
+      exit 2
+    fi
+    mkdir -p dist
+    zip="dist/ParaBank_QA_submission_$(date -u +%Y-%m-%d)_$(git rev-parse --short HEAD).zip"
+    git archive --format=zip --prefix=ParaBank_QA/ -o "$zip" HEAD
+    echo "Submission: $zip ($(du -h "$zip" | cut -f1))"
     exit
     ;;
 

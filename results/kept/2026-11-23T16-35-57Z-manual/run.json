@@ -2,7 +2,7 @@
   "id": "2026-11-23T16-35-57Z-manual",
   "kind": "manual",
   "started": "2026-11-23T16:35:57Z",
-  "user": "Rktest2",
+  "user": "<USERNAME>",
   "scope": "AUTH-03, AUTH-05, TRF-08, TRF-09",
   "counts": {
     "FAIL": 2,

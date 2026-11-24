@@ -1,0 +1,3995 @@
+---
+kind: postman-cli-collection-run-executions
+schemaVersion: 1
+runId: 115682b2-8aa0-4729-bbb3-36e5cd5f0cf6
+summaryFile: parabank-qa-2026-11-24-12-28-27.collection-run-summary.yaml
+collection:
+  id: b6f1c0de-7a1e-4c55-9d1a-parabankqa01
+  name: ParaBank QA
+generatedAt: '2026-11-24T10:28:27.661Z'
+---
+iteration: 0
+cursorRef: cc17bb34-1d98-4106-90c5-e10105301268
+item:
+  id: 04940814-5b44-4860-ba6f-6c42fa7f7da9
+  name: JRN-01 J02 · login
+  folders:
+    - 01 Customer Journey
+    - Onboarding
+    - JRN-01 J02 · login
+  fullName: 01 Customer Journey / Onboarding / JRN-01 J02 · login
+  parent:
+    id: 6a76d4fc-c147-44ac-b5be-ddef61741aba
+    name: Onboarding
+    folders:
+      - 01 Customer Journey
+      - Onboarding
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - login
+      - <USERNAME>
+      - <REDACTED>
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 699ccb28-2ab0-486c-84b8-d02d03c37f41
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 63232a40-5871-4ab7-ba52-ec176c011d6f
+  code: 200
+  status: OK
+  responseTime: 690
+  responseSize: 198
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:30 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba24f89a945d-LHR
+  body: '{"id":13877,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
+tests:
+  - name: JRN-01 J02 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J02 [C1] customer schema
+    status: passed
+  - name: JRN-01 J02 [A7] profile = registration data
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: da32c547-8081-43b6-8849-868790a2edc1
+item:
+  id: e537878c-9210-4abc-ad9d-2ba4f8ea3f35
+  name: JRN-01 J03 · get customer
+  folders:
+    - 01 Customer Journey
+    - Onboarding
+    - JRN-01 J03 · get customer
+  fullName: 01 Customer Journey / Onboarding / JRN-01 J03 · get customer
+  parent:
+    id: 6a76d4fc-c147-44ac-b5be-ddef61741aba
+    name: Onboarding
+    folders:
+      - 01 Customer Journey
+      - Onboarding
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 093f93d0-7a23-43e4-888a-f82728b9dcfe
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 2d92262b-9bc6-4adc-a967-6f34cf55d490
+  code: 200
+  status: OK
+  responseTime: 228
+  responseSize: 198
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:31 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba320a72945d-LHR
+  body: '{"id":13877,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
+tests:
+  - name: JRN-01 J03 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J03 [A7] every field = J02
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 0f8234f9-54ea-4714-857b-0bb4f96597e5
+item:
+  id: 0a48fa70-c812-4ea9-9f61-f9783b1be472
+  name: JRN-01 J04 · list accounts
+  folders:
+    - 01 Customer Journey
+    - Onboarding
+    - JRN-01 J04 · list accounts
+  fullName: 01 Customer Journey / Onboarding / JRN-01 J04 · list accounts
+  parent:
+    id: 6a76d4fc-c147-44ac-b5be-ddef61741aba
+    name: Onboarding
+    folders:
+      - 01 Customer Journey
+      - Onboarding
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - accounts
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 71cb740c-5bda-4d29-95b9-81a6d2d8bc93
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: b6b0c83c-f3fd-407f-9c18-75875c4d7218
+  code: 200
+  status: OK
+  responseTime: 235
+  responseSize: 853
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:33 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba3d0aed945d-LHR
+  body: '[{"id":15564,"customerId":13877,"type":"CHECKING","balance":525.50},{"id":15675,"customerId":13877,"type":"CHECKING","balance":200.00},{"id":16008,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":16119,"customerId":13877,"type":"CHECKING","balance":1399.00},{"id":16341,"customerId":13877,"type":"CHECKING","balance":195.00},{"id":16563,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17229,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17340,"customerId":13877,"type":"CHECKING","balance":200.00},{"id":17562,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17673,"customerId":13877,"type":"LOAN","balance":500.00},{"id":17784,"customerId":13877,"type":"LOAN","balance":10.00},{"id":17895,"customerId":13877,"type":"LOAN","balance":1000.00},{"id":18006,"customerId":13877,"type":"CHECKING","balance":205.00}]'
+tests:
+  - name: JRN-01 J04 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J04 [C1] list of account
+    status: passed
+  - name: JRN-01 J04 [A6] every account belongs to the customer
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 23c752d6-7837-460a-bb3b-f954dbc89890
+item:
+  id: dbb1643e-a2fd-451c-9a2b-b9490043a4b0
+  name: JRN-01 J05a · account A
+  folders:
+    - 01 Customer Journey
+    - Onboarding
+    - JRN-01 J05a · account A
+  fullName: 01 Customer Journey / Onboarding / JRN-01 J05a · account A
+  parent:
+    id: 6a76d4fc-c147-44ac-b5be-ddef61741aba
+    name: Onboarding
+    folders:
+      - 01 Customer Journey
+      - Onboarding
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 1e15552d-6ff4-4c2e-81b1-650a283e7130
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: d4c501bb-5ba9-4bfa-ada1-dd90fdfa79c3
+  code: 200
+  status: OK
+  responseTime: 241
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:35 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba481c8c945d-LHR
+  body: '{"id":15564,"customerId":13877,"type":"CHECKING","balance":525.50}'
+tests:
+  - name: JRN-01 J05a [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J05a [A7] id, type, balance, customerId = J04 entry
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: ebda9afb-8d1c-4589-a39f-715a0e22ccc5
+item:
+  id: 79235850-1cc3-4885-a202-0c1d4e3b1249
+  name: JRN-01 J05b · baseline transactions of A
+  folders:
+    - 01 Customer Journey
+    - Onboarding
+    - JRN-01 J05b · baseline transactions of A
+  fullName: 01 Customer Journey / Onboarding / JRN-01 J05b · baseline transactions of A
+  parent:
+    id: 6a76d4fc-c147-44ac-b5be-ddef61741aba
+    name: Onboarding
+    folders:
+      - 01 Customer Journey
+      - Onboarding
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: af72c7ac-9686-47ae-a14b-4d73572760e4
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 819f6dd0-9571-401a-8cca-bb59c8cdf63a
+  code: 200
+  status: OK
+  responseTime: 279
+  responseSize: 1939
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:37 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba536dd1945d-LHR
+  body: '[{"id":17140,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":17584,"accountId":15564,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":17917,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":18028,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":18250,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20359,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":20470,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20914,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":21025,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23356,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":23467,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23689,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":24466,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":24577,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":25243,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":25354,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"}]'
+tests:
+  - name: JRN-01 J05b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J05b [C1] list of transaction
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 01353590-aa8e-42a1-83ae-fe1ed168154d
+item:
+  id: 3714986c-05e3-4557-abd6-16410d492161
+  name: JRN-01 J06a · open savings account B
+  folders:
+    - 01 Customer Journey
+    - Open account
+    - JRN-01 J06a · open savings account B
+  fullName: 01 Customer Journey / Open account / JRN-01 J06a · open savings account B
+  parent:
+    id: 2f86b25e-b7e9-4a62-8ecf-ade109aae8f7
+    name: Open account
+    folders:
+      - 01 Customer Journey
+      - Open account
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - createAccount
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: customerId
+        value: '13877'
+      - key: newAccountType
+        value: '1'
+      - key: fromAccountId
+        value: '15564'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 4b50b1bb-872b-4c3e-8405-97ce71c434a6
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: b16f9807-f051-462b-a3da-4f71db35b7c0
+  code: 200
+  status: OK
+  responseTime: 330
+  responseSize: 60
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:38 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba5e7eac945d-LHR
+  body: '{"id":18339,"customerId":13877,"type":"SAVINGS","balance":0}'
+tests:
+  - name: JRN-01 J06a [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J06a [C1] account schema
+    status: passed
+  - name: JRN-01 J06a [C1] owned by the customer, type SAVINGS
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: deebb741-09af-4d27-bbc4-a80d91b4fce5
+item:
+  id: cf187ba7-7fd9-49f6-bf2a-d6baaf2ffbbd
+  name: JRN-01 J06b · read-back B
+  folders:
+    - 01 Customer Journey
+    - Open account
+    - JRN-01 J06b · read-back B
+  fullName: 01 Customer Journey / Open account / JRN-01 J06b · read-back B
+  parent:
+    id: 2f86b25e-b7e9-4a62-8ecf-ade109aae8f7
+    name: Open account
+    folders:
+      - 01 Customer Journey
+      - Open account
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '18339'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 91324e6f-02cb-4def-946f-5d1fa89d48fd
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 31bd3d50-61d3-4e17-989a-d788d34d6168
+  code: 200
+  status: OK
+  responseTime: 269
+  responseSize: 65
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:40 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba6a5841945d-LHR
+  body: '{"id":18339,"customerId":13877,"type":"SAVINGS","balance":200.00}'
+tests:
+  - name: JRN-01 J06b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J06b [A7] create response balance = account balance (0 vs 20000 cents)
+    error:
+      name: AssertionError
+      index: 1
+      test: JRN-01 J06b [A7] create response balance = account balance (0 vs 20000 cents)
+      message: expected +0 to deeply equal 20000
+      stack: |-
+        AssertionError: expected +0 to deeply equal 20000
+           at Object.eval sandbox-script.js:2:7)
+    status: failed
+errors: []
+---
+iteration: 0
+cursorRef: bd8146f5-a1ad-470f-9dbc-8c8ad1dc1d03
+item:
+  id: 9b227f12-ba93-4f58-a3ac-c1ac435754ea
+  name: JRN-01 J06c · read-back A
+  folders:
+    - 01 Customer Journey
+    - Open account
+    - JRN-01 J06c · read-back A
+  fullName: 01 Customer Journey / Open account / JRN-01 J06c · read-back A
+  parent:
+    id: 2f86b25e-b7e9-4a62-8ecf-ade109aae8f7
+    name: Open account
+    folders:
+      - 01 Customer Journey
+      - Open account
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 98073d25-d27e-4f6b-b749-7dc1bcadce68
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: bd8e03ae-1a53-4524-bb70-4d5010b98b9e
+  code: 200
+  status: OK
+  responseTime: 229
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:42 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba7569be945d-LHR
+  body: '{"id":15564,"customerId":13877,"type":"CHECKING","balance":325.50}'
+tests:
+  - name: JRN-01 J06c [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J06c [A1] A = expected 32550 cents (got 32550)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: c5e6992b-20b3-4844-b259-3763eee7124c
+item:
+  id: cdec7c6a-7dc3-4605-956e-9c54987c23f2
+  name: JRN-01 J06d · account list includes B
+  folders:
+    - 01 Customer Journey
+    - Open account
+    - JRN-01 J06d · account list includes B
+  fullName: 01 Customer Journey / Open account / JRN-01 J06d · account list includes B
+  parent:
+    id: 2f86b25e-b7e9-4a62-8ecf-ade109aae8f7
+    name: Open account
+    folders:
+      - 01 Customer Journey
+      - Open account
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - accounts
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: cf70188f-680e-4f9f-b3ac-10b80573a88c
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 42678f60-2f6f-4123-ab33-0ef5b92334b8
+  code: 200
+  status: OK
+  responseTime: 218
+  responseSize: 919
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:44 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba805bb7945d-LHR
+  body: '[{"id":15564,"customerId":13877,"type":"CHECKING","balance":325.50},{"id":15675,"customerId":13877,"type":"CHECKING","balance":200.00},{"id":16008,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":16119,"customerId":13877,"type":"CHECKING","balance":1399.00},{"id":16341,"customerId":13877,"type":"CHECKING","balance":195.00},{"id":16563,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17229,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17340,"customerId":13877,"type":"CHECKING","balance":200.00},{"id":17562,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17673,"customerId":13877,"type":"LOAN","balance":500.00},{"id":17784,"customerId":13877,"type":"LOAN","balance":10.00},{"id":17895,"customerId":13877,"type":"LOAN","balance":1000.00},{"id":18006,"customerId":13877,"type":"CHECKING","balance":205.00},{"id":18339,"customerId":13877,"type":"SAVINGS","balance":200.00}]'
+tests:
+  - name: JRN-01 J06d [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J06d [C1] list = start accounts + B
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: e1b44534-2525-4a26-9bfe-558aa7bbc1ed
+item:
+  id: 0bbe0fe5-8a01-4fa9-8c3f-458f6a90e2a3
+  name: JRN-01 J07a · deposit 200.00 into B
+  folders:
+    - 01 Customer Journey
+    - Manage money
+    - JRN-01 J07a · deposit 200.00 into B
+  fullName: 01 Customer Journey / Manage money / JRN-01 J07a · deposit 200.00 into B
+  parent:
+    id: c78ff90d-8a1b-4702-9a53-f6e6d982ede7
+    name: Manage money
+    folders:
+      - 01 Customer Journey
+      - Manage money
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - deposit
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: accountId
+        value: '18339'
+      - key: amount
+        value: '200'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 70492d8d-6470-42c1-a04b-04e23ffef509
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: 200e0473-7e68-4229-b32f-0d5ca214cf9f
+  code: 200
+  status: OK
+  responseTime: 225
+  responseSize: 45
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:46 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Content-Length
+      value: '45'
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: CF-RAY
+      value: a5f7ba8b4bf8945d-LHR
+  body: 'Successfully deposited $200 to account #18339'
+tests:
+  - name: JRN-01 J07a [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: dc162834-ec4b-4e42-b86e-49ad1006fbca
+item:
+  id: 65c6c279-0926-438c-96e1-98e31b7854ed
+  name: JRN-01 J07b · read-back B
+  folders:
+    - 01 Customer Journey
+    - Manage money
+    - JRN-01 J07b · read-back B
+  fullName: 01 Customer Journey / Manage money / JRN-01 J07b · read-back B
+  parent:
+    id: c78ff90d-8a1b-4702-9a53-f6e6d982ede7
+    name: Manage money
+    folders:
+      - 01 Customer Journey
+      - Manage money
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '18339'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: f2a7f098-a61f-4c9f-95bb-578931a1b96e
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 2f22e292-efbe-4102-86fb-056ea61c05fc
+  code: 200
+  status: OK
+  responseTime: 315
+  responseSize: 65
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:47 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7ba963d14945d-LHR
+  body: '{"id":18339,"customerId":13877,"type":"SAVINGS","balance":400.00}'
+tests:
+  - name: JRN-01 J07b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J07b [A2] B = expected 40000 cents (got 40000)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 8c02dca9-1764-44c7-b448-9cfa4619ea2e
+item:
+  id: 42da8b6c-d2b5-4189-bcea-bff42435a4e5
+  name: JRN-01 J08a · withdraw 20.00 from B
+  folders:
+    - 01 Customer Journey
+    - Manage money
+    - JRN-01 J08a · withdraw 20.00 from B
+  fullName: 01 Customer Journey / Manage money / JRN-01 J08a · withdraw 20.00 from B
+  parent:
+    id: c78ff90d-8a1b-4702-9a53-f6e6d982ede7
+    name: Manage money
+    folders:
+      - 01 Customer Journey
+      - Manage money
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - withdraw
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: accountId
+        value: '18339'
+      - key: amount
+        value: '20'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 84d98bcc-2953-488b-8404-1304336da41d
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: 339dbaaf-4b1e-49cf-ba65-65e08b17a09a
+  code: 200
+  status: OK
+  responseTime: 303
+  responseSize: 45
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:49 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Content-Length
+      value: '45'
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: CF-RAY
+      value: a5f7baa20fc1945d-LHR
+  body: 'Successfully withdrew $20 from account #18339'
+tests:
+  - name: JRN-01 J08a [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: aea0e437-595b-4294-af3c-45fec5fcf93c
+item:
+  id: 5b1dd438-0d68-49ac-9b35-25a6253348c5
+  name: JRN-01 J08b · read-back B
+  folders:
+    - 01 Customer Journey
+    - Manage money
+    - JRN-01 J08b · read-back B
+  fullName: 01 Customer Journey / Manage money / JRN-01 J08b · read-back B
+  parent:
+    id: c78ff90d-8a1b-4702-9a53-f6e6d982ede7
+    name: Manage money
+    folders:
+      - 01 Customer Journey
+      - Manage money
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '18339'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: d35772bc-f8a3-45ba-9121-aeb59700e829
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 5af7d740-b60f-4b86-94ed-50b1b9ab8c09
+  code: 200
+  status: OK
+  responseTime: 226
+  responseSize: 65
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:51 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7baad29ae945d-LHR
+  body: '{"id":18339,"customerId":13877,"type":"SAVINGS","balance":380.00}'
+tests:
+  - name: JRN-01 J08b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J08b [A2] B = expected 38000 cents (got 38000)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 8ba4bbc4-0b61-4e4a-bca0-ad984cd6b81d
+item:
+  id: a631ed8a-07db-4210-8b58-9eef56aa7b49
+  name: JRN-01 J09a · transfer 50.00 B to A
+  folders:
+    - 01 Customer Journey
+    - Manage money
+    - JRN-01 J09a · transfer 50.00 B to A
+  fullName: 01 Customer Journey / Manage money / JRN-01 J09a · transfer 50.00 B to A
+  parent:
+    id: c78ff90d-8a1b-4702-9a53-f6e6d982ede7
+    name: Manage money
+    folders:
+      - 01 Customer Journey
+      - Manage money
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - transfer
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: fromAccountId
+        value: '18339'
+      - key: toAccountId
+        value: '15564'
+      - key: amount
+        value: '50'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 8dc10997-c645-4b9f-aada-0ffcedf1cd3c
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: 7b7af3a9-e4de-4517-8a55-ebaad342b770
+  code: 200
+  status: OK
+  responseTime: 251
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:53 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bab81b80945d-LHR
+  body: 'Successfully transferred $50 from account #18339 to account #15564'
+tests:
+  - name: JRN-01 J09a [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 7f2e2ea6-ea6e-4928-9403-9ee474d1dc99
+item:
+  id: f38c47e3-48cc-4243-a2c2-2cdc0e48d6d5
+  name: JRN-01 J09b · read-back A
+  folders:
+    - 01 Customer Journey
+    - Manage money
+    - JRN-01 J09b · read-back A
+  fullName: 01 Customer Journey / Manage money / JRN-01 J09b · read-back A
+  parent:
+    id: c78ff90d-8a1b-4702-9a53-f6e6d982ede7
+    name: Manage money
+    folders:
+      - 01 Customer Journey
+      - Manage money
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: af799c7c-4b85-4f90-b298-dc55c75b6000
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: b511d873-37d5-485d-80ad-9ab17525d4db
+  code: 200
+  status: OK
+  responseTime: 218
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:55 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bac33c42945d-LHR
+  body: '{"id":15564,"customerId":13877,"type":"CHECKING","balance":375.50}'
+tests:
+  - name: JRN-01 J09b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J09b [A1] A = expected 37550 cents (got 37550)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 14bc9edb-06ba-41d2-af62-7cfe5966df30
+item:
+  id: 8cd10f43-ae13-412d-8c3d-c48a34a47b7c
+  name: JRN-01 J09b · read-back B
+  folders:
+    - 01 Customer Journey
+    - Manage money
+    - JRN-01 J09b · read-back B
+  fullName: 01 Customer Journey / Manage money / JRN-01 J09b · read-back B
+  parent:
+    id: c78ff90d-8a1b-4702-9a53-f6e6d982ede7
+    name: Manage money
+    folders:
+      - 01 Customer Journey
+      - Manage money
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '18339'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 71cfa1b9-d3da-4249-9246-6014cba26395
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 564c617c-8593-46fa-8253-e0aa88fe0448
+  code: 200
+  status: OK
+  responseTime: 298
+  responseSize: 65
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:56 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: Content-Security-Policy-Report-Only
+      value: script-src 'unsafe-inline' 'unsafe-eval'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=zXYuiUPCtvpkxqFbyhfq2H9p1q.xGLZbwWRdIIalWNQ-1795516136.6563501-1.0.1.1-1.TRCOe5w8Fwwb2AirVScnz3P0gABIn5W9CXwb4SwwZFkIOv4lBivnLY6qsVaTnmSHCnha7B2ZHKWI6AByyZjGZLcm7cNbVGhRGnHtIGSprGnRup4k3GAYlDDSZihnD_GSgzCedQWipPKsIwNbXLF3p1hg83_cTKY1nmZ1iad2gd6LdrM985YuAM60bgk1wZ; report-to cf-csp-endpoint
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: Report-To
+      value: '{"group":"cf-csp-endpoint","max_age":86400,"endpoints":[{"url":"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=zXYuiUPCtvpkxqFbyhfq2H9p1q.xGLZbwWRdIIalWNQ-1795516136.6563501-1.0.1.1-1.TRCOe5w8Fwwb2AirVScnz3P0gABIn5W9CXwb4SwwZFkIOv4lBivnLY6qsVaTnmSHCnha7B2ZHKWI6AByyZjGZLcm7cNbVGhRGnHtIGSprGnRup4k3GAYlDDSZihnD_GSgzCedQWipPKsIwNbXLF3p1hg83_cTKY1nmZ1iad2gd6LdrM985YuAM60bgk1wZ"}]}'
+    - key: Reporting-Endpoints
+      value: cf-csp-endpoint="https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=zXYuiUPCtvpkxqFbyhfq2H9p1q.xGLZbwWRdIIalWNQ-1795516136.6563501-1.0.1.1-1.TRCOe5w8Fwwb2AirVScnz3P0gABIn5W9CXwb4SwwZFkIOv4lBivnLY6qsVaTnmSHCnha7B2ZHKWI6AByyZjGZLcm7cNbVGhRGnHtIGSprGnRup4k3GAYlDDSZihnD_GSgzCedQWipPKsIwNbXLF3p1hg83_cTKY1nmZ1iad2gd6LdrM985YuAM60bgk1wZ"
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bace1d28945d-LHR
+  body: '{"id":18339,"customerId":13877,"type":"SAVINGS","balance":330.00}'
+tests:
+  - name: JRN-01 J09b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J09b [A1] B = expected 33000 cents (got 33000)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 5860e814-0518-42c0-b39e-e5d7df83be4a
+item:
+  id: 7e4ffdbc-6b36-4847-86fd-78a7b34416e6
+  name: JRN-01 J10a · pay 30.00 bill from A
+  folders:
+    - 01 Customer Journey
+    - Pay bills
+    - JRN-01 J10a · pay 30.00 bill from A
+  fullName: 01 Customer Journey / Pay bills / JRN-01 J10a · pay 30.00 bill from A
+  parent:
+    id: c5b991fc-2d42-43ea-bba8-2caaa913f86f
+    name: Pay bills
+    folders:
+      - 01 Customer Journey
+      - Pay bills
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - billpay
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: accountId
+        value: '15564'
+      - key: amount
+        value: '30'
+    variable: []
+  headers:
+    - key: Content-Type
+      value: application/json
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 72684dcd-257b-4364-9a72-1014d6ee8738
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '202'
+      system: true
+  body:
+    mode: raw
+    raw: |-
+      {
+        "name": "City Utilities",
+        "address": {
+          "street": "1 Main St",
+          "city": "Springfield",
+          "state": "IL",
+          "zipCode": "62701"
+        },
+        "phoneNumber": "5550100",
+        "accountNumber": "18339"
+      }
+response:
+  id: 3700ec5c-83d9-4424-9ba0-dd9be8547a61
+  code: 200
+  status: OK
+  responseTime: 271
+  responseSize: 60
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:28:58 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: Content-Security-Policy-Report-Only
+      value: script-src 'unsafe-inline' 'unsafe-eval'; connect-src 'none'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=BAFi2i4nzhXo.cTg7BsRvOXRrUwYXvkR6SuHlxPTQHo-1795516138.5175195-1.0.1.1-ynpoZrkJIkzyaE5ifwDFkrI2C7A7lET6QbR2Z.1_E6p9EC_b2UY44EciEOEn_JQvr3TQi1HEad5LWhmH9D3AXCi87Gv4MOuLm97eT.mNrTdl_e2RH1KdV2AtSh0j8h0O_mH6mxnVubm4DvUrRQ96tYMKIJ.obNSt.V5oXDKehScOm3yWj9Pd2vh1fQmkx8b4; report-to cf-csp-endpoint
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: Report-To
+      value: '{"group":"cf-csp-endpoint","max_age":86400,"endpoints":[{"url":"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=BAFi2i4nzhXo.cTg7BsRvOXRrUwYXvkR6SuHlxPTQHo-1795516138.5175195-1.0.1.1-ynpoZrkJIkzyaE5ifwDFkrI2C7A7lET6QbR2Z.1_E6p9EC_b2UY44EciEOEn_JQvr3TQi1HEad5LWhmH9D3AXCi87Gv4MOuLm97eT.mNrTdl_e2RH1KdV2AtSh0j8h0O_mH6mxnVubm4DvUrRQ96tYMKIJ.obNSt.V5oXDKehScOm3yWj9Pd2vh1fQmkx8b4"}]}'
+    - key: Reporting-Endpoints
+      value: cf-csp-endpoint="https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=BAFi2i4nzhXo.cTg7BsRvOXRrUwYXvkR6SuHlxPTQHo-1795516138.5175195-1.0.1.1-ynpoZrkJIkzyaE5ifwDFkrI2C7A7lET6QbR2Z.1_E6p9EC_b2UY44EciEOEn_JQvr3TQi1HEad5LWhmH9D3AXCi87Gv4MOuLm97eT.mNrTdl_e2RH1KdV2AtSh0j8h0O_mH6mxnVubm4DvUrRQ96tYMKIJ.obNSt.V5oXDKehScOm3yWj9Pd2vh1fQmkx8b4"
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bad9b869945d-LHR
+  body: '{"payeeName":"City Utilities","amount":30,"accountId":15564}'
+tests:
+  - name: JRN-01 J10a [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J10a [C1] billPayResult schema
+    status: passed
+  - name: JRN-01 J10a [A7] payeeName, amount, accountId echoed
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 1328b938-be34-4543-ac1a-89697a6b4b1b
+item:
+  id: 2006cb0a-9597-4edf-8d47-53297eb1f27a
+  name: JRN-01 J10b · read-back A
+  folders:
+    - 01 Customer Journey
+    - Pay bills
+    - JRN-01 J10b · read-back A
+  fullName: 01 Customer Journey / Pay bills / JRN-01 J10b · read-back A
+  parent:
+    id: c5b991fc-2d42-43ea-bba8-2caaa913f86f
+    name: Pay bills
+    folders:
+      - 01 Customer Journey
+      - Pay bills
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: fede9abe-2cd8-4fe5-8d7a-8daf0324b266
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: ce7649b0-2ff0-40d8-82de-90ebd960ebc7
+  code: 200
+  status: OK
+  responseTime: 243
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:00 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bae4ca14945d-LHR
+  body: '{"id":15564,"customerId":13877,"type":"CHECKING","balance":345.50}'
+tests:
+  - name: JRN-01 J10b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J10b [A2] A = expected 34550 cents (got 34550)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 9382ed3d-baba-4a64-afa9-9cf7b45ebfe9
+item:
+  id: 3e1b9576-966b-4e7f-94df-8f7a1126ec62
+  name: JRN-01 J11a · transactions of A
+  folders:
+    - 01 Customer Journey
+    - Statement
+    - JRN-01 J11a · transactions of A
+  fullName: 01 Customer Journey / Statement / JRN-01 J11a · transactions of A
+  parent:
+    id: 2d0cdbc4-5188-4e10-854e-92cc833522ef
+    name: Statement
+    folders:
+      - 01 Customer Journey
+      - Statement
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 090e6f0b-074d-4821-a477-68cbc88854f2
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 9747eddb-fdd6-4ee4-aa9b-cb1fac737583
+  code: 200
+  status: OK
+  responseTime: 222
+  responseSize: 2310
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:02 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7baefcc07945d-LHR
+  body: '[{"id":17140,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":17584,"accountId":15564,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":17917,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":18028,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":18250,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20359,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":20470,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20914,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":21025,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23356,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":23467,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23689,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":24466,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":24577,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":25243,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":25354,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":26464,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":27241,"accountId":15564,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"},{"id":27574,"accountId":15564,"type":"Debit","date":1795478400000,"amount":30.00,"description":"Bill Payment to City Utilities"}]'
+tests:
+  - name: JRN-01 J11a [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J11a [A2] new rows on A = ["Credit 5000","Debit 20000","Debit 3000"] (got ["Credit 5000","Debit 20000","Debit 3000"])
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 6a4cd03d-3ed6-4e52-809f-fa20977a6e0e
+item:
+  id: 15a767d7-da29-441d-9433-3e3493671db3
+  name: JRN-01 J11b · transactions of B
+  folders:
+    - 01 Customer Journey
+    - Statement
+    - JRN-01 J11b · transactions of B
+  fullName: 01 Customer Journey / Statement / JRN-01 J11b · transactions of B
+  parent:
+    id: 2d0cdbc4-5188-4e10-854e-92cc833522ef
+    name: Statement
+    folders:
+      - 01 Customer Journey
+      - Statement
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '18339'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: f17d65ab-1288-41a1-a317-e661f4ce7578
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: f753158f-220a-419f-99cb-81744409cce1
+  code: 200
+  status: OK
+  responseTime: 233
+  responseSize: 490
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:03 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bafaae45945d-LHR
+  body: '[{"id":26575,"accountId":18339,"type":"Credit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Received"},{"id":26908,"accountId":18339,"type":"Credit","date":1795478400000,"amount":200.00,"description":"Deposit via Web Service"},{"id":27019,"accountId":18339,"type":"Debit","date":1795478400000,"amount":20.00,"description":"Withdraw via Web Service"},{"id":27130,"accountId":18339,"type":"Debit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Sent"}]'
+tests:
+  - name: JRN-01 J11b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J11b [A2] rows on B = ["Credit 20000","Credit 20000","Debit 2000","Debit 5000"] (got ["Credit 20000","Credit 20000","Debit 2000","Debit 5000"])
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: c236e1e6-c91d-45e7-9038-5da9d8785872
+item:
+  id: ddc5bc14-a4cb-4de2-a531-6a1bbd2e5ef4
+  name: JRN-01 J11c · transaction by id
+  folders:
+    - 01 Customer Journey
+    - Statement
+    - JRN-01 J11c · transaction by id
+  fullName: 01 Customer Journey / Statement / JRN-01 J11c · transaction by id
+  parent:
+    id: 2d0cdbc4-5188-4e10-854e-92cc833522ef
+    name: Statement
+    folders:
+      - 01 Customer Journey
+      - Statement
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - transactions
+      - '27241'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: d1324c8d-5702-4e0a-b27f-91e8257cb862
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: bb6bba5c-3792-4458-8540-6bff402d25c4
+  code: 200
+  status: OK
+  responseTime: 315
+  responseSize: 122
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:05 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb05abc9945d-LHR
+  body: '{"id":27241,"accountId":15564,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"}'
+tests:
+  - name: JRN-01 J11c [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J11c [A7] every field = the J11a row
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 06557ff2-8d53-4610-895f-a29604568aea
+item:
+  id: 05ee4f81-9249-44a4-8a60-ae3e4665de5a
+  name: JRN-01 J12a · filter amount 50
+  folders:
+    - 01 Customer Journey
+    - Statement
+    - JRN-01 J12a · filter amount 50
+  fullName: 01 Customer Journey / Statement / JRN-01 J12a · filter amount 50
+  parent:
+    id: 2d0cdbc4-5188-4e10-854e-92cc833522ef
+    name: Statement
+    folders:
+      - 01 Customer Journey
+      - Statement
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+      - amount
+      - '50'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: fa618836-0888-4a54-ab1c-543370028ca1
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 814aa10d-2c28-487a-8f95-417e03332a42
+  code: 200
+  status: OK
+  responseTime: 265
+  responseSize: 124
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:07 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb11782b945d-LHR
+  body: '[{"id":27241,"accountId":15564,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"}]'
+tests:
+  - name: JRN-01 J12a [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J12a [C2] result = rows of the unfiltered list with amount 50.00 (want [27241], got [27241])
+    status: passed
+  - name: JRN-01 J12a [C2] includes the J09 credit
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 90d46589-02b8-4423-950a-542885281b90
+item:
+  id: 5894b6ce-032a-4bda-abc0-6d24de3838c5
+  name: JRN-01 J12b · filter onDate today
+  folders:
+    - 01 Customer Journey
+    - Statement
+    - JRN-01 J12b · filter onDate today
+  fullName: 01 Customer Journey / Statement / JRN-01 J12b · filter onDate today
+  parent:
+    id: 2d0cdbc4-5188-4e10-854e-92cc833522ef
+    name: Statement
+    folders:
+      - 01 Customer Journey
+      - Statement
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+      - onDate
+      - 11-24-2026
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 1f849ae9-240e-4c9d-b3d7-a7245244bd36
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 7fcd28d6-6b21-4380-906e-585f60fbfdf8
+  code: 200
+  status: OK
+  responseTime: 348
+  responseSize: 2310
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:09 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb1c6adb945d-LHR
+  body: '[{"id":17140,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":17584,"accountId":15564,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":17917,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":18028,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":18250,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20359,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":20470,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20914,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":21025,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23356,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":23467,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23689,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":24466,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":24577,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":25243,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":25354,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":26464,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":27241,"accountId":15564,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"},{"id":27574,"accountId":15564,"type":"Debit","date":1795478400000,"amount":30.00,"description":"Bill Payment to City Utilities"}]'
+tests:
+  - name: JRN-01 J12b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J12b [C2] result = rows of the unfiltered list dated today (want [17140,17584,17917,18028,18250,20359,20470,20914,21025,23356,23467,23689,24466,24577,25243,25354,26464,27241,27574], got [17140,17584,17917,18028,18250,20359,20470,20914,21025,23356,23467,23689,24466,24577,25243,25354,26464,27241,27574])
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 9379147a-0f01-4bc4-af8c-680f00d0c37b
+item:
+  id: 5eff26c2-9482-4fb1-877c-0d7cd2399543
+  name: JRN-01 J12c · filter fromDate today toDate today
+  folders:
+    - 01 Customer Journey
+    - Statement
+    - JRN-01 J12c · filter fromDate today toDate today
+  fullName: 01 Customer Journey / Statement / JRN-01 J12c · filter fromDate today toDate today
+  parent:
+    id: 2d0cdbc4-5188-4e10-854e-92cc833522ef
+    name: Statement
+    folders:
+      - 01 Customer Journey
+      - Statement
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+      - fromDate
+      - 11-24-2026
+      - toDate
+      - 11-24-2026
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: ab793a37-2f1c-4ade-8d17-7a8b9d54ed83
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: f7d5fd74-fa71-4b7c-926e-0f178ac85d05
+  code: 200
+  status: OK
+  responseTime: 302
+  responseSize: 2310
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:11 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb285d66945d-LHR
+  body: '[{"id":17140,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":17584,"accountId":15564,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":17917,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":18028,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":18250,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20359,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":20470,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20914,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":21025,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23356,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":23467,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23689,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":24466,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":24577,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":25243,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":25354,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":26464,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":27241,"accountId":15564,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"},{"id":27574,"accountId":15564,"type":"Debit","date":1795478400000,"amount":30.00,"description":"Bill Payment to City Utilities"}]'
+tests:
+  - name: JRN-01 J12c [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J12c [C2] result = rows of the unfiltered list dated today (want [17140,17584,17917,18028,18250,20359,20470,20914,21025,23356,23467,23689,24466,24577,25243,25354,26464,27241,27574], got [17140,17584,17917,18028,18250,20359,20470,20914,21025,23356,23467,23689,24466,24577,25243,25354,26464,27241,27574])
+    status: passed
+  - name: JRN-01 J12c [C2] same rows as J12b
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: a20b44af-3b91-45c5-b5d5-4760489544df
+item:
+  id: 453e40fd-16ee-4578-8d2e-6975ea8b862c
+  name: JRN-01 J12d · filter month and type Debit
+  folders:
+    - 01 Customer Journey
+    - Statement
+    - JRN-01 J12d · filter month and type Debit
+  fullName: 01 Customer Journey / Statement / JRN-01 J12d · filter month and type Debit
+  parent:
+    id: 2d0cdbc4-5188-4e10-854e-92cc833522ef
+    name: Statement
+    folders:
+      - 01 Customer Journey
+      - Statement
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+      - month
+      - November
+      - type
+      - Debit
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: d627c985-4e27-4759-96d1-f5c7c1f5a462
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 2742d99a-a62c-401a-b3c0-65532bbbab23
+  code: 200
+  status: OK
+  responseTime: 220
+  responseSize: 1320
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:13 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb338f18945d-LHR
+  body: '[{"id":17140,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":18028,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":18250,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20470,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":21025,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23467,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23689,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":24577,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":25354,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":26464,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":27574,"accountId":15564,"type":"Debit","date":1795478400000,"amount":30.00,"description":"Bill Payment to City Utilities"}]'
+tests:
+  - name: JRN-01 J12d [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J12d [C2] result = rows of the unfiltered list in this month with type Debit (want [17140,18028,18250,20470,21025,23467,23689,24577,25354,26464,27574], got [17140,18028,18250,20470,21025,23467,23689,24577,25354,26464,27574])
+    status: passed
+  - name: JRN-01 J12d [C2] includes the J06 and J10 debits
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: fdd3da89-4627-49f6-a5c4-307749df929f
+item:
+  id: 4be525d0-5b67-47c2-a5d8-e7775384e9a9
+  name: JRN-01 J13a · request loan 500, down payment 50 from A
+  folders:
+    - 01 Customer Journey
+    - Loan
+    - JRN-01 J13a · request loan 500, down payment 50 from A
+  fullName: 01 Customer Journey / Loan / JRN-01 J13a · request loan 500, down payment 50 from A
+  parent:
+    id: 6a894f0b-a1ba-4e8c-837e-cb7e1f75fce2
+    name: Loan
+    folders:
+      - 01 Customer Journey
+      - Loan
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - requestLoan
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: customerId
+        value: '13877'
+      - key: amount
+        value: '500'
+      - key: downPayment
+        value: '50'
+      - key: fromAccountId
+        value: '15564'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: c154cf44-aabb-4c0c-bb4f-b4964d327a74
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: 2d9987f8-1602-44a6-8d3f-99fb71c272ba
+  code: 200
+  status: OK
+  responseTime: 341
+  responseSize: 124
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:14 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb3e685b945d-LHR
+  body: '{"responseDate":1795516154787,"loanProviderName":"Wealth Securities Dynamic Loans (WSDL)","approved":true,"accountId":18450}'
+tests:
+  - name: JRN-01 J13a [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J13a [C1] loanResponse schema (data.responseDate should be string)
+    error:
+      name: AssertionError
+      index: 1
+      test: JRN-01 J13a [C1] loanResponse schema (data.responseDate should be string)
+      message: expected false to deeply equal true
+      stack: |-
+        AssertionError: expected false to deeply equal true
+           at Object.eval sandbox-script.js:2:26)
+    status: failed
+  - name: JRN-01 J13a [C1] approved is a boolean
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: f30cb408-adae-4b95-9c67-bc8a75b53b0d
+item:
+  id: 915706c2-3219-4b65-9ce9-729dbad12625
+  name: JRN-01 J13b · account list after loan
+  folders:
+    - 01 Customer Journey
+    - Loan
+    - JRN-01 J13b · account list after loan
+  fullName: 01 Customer Journey / Loan / JRN-01 J13b · account list after loan
+  parent:
+    id: 6a894f0b-a1ba-4e8c-837e-cb7e1f75fce2
+    name: Loan
+    folders:
+      - 01 Customer Journey
+      - Loan
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - accounts
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: e63ab0e3-c3d1-421a-a94b-1ea733784ba2
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 08f375ce-39e4-4924-8ca6-771fa2e9b78d
+  code: 200
+  status: OK
+  responseTime: 225
+  responseSize: 982
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:16 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb4a19fc945d-LHR
+  body: '[{"id":15564,"customerId":13877,"type":"CHECKING","balance":295.50},{"id":15675,"customerId":13877,"type":"CHECKING","balance":200.00},{"id":16008,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":16119,"customerId":13877,"type":"CHECKING","balance":1399.00},{"id":16341,"customerId":13877,"type":"CHECKING","balance":195.00},{"id":16563,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17229,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17340,"customerId":13877,"type":"CHECKING","balance":200.00},{"id":17562,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17673,"customerId":13877,"type":"LOAN","balance":500.00},{"id":17784,"customerId":13877,"type":"LOAN","balance":10.00},{"id":17895,"customerId":13877,"type":"LOAN","balance":1000.00},{"id":18006,"customerId":13877,"type":"CHECKING","balance":205.00},{"id":18339,"customerId":13877,"type":"SAVINGS","balance":330.00},{"id":18450,"customerId":13877,"type":"LOAN","balance":500.00}]'
+tests:
+  - name: JRN-01 J13b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J13b [A12] list = J06d list + loan account (got [15564,15675,16008,16119,16341,16563,17229,17340,17562,17673,17784,17895,18006,18339,18450])
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 93565d17-76b6-4d8a-8e1a-e1a2365b6823
+item:
+  id: df44fe80-6df5-49f2-8d42-57d7de2a6554
+  name: JRN-01 J13c · read-back A
+  folders:
+    - 01 Customer Journey
+    - Loan
+    - JRN-01 J13c · read-back A
+  fullName: 01 Customer Journey / Loan / JRN-01 J13c · read-back A
+  parent:
+    id: 6a894f0b-a1ba-4e8c-837e-cb7e1f75fce2
+    name: Loan
+    folders:
+      - 01 Customer Journey
+      - Loan
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 0d44ae0e-f82d-4ecd-8f6b-80d4dec64e91
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: bf3c837d-5c0b-468f-9b3f-61da9771959c
+  code: 200
+  status: OK
+  responseTime: 221
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:18 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb550bea945d-LHR
+  body: '{"id":15564,"customerId":13877,"type":"CHECKING","balance":295.50}'
+tests:
+  - name: JRN-01 J13c [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J13c [A12] A = expected 29550 cents (got 29550)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: ff6e8e43-dedc-4d16-9e9d-8dc93761de9e
+item:
+  id: fd25a18a-0bed-41dd-af06-8c79db58e805
+  name: JRN-01 J13d · loan account (report only)
+  folders:
+    - 01 Customer Journey
+    - Loan
+    - JRN-01 J13d · loan account (report only)
+  fullName: 01 Customer Journey / Loan / JRN-01 J13d · loan account (report only)
+  parent:
+    id: 6a894f0b-a1ba-4e8c-837e-cb7e1f75fce2
+    name: Loan
+    folders:
+      - 01 Customer Journey
+      - Loan
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '18450'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 3e77cb9b-a753-4a38-b367-32a909fd7864
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 8fbc4407-3f93-42c9-83c5-a622a592fc2c
+  code: 200
+  status: OK
+  responseTime: 248
+  responseSize: 62
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:20 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb601e80945d-LHR
+  body: '{"id":18450,"customerId":13877,"type":"LOAN","balance":500.00}'
+tests: []
+errors: []
+---
+iteration: 0
+cursorRef: a123f720-afd8-4048-9180-7084a63ee0fb
+item:
+  id: 901dee21-4acb-4aca-b3f2-0910cb5ccb3c
+  name: JRN-01 J13e · transactions of A after loan
+  folders:
+    - 01 Customer Journey
+    - Loan
+    - JRN-01 J13e · transactions of A after loan
+  fullName: 01 Customer Journey / Loan / JRN-01 J13e · transactions of A after loan
+  parent:
+    id: 6a894f0b-a1ba-4e8c-837e-cb7e1f75fce2
+    name: Loan
+    folders:
+      - 01 Customer Journey
+      - Loan
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: ff2e518c-22d9-427a-a224-80639e6d27c9
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 57942f5d-1e68-4998-b46c-d27d20866ee1
+  code: 200
+  status: OK
+  responseTime: 226
+  responseSize: 2438
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:21 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb6b0ff4945d-LHR
+  body: '[{"id":17140,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":17584,"accountId":15564,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":17917,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":18028,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":18250,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20359,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":20470,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":20914,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":21025,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23356,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":23467,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":23689,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":24466,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":24577,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":25243,"accountId":15564,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":25354,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":26464,"accountId":15564,"type":"Debit","date":1795478400000,"amount":200.00,"description":"Funds Transfer Sent"},{"id":27241,"accountId":15564,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"},{"id":27574,"accountId":15564,"type":"Debit","date":1795478400000,"amount":30.00,"description":"Bill Payment to City Utilities"},{"id":27907,"accountId":15564,"type":"Debit","date":1795478400000,"amount":50.00,"description":"Down Payment for Loan # 18450"}]'
+tests:
+  - name: JRN-01 J13e [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J13e [A12] down payment 50.00 recorded as a Debit on A (got ["Debit 5000"])
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 28157373-a9ba-49ed-87b1-425fe11e8ea8
+item:
+  id: bc5b3f87-ef79-403a-828c-5fe2b8f95e13
+  name: JRN-01 J13e · transactions of the loan account
+  folders:
+    - 01 Customer Journey
+    - Loan
+    - JRN-01 J13e · transactions of the loan account
+  fullName: 01 Customer Journey / Loan / JRN-01 J13e · transactions of the loan account
+  parent:
+    id: 6a894f0b-a1ba-4e8c-837e-cb7e1f75fce2
+    name: Loan
+    folders:
+      - 01 Customer Journey
+      - Loan
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '18450'
+      - transactions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 33da0343-e853-4573-9899-d52484c688af
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 15ff714d-275b-4845-a919-7b94c866912b
+  code: 200
+  status: OK
+  responseTime: 224
+  responseSize: 2
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:23 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb75fa79945d-LHR
+  body: '[]'
+tests:
+  - name: JRN-01 J13e [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J13e [A12] the loan is recorded in the loan account history (found 0)
+    error:
+      name: AssertionError
+      index: 1
+      test: JRN-01 J13e [A12] the loan is recorded in the loan account history (found 0)
+      message: expected +0 to be above +0
+      stack: |-
+        AssertionError: expected +0 to be above +0
+           at Object.eval sandbox-script.js:2:31)
+    status: failed
+errors: []
+---
+iteration: 0
+cursorRef: 1431170e-f2ac-4cd6-980c-ee1a7df067fb
+item:
+  id: f64df3c6-774c-48ed-9f09-e49ac85c9b35
+  name: JRN-01 J14a · buy 2 QATS at 10.00
+  folders:
+    - 01 Customer Journey
+    - Invest
+    - JRN-01 J14a · buy 2 QATS at 10.00
+  fullName: 01 Customer Journey / Invest / JRN-01 J14a · buy 2 QATS at 10.00
+  parent:
+    id: 1e029b16-6a13-4e93-b114-a7d0d6540cca
+    name: Invest
+    folders:
+      - 01 Customer Journey
+      - Invest
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - buyPosition
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: accountId
+        value: '15564'
+      - key: name
+        value: QA%20Test%20Stock
+      - key: symbol
+        value: QATS
+      - key: shares
+        value: '2'
+      - key: pricePerShare
+        value: '10'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 21d489d5-70e9-46a6-9c9e-79da2918cad4
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: face04a3-9ecc-4bfd-bb0e-5d2a3a29e72c
+  code: 200
+  status: OK
+  responseTime: 254
+  responseSize: 115
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:25 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb80eb3a945d-LHR
+  body: '[{"positionId":13017,"customerId":13877,"name":"QA Test Stock","symbol":"QATS","shares":2,"purchasePrice":10.0000}]'
+tests:
+  - name: JRN-01 J14a [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J14a [C1] list of position
+    status: passed
+  - name: JRN-01 J14a [C1] position list contains QATS with 2 shares
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: fd4b307e-4e6c-45c9-a073-a5fe438cbf9c
+item:
+  id: 038d1b9d-736c-4e6b-b322-d3c55e3c761b
+  name: JRN-01 J14b · positions of the customer
+  folders:
+    - 01 Customer Journey
+    - Invest
+    - JRN-01 J14b · positions of the customer
+  fullName: 01 Customer Journey / Invest / JRN-01 J14b · positions of the customer
+  parent:
+    id: 1e029b16-6a13-4e93-b114-a7d0d6540cca
+    name: Invest
+    folders:
+      - 01 Customer Journey
+      - Invest
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - positions
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 16c914bc-4e69-40bf-8cf5-45479d60a388
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 36fa5261-0c7c-44a3-932c-1aeff69a0640
+  code: 200
+  status: OK
+  responseTime: 306
+  responseSize: 115
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:27 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb8c1cac945d-LHR
+  body: '[{"positionId":13017,"customerId":13877,"name":"QA Test Stock","symbol":"QATS","shares":2,"purchasePrice":10.0000}]'
+tests:
+  - name: JRN-01 J14b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J14b [A7] contains the position with 2 shares
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 4bfed49a-1278-4a49-8cef-2fe2de766c19
+item:
+  id: da07dc74-4b69-41b2-897a-61caee7f3854
+  name: JRN-01 J14c · position by id
+  folders:
+    - 01 Customer Journey
+    - Invest
+    - JRN-01 J14c · position by id
+  fullName: 01 Customer Journey / Invest / JRN-01 J14c · position by id
+  parent:
+    id: 1e029b16-6a13-4e93-b114-a7d0d6540cca
+    name: Invest
+    folders:
+      - 01 Customer Journey
+      - Invest
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - positions
+      - '13017'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 2b65263a-688a-40f1-9e15-6cfa7b5dba69
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: c6768744-a56b-4c23-b932-55f3189ad46f
+  code: 200
+  status: OK
+  responseTime: 266
+  responseSize: 113
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:29 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bb97cf04945d-LHR
+  body: '{"positionId":13017,"customerId":13877,"name":"QA Test Stock","symbol":"QATS","shares":2,"purchasePrice":10.0000}'
+tests:
+  - name: JRN-01 J14c [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J14c [C1] position schema
+    status: passed
+  - name: JRN-01 J14c [A7] shares 2, purchasePrice 10.00, owned by the customer
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 84e7eb81-7d76-4c15-92ac-dc886cb17b56
+item:
+  id: 341fe5ba-e6c6-4dd5-b9da-5f48304142b1
+  name: JRN-01 J14d · read-back A
+  folders:
+    - 01 Customer Journey
+    - Invest
+    - JRN-01 J14d · read-back A
+  fullName: 01 Customer Journey / Invest / JRN-01 J14d · read-back A
+  parent:
+    id: 1e029b16-6a13-4e93-b114-a7d0d6540cca
+    name: Invest
+    folders:
+      - 01 Customer Journey
+      - Invest
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: faa27580-b23d-4db4-85fe-5cae4cc5a732
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: df425dc8-bde0-4b02-8bb6-03bf7f068e05
+  code: 200
+  status: OK
+  responseTime: 225
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:30 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bba2ba21945d-LHR
+  body: '{"id":15564,"customerId":13877,"type":"CHECKING","balance":275.50}'
+tests:
+  - name: JRN-01 J14d [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J14d [A1] A = expected 27550 cents (got 27550)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: ba25d3b8-85af-4754-ad22-d5ea9fba2162
+item:
+  id: 89e5459b-e203-4fdf-966f-84670823fdd1
+  name: JRN-01 J15a · sell 1 QATS at 12.00
+  folders:
+    - 01 Customer Journey
+    - Invest
+    - JRN-01 J15a · sell 1 QATS at 12.00
+  fullName: 01 Customer Journey / Invest / JRN-01 J15a · sell 1 QATS at 12.00
+  parent:
+    id: 1e029b16-6a13-4e93-b114-a7d0d6540cca
+    name: Invest
+    folders:
+      - 01 Customer Journey
+      - Invest
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - sellPosition
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: accountId
+        value: '15564'
+      - key: positionId
+        value: '13017'
+      - key: shares
+        value: '1'
+      - key: pricePerShare
+        value: '12'
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 760f15e0-8682-444e-88d0-983055636160
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: e96df526-c0cd-44ae-a7a7-72e7fb5b2ade
+  code: 200
+  status: OK
+  responseTime: 236
+  responseSize: 115
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:32 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bbadac7d945d-LHR
+  body: '[{"positionId":13017,"customerId":13877,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000}]'
+tests:
+  - name: JRN-01 J15a [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J15a [C1] position now shows 1 share
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: fa51cfc4-0563-4a81-8bd5-5df5bb74c1d6
+item:
+  id: b2926452-1253-4388-8d6e-817205974b42
+  name: JRN-01 J15b · position by id
+  folders:
+    - 01 Customer Journey
+    - Invest
+    - JRN-01 J15b · position by id
+  fullName: 01 Customer Journey / Invest / JRN-01 J15b · position by id
+  parent:
+    id: 1e029b16-6a13-4e93-b114-a7d0d6540cca
+    name: Invest
+    folders:
+      - 01 Customer Journey
+      - Invest
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - positions
+      - '13017'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: f01abca0-6553-42be-ab8f-849cfe194ce5
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 70b1fd22-c0c2-44f0-9503-9f92af83de95
+  code: 200
+  status: OK
+  responseTime: 222
+  responseSize: 113
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:34 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bbb8adc5945d-LHR
+  body: '{"positionId":13017,"customerId":13877,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000}'
+tests:
+  - name: JRN-01 J15b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J15b [A7] shares 1
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 4f0b4db4-1f1e-4a25-bd31-583e8ac94bf2
+item:
+  id: b4365001-e04c-4d93-b57a-85153bf27e30
+  name: JRN-01 J15c · read-back A
+  folders:
+    - 01 Customer Journey
+    - Invest
+    - JRN-01 J15c · read-back A
+  fullName: 01 Customer Journey / Invest / JRN-01 J15c · read-back A
+  parent:
+    id: 1e029b16-6a13-4e93-b114-a7d0d6540cca
+    name: Invest
+    folders:
+      - 01 Customer Journey
+      - Invest
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - accounts
+      - '15564'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 64846e48-45ff-414c-8a1b-67d98288eb77
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 6334938f-2c8d-4284-bf8b-60d7e177de8e
+  code: 200
+  status: OK
+  responseTime: 225
+  responseSize: 66
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:36 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bbc39f75945d-LHR
+  body: '{"id":15564,"customerId":13877,"type":"CHECKING","balance":287.50}'
+tests:
+  - name: JRN-01 J15c [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J15c [A1] A = expected 28750 cents (got 28750)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 89656c5c-a4ff-4a11-aa60-3c670b42cada
+item:
+  id: 892ee28d-74ed-4df8-8141-0b74093a5f8e
+  name: JRN-01 J16a · update street and phone
+  folders:
+    - 01 Customer Journey
+    - Update profile
+    - JRN-01 J16a · update street and phone
+  fullName: 01 Customer Journey / Update profile / JRN-01 J16a · update street and phone
+  parent:
+    id: b0099a26-653f-4eea-b56a-202d24e2f920
+    name: Update profile
+    folders:
+      - 01 Customer Journey
+      - Update profile
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - update
+      - '13877'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: firstName
+        value: <FIRST_NAME>
+      - key: lastName
+        value: <LAST_NAME>
+      - key: street
+        value: QA%20Street%201
+      - key: city
+        value: <CITY>
+      - key: state
+        value: <STATE>
+      - key: zipCode
+        value: <ZIP>
+      - key: phoneNumber
+        value: '5550199'
+      - key: ssn
+        value: '<REDACTED>'
+      - key: username
+        value: <USERNAME>
+      - key: password
+        value: <REDACTED>
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 9d699bfe-4007-4a5b-8b62-af1785ef5069
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: 08322f41-b81b-498b-954d-b24d888f893c
+  code: 200
+  status: OK
+  responseTime: 226
+  responseSize: 37
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:37 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Content-Length
+      value: '37'
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: CF-RAY
+      value: a5f7bbce8a40945d-LHR
+  body: Successfully updated customer profile
+tests:
+  - name: JRN-01 J16a [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 3c364994-3de9-42ac-8de7-7537abfe105b
+item:
+  id: d04a62b2-9d18-453c-b385-d5f2cdd03d50
+  name: JRN-01 J16b · customer after update
+  folders:
+    - 01 Customer Journey
+    - Update profile
+    - JRN-01 J16b · customer after update
+  fullName: 01 Customer Journey / Update profile / JRN-01 J16b · customer after update
+  parent:
+    id: b0099a26-653f-4eea-b56a-202d24e2f920
+    name: Update profile
+    folders:
+      - 01 Customer Journey
+      - Update profile
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 0e94608b-41dd-4a8a-8e5d-335ef256b301
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 3b82b67e-ddae-4e08-93e3-5622f51c64be
+  code: 200
+  status: OK
+  responseTime: 219
+  responseSize: 194
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:39 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bbd96c0f945d-LHR
+  body: '{"id":13877,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"QA Street 1","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"5550199","ssn":"<REDACTED>"}'
+tests:
+  - name: JRN-01 J16b [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J16b [A7] new street and phone
+    status: passed
+  - name: JRN-01 J16b [A7] every other field unchanged
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 126452c1-8ec6-47ed-8c3c-defc11cc9869
+item:
+  id: ef5bca96-5169-4291-8c47-037501f1c70e
+  name: JRN-01 J16c · login after update
+  folders:
+    - 01 Customer Journey
+    - Update profile
+    - JRN-01 J16c · login after update
+  fullName: 01 Customer Journey / Update profile / JRN-01 J16c · login after update
+  parent:
+    id: b0099a26-653f-4eea-b56a-202d24e2f920
+    name: Update profile
+    folders:
+      - 01 Customer Journey
+      - Update profile
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - login
+      - <USERNAME>
+      - <REDACTED>
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: e93a4ca9-2b70-40fa-bc0f-585295085671
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: 372debeb-fd1e-4a65-b410-2dac97883064
+  code: 200
+  status: OK
+  responseTime: 224
+  responseSize: 194
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:41 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bbe45d3e945d-LHR
+  body: '{"id":13877,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"QA Street 1","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"5550199","ssn":"<REDACTED>"}'
+tests:
+  - name: JRN-01 J16c [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J16c [A7] login returns the updated profile
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 54bb0182-76c5-4674-8faf-88cc49073a3a
+item:
+  id: a70285b0-95ae-4ef1-ae9d-a625cc539581
+  name: JRN-01 J16d · restore original profile
+  folders:
+    - 01 Customer Journey
+    - Update profile
+    - JRN-01 J16d · restore original profile
+  fullName: 01 Customer Journey / Update profile / JRN-01 J16d · restore original profile
+  parent:
+    id: b0099a26-653f-4eea-b56a-202d24e2f920
+    name: Update profile
+    folders:
+      - 01 Customer Journey
+      - Update profile
+request:
+  method: POST
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - update
+      - '13877'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query:
+      - key: firstName
+        value: <FIRST_NAME>
+      - key: lastName
+        value: <LAST_NAME>
+      - key: street
+        value: <STREET>
+      - key: city
+        value: <CITY>
+      - key: state
+        value: <STATE>
+      - key: zipCode
+        value: <ZIP>
+      - key: phoneNumber
+        value: '<PHONE>'
+      - key: ssn
+        value: '<REDACTED>'
+      - key: username
+        value: <USERNAME>
+      - key: password
+        value: <REDACTED>
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: b459ad51-0fbd-40d8-b2ed-aba160e169f8
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+    - key: Content-Length
+      value: '0'
+      system: true
+response:
+  id: 12c9f914-2b86-4709-86d7-78be7a757e6b
+  code: 200
+  status: OK
+  responseTime: 221
+  responseSize: 37
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:43 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Content-Length
+      value: '37'
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: CF-RAY
+      value: a5f7bbef4ed2945d-LHR
+  body: Successfully updated customer profile
+tests:
+  - name: JRN-01 J16d [C1] HTTP 200 (got 200)
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 1138f1f1-0c58-48a7-8d5f-5c3d7e6e1839
+item:
+  id: 23c529c9-9cdd-4339-9ac3-7119e5135bd4
+  name: JRN-01 J16d · customer after restore
+  folders:
+    - 01 Customer Journey
+    - Update profile
+    - JRN-01 J16d · customer after restore
+  fullName: 01 Customer Journey / Update profile / JRN-01 J16d · customer after restore
+  parent:
+    id: b0099a26-653f-4eea-b56a-202d24e2f920
+    name: Update profile
+    folders:
+      - 01 Customer Journey
+      - Update profile
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: a28b4957-bbd2-41eb-a493-c9dcc373b0f4
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: d36c21ea-cb09-4ef6-bc8f-529c9d8c06e7
+  code: 200
+  status: OK
+  responseTime: 225
+  responseSize: 198
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:44 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bbfa2a84945d-LHR
+  body: '{"id":13877,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
+tests:
+  - name: JRN-01 J16d [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J16d [A7] profile = registration again
+    status: passed
+errors: []
+---
+iteration: 0
+cursorRef: 31cc67df-bdf8-4664-8a1f-8beddf3d3a7a
+item:
+  id: dc9ddc57-1fe1-43dc-8423-f8f87c622ac9
+  name: JRN-01 J17 · final accounts
+  folders:
+    - 01 Customer Journey
+    - Reconciliation
+    - JRN-01 J17 · final accounts
+  fullName: 01 Customer Journey / Reconciliation / JRN-01 J17 · final accounts
+  parent:
+    id: c84d7120-e222-4277-b336-422f73b8b2ae
+    name: Reconciliation
+    folders:
+      - 01 Customer Journey
+      - Reconciliation
+request:
+  method: GET
+  url:
+    protocol: https
+    path:
+      - parabank
+      - services
+      - bank
+      - customers
+      - '13877'
+      - accounts
+    host:
+      - parabank
+      - parasoft
+      - com
+    query: []
+    variable: []
+  headers:
+    - key: Accept
+      value: application/json
+    - key: User-Agent
+      value: PostmanRuntime/7.56.2
+      system: true
+    - key: Cache-Control
+      value: no-cache
+      system: true
+    - key: Postman-Token
+      value: 6241acc3-8148-490e-aea4-750fbf88a49d
+      system: true
+    - key: Host
+      value: parabank.parasoft.com
+      system: true
+    - key: Accept-Encoding
+      value: gzip, deflate, br
+      system: true
+    - key: Connection
+      value: keep-alive
+      system: true
+response:
+  id: a540aebf-4847-4744-bff4-b3a80202cfbd
+  code: 200
+  status: OK
+  responseTime: 241
+  responseSize: 982
+  headers:
+    - key: Date
+      value: Tue, 24 Nov 2026 10:29:46 GMT
+    - key: Content-Type
+      value: application/json
+    - key: Transfer-Encoding
+      value: chunked
+    - key: Connection
+      value: keep-alive
+    - key: Server
+      value: cloudflare
+    - key: X-Content-Type-Options
+      value: nosniff
+    - key: cf-cache-status
+      value: DYNAMIC
+    - key: Content-Encoding
+      value: br
+    - key: CF-RAY
+      value: a5f7bc051c43945d-LHR
+  body: '[{"id":15564,"customerId":13877,"type":"CHECKING","balance":287.50},{"id":15675,"customerId":13877,"type":"CHECKING","balance":200.00},{"id":16008,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":16119,"customerId":13877,"type":"CHECKING","balance":1399.00},{"id":16341,"customerId":13877,"type":"CHECKING","balance":195.00},{"id":16563,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17229,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17340,"customerId":13877,"type":"CHECKING","balance":200.00},{"id":17562,"customerId":13877,"type":"CHECKING","balance":0.00},{"id":17673,"customerId":13877,"type":"LOAN","balance":500.00},{"id":17784,"customerId":13877,"type":"LOAN","balance":10.00},{"id":17895,"customerId":13877,"type":"LOAN","balance":1000.00},{"id":18006,"customerId":13877,"type":"CHECKING","balance":205.00},{"id":18339,"customerId":13877,"type":"SAVINGS","balance":330.00},{"id":18450,"customerId":13877,"type":"LOAN","balance":500.00}]'
+tests:
+  - name: JRN-01 J17 [C1] HTTP 200 (got 200)
+    status: passed
+  - name: JRN-01 J17 [A1] accounts = start + B + L, nothing else
+    status: passed
+  - name: JRN-01 J17 [A1] A = ledger 28750 cents (got 28750)
+    status: passed
+  - name: JRN-01 J17 [A2] B = ledger 33000 cents (got 33000)
+    status: passed
+errors: []

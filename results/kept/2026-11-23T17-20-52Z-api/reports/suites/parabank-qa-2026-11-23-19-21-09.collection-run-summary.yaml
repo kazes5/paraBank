@@ -92,10 +92,10 @@ failures:
       scriptId: ff0977a0-4768-4d5a-a071-fe38aff14379
     error:
       name: AssertionError
-      message: expected '{"id":37409,"firstName":"Roy","lastNa…' to not include '<REDACTED>'
+      message: expected '{"id":37409,"firstName":"<FIRST_NAME>","lastNa…' to not include '<REDACTED>'
       test: CUST-03 [A6] no SSN in the response
       stack: |-
-        AssertionError: expected '{"id":37409,"firstName":"Roy","lastNa…' to not include '<REDACTED>'
+        AssertionError: expected '{"id":37409,"firstName":"<FIRST_NAME>","lastNa…' to not include '<REDACTED>'
            at Object.eval sandbox-script.js:2:6)
   - at: assertion:0 in test-script
     source:

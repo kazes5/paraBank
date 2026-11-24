@@ -13,6 +13,9 @@ const ROOTS = /^(evidence|results|tests|docs|scripts|postman)\//;
 const docs = [
   'README.md',
   'STR.md',
+  'STR_Detailed.md',
+  'SUBMISSION.md',
+  'docs/walkthrough.md',
   'plan.md',
   'STD.md',
   'Bug_Reports.md',
@@ -24,7 +27,9 @@ const walk = (d) =>
     const p = join(d, f);
     return statSync(p).isDirectory() ? walk(p) : [p];
   });
-for (const d of ['evidence', 'results']) docs.push(...walk(d).filter((f) => f.endsWith('.md')));
+// results/runs/ is local and git-ignored (never shared), so only committed documents are checked.
+for (const d of ['evidence', 'results'])
+  docs.push(...walk(d).filter((f) => f.endsWith('.md') && !f.startsWith(join('results', 'runs'))));
 
 const missing = [];
 let checked = 0;

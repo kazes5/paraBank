@@ -33,7 +33,7 @@ request:
       - services
       - bank
       - login
-      - Rktest2
+      - <USERNAME>
       - <REDACTED>
     host:
       - parabank
@@ -87,7 +87,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1ddb49fd64f42-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
 tests:
   - name: JRN-01 J02 [C1] HTTP 200 (got 200)
     status: passed
@@ -175,7 +175,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1ddc1c9f34f42-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
 tests:
   - name: JRN-01 J03 [C1] HTTP 200 (got 200)
     status: passed
@@ -3469,23 +3469,23 @@ request:
       - com
     query:
       - key: firstName
-        value: Roy
+        value: <FIRST_NAME>
       - key: lastName
-        value: Kazes
+        value: <LAST_NAME>
       - key: street
         value: QA%20Street%201
       - key: city
-        value: some%20city
+        value: <CITY>
       - key: state
-        value: some%20state
+        value: <STATE>
       - key: zipCode
-        value: zipzipzipzip
+        value: <ZIP>
       - key: phoneNumber
         value: '5550199'
       - key: ssn
         value: '<REDACTED>'
       - key: username
-        value: Rktest2
+        value: <USERNAME>
       - key: password
         value: <REDACTED>
     variable: []
@@ -3620,7 +3620,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1df6b9a4f4f42-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"QA Street 1","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"5550199","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"QA Street 1","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"5550199","ssn":"<REDACTED>"}'
 tests:
   - name: JRN-01 J16b [C1] HTTP 200 (got 200)
     status: passed
@@ -3655,7 +3655,7 @@ request:
       - services
       - bank
       - login
-      - Rktest2
+      - <USERNAME>
       - <REDACTED>
     host:
       - parabank
@@ -3715,7 +3715,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1df768f584f42-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"QA Street 1","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"5550199","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"QA Street 1","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"5550199","ssn":"<REDACTED>"}'
 tests:
   - name: JRN-01 J16c [C1] HTTP 200 (got 200)
     status: passed
@@ -3756,23 +3756,23 @@ request:
       - com
     query:
       - key: firstName
-        value: Roy
+        value: <FIRST_NAME>
       - key: lastName
-        value: Kazes
+        value: <LAST_NAME>
       - key: street
-        value: some%20address
+        value: <STREET>
       - key: city
-        value: some%20city
+        value: <CITY>
       - key: state
-        value: some%20state
+        value: <STATE>
       - key: zipCode
-        value: zipzipzipzip
+        value: <ZIP>
       - key: phoneNumber
-        value: '0987654321'
+        value: '<PHONE>'
       - key: ssn
         value: '<REDACTED>'
       - key: username
-        value: Rktest2
+        value: <USERNAME>
       - key: password
         value: <REDACTED>
     variable: []
@@ -3907,7 +3907,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1df8c8c5c4f42-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
 tests:
   - name: JRN-01 J16d [C1] HTTP 200 (got 200)
     status: passed

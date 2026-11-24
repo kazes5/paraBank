@@ -31,7 +31,7 @@ request:
       - services
       - bank
       - login
-      - Rktest2
+      - <USERNAME>
       - <REDACTED>
     host:
       - parabank
@@ -85,7 +85,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1d94ddc9f7dcd-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
 tests:
   - name: FIX [C1] HTTP 200 (got 200)
     status: passed
@@ -207,7 +207,7 @@ request:
       - services
       - bank
       - login
-      - Rktest2
+      - <USERNAME>
       - WrongPass-000
     host:
       - parabank
@@ -510,7 +510,7 @@ response:
       value: br
     - key: CF-RAY
       value: a5f1d9878ff07dcd-LHR
-  body: '{"id":37409,"firstName":"Roy","lastName":"Kazes","address":{"street":"some address","city":"some city","state":"some state","zipCode":"zipzipzipzip"},"phoneNumber":"0987654321","ssn":"<REDACTED>"}'
+  body: '{"id":37409,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}'
 tests:
   - name: CUST-03 [A6] rejected with 401 or 403 (got 200)
     error:
@@ -527,9 +527,9 @@ tests:
       name: AssertionError
       index: 1
       test: CUST-03 [A6] no SSN in the response
-      message: expected '{"id":37409,"firstName":"Roy","lastNa…' to not include '<REDACTED>'
+      message: expected '{"id":37409,"firstName":"<FIRST_NAME>","lastNa…' to not include '<REDACTED>'
       stack: |-
-        AssertionError: expected '{"id":37409,"firstName":"Roy","lastNa…' to not include '<REDACTED>'
+        AssertionError: expected '{"id":37409,"firstName":"<FIRST_NAME>","lastNa…' to not include '<REDACTED>'
            at Object.eval sandbox-script.js:2:6)
     status: failed
 errors: []

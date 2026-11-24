@@ -12,7 +12,7 @@
 import { chromium } from 'playwright';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { BASE, readUser, redact, http, newRun, findRun, rebuildIndex } from './lib/common.mjs';
+import { BASE, readUser, redact, http, newRun, findRun, rebuildIndex, maskedScreenshot } from './lib/common.mjs';
 
 // Arguments: an API run ID (default: the latest API run) and a .env user prefix (default PARABANK).
 const args = process.argv.slice(2);
@@ -91,7 +91,7 @@ async function apiGet(path) {
 // Headless Chrome; shot(name) saves a full-page screenshot as evidence.
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-const shot = (name) => page.screenshot({ path: join(OUT, `${name}.png`), fullPage: true });
+const shot = (name) => maskedScreenshot(page, { path: join(OUT, `${name}.png`), fullPage: true }); // profile masked
 
 // ---- login through the UI form
 await page.goto(`${web}/index.htm`);
