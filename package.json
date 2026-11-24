@@ -13,7 +13,8 @@
     "test:repro": "./run.sh repro",
     "results": "./run.sh list",
     "format": "prettier --write \"tests/**/*.{mjs,js}\" && tests/automation/.venv/bin/black -q tests/automation",
-    "format:check": "prettier --check \"tests/**/*.{mjs,js}\" && tests/automation/.venv/bin/black -q --check tests/automation"
+    "format:check": "prettier --check \"tests/**/*.{mjs,js}\" && tests/automation/.venv/bin/black -q --check tests/automation",
+    "web": "./run.sh web"
   },
   "devDependencies": {
     "marked": "^15.0.12",

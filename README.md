@@ -37,6 +37,7 @@ cp .env.example .env        # fill in the test users (never committed)
 | `./run.sh ui [apiRunId]` | Web UI cross-check of an API run (default: the latest) | ~1 min |
 | `./run.sh manual [AUTH-03 …]` | Manual cases in a visible Chrome window, with captioned screenshots (`--headless` to hide it) | ~2 min |
 | `./run.sh repro [--publish]` | Reproduce every known defect on fresh throwaway users | ~5 min |
+| `./run.sh web` | Web page at http://127.0.0.1:4321: choose steps, live progress, verdict, links to reports, bugs, evidence and deliverables | — |
 | `./run.sh auto` | Coded tests, pytest + requests: JRN-01, TRF-01, TRF-03, DEP-01, ACCT-03 ([`tests/automation/README.md`](tests/automation/README.md)) | ~2 min |
 | `./run.sh cycle [--keep]` | One full test cycle: all → ui → manual (headless) → auto → load → report | ~45 min |
 | `./run.sh report [--kept] [--publish]` | Test Summary Report (Markdown + PDF) from the latest runs; `--publish` updates `STR.md` / `STR.pdf` | ~20 s |
@@ -81,6 +82,7 @@ plan.md  STD.md  Business_Rules.md  Bug_Reports.md  parabank_test_approach.md
 docs/exercise/                         provided exercise files and templates (00–06, OpenAPI)
 tests/load/                            load test plan + k6 scripts (Stage 5)
 tests/automation/                      coded tests, pytest + requests (Stage 7)
+tests/web/                             local test-runner web page (./run.sh web)
 tests/postman/                         ParaBank_QA collection + environment (legacy/ = original login-only files)
 tests/scripts/                         build-collection, run-api, summarize, ui-crosscheck, manual-tests,
                                        repro-defects, setup-users, explore, results, check-links, lib/

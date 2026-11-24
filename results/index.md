@@ -5,6 +5,8 @@ Keep a run with `./run.sh keep <runId>`. Regenerated automatically after every r
 
 | Run | Kind | Scope | User | Result | Kept | Summary |
 |---|---|---|---|---|---|---|
+| 2026-11-24T09-48-14Z-api | api | smoke | Rktest2 | PASS 6 · NOT RUN 40 | local | [summary](runs/2026-11-24T09-48-14Z-api/summary.md) |
+| 2026-11-24T09-43-57Z-report | report | STR | — | NO-GO 1 · defects 16 · critical 4 · PASS 20 · FAIL 24 · NEEDS-CLARIFICATION 2 · BLOCKED 1 | local | [summary](runs/2026-11-24T09-43-57Z-report/summary.md) |
 | 2026-11-24T09-13-34Z-report | report | STR | — | NO-GO 1 · defects 16 · critical 4 · PASS 20 · FAIL 24 · NEEDS-CLARIFICATION 2 · BLOCKED 1 | local | [summary](runs/2026-11-24T09-13-34Z-report/summary.md) |
 | 2026-11-24T09-10-37Z-auto | auto | pytest: JRN-01, TRF-01, TRF-03, DEP-01, ACCT-03 | Rktest2 | PASSED 4 · XFAIL 2 | yes | [summary](kept/2026-11-24T09-10-37Z-auto/summary.md) |
 | 2026-11-24T09-04-44Z-auto | auto | pytest: JRN-01, TRF-01, TRF-03, DEP-01, ACCT-03 | Rktest2 | PASSED 2 · FAILED 3 | local | [summary](runs/2026-11-24T09-04-44Z-auto/summary.md) |

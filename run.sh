@@ -10,6 +10,7 @@
 #   ./run.sh auto [--user PARABANK2] [--keep]        coded tests: pytest + requests (tests/automation)
 #   ./run.sh report [--kept] [--publish]             Test Summary Report (STR.md + STR.pdf) from the latest runs
 #   ./run.sh cycle [--keep] [--user PARABANK2]       all → ui → manual (headless) → auto → load → report
+#   ./run.sh web [--port 4321]                       web page: choose steps, live progress, verdict and links
 #   ./run.sh keep <runId|last>                       move a run to results/kept/ (committed)
 #   ./run.sh list                                    show results/index.md
 #   ./run.sh latest [api|ui|manual|repro|load|auto]  path of the latest summary.md
@@ -20,9 +21,9 @@ cd "$(dirname "$0")"
 
 # ---------------------------------------------------------------- arguments
 
-# Print the usage block above (lines 2-16) without the leading "# ".
+# Print the usage block above (lines 2-17) without the leading "# ".
 usage() {
-  sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
   exit 2
 }
 
@@ -160,6 +161,12 @@ case $cmd in
     ./run.sh auto --user "$user" ${k[@]+"${k[@]}"} || true
     ./run.sh load ${k[@]+"${k[@]}"} || true
     if [[ $keep == 1 ]]; then ./run.sh report --kept --publish; else ./run.sh report; fi
+    exit
+    ;;
+
+  # Local web page to choose and run steps, with live progress, the verdict and links (127.0.0.1 only).
+  web)
+    node tests/web/server.mjs ${rest[@]+"${rest[@]}"}
     exit
     ;;
 
