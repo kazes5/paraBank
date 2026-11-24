@@ -5,6 +5,9 @@ Keep a run with `./run.sh keep <runId>`. Regenerated automatically after every r
 
 | Run | Kind | Scope | User | Result | Kept | Summary |
 |---|---|---|---|---|---|---|
+| 2026-11-24T08-52-39Z-report | report | STR | — | NO-GO 1 · defects 16 · critical 4 · PASS 20 · FAIL 24 · NEEDS-CLARIFICATION 2 · BLOCKED 1 | local | [summary](runs/2026-11-24T08-52-39Z-report/summary.md) |
+| 2026-11-24T08-52-07Z-report | report | STR | — | NO-GO 1 · defects 16 · critical 4 · PASS 20 · FAIL 24 · NEEDS-CLARIFICATION 2 · BLOCKED 1 | local | [summary](runs/2026-11-24T08-52-07Z-report/summary.md) |
+| 2026-11-24T08-50-55Z-report | report | STR | — | NO-GO 1 · defects 16 · critical 4 · PASS 20 · FAIL 24 · NEEDS-CLARIFICATION 2 · BLOCKED 1 | local | [summary](runs/2026-11-24T08-50-55Z-report/summary.md) |
 | 2026-11-24T08-40-54Z-api | api | smoke | Rktest2 | PASS 6 · NOT RUN 40 | local | [summary](runs/2026-11-24T08-40-54Z-api/summary.md) |
 | 2026-11-24T08-22-10Z-load | load | L1–L6 | — | PASS 6 · RECON FAIL 1 | yes | [summary](kept/2026-11-24T08-22-10Z-load/summary.md) |
 | 2026-11-24T08-21-53Z-api | api | smoke | Rktest2 | PASS 6 · NOT RUN 40 | local | [summary](runs/2026-11-24T08-21-53Z-api/summary.md) |

@@ -7,13 +7,15 @@
 #   ./run.sh ui [apiRunId|latest] [--user PARABANK2] [--keep]
 #   ./run.sh repro [--publish] [--keep]
 #   ./run.sh load [--dry] [--keep]                   k6 load session L1-L6 (tests/load/load_test_plan.md)
+#   ./run.sh report [--kept] [--publish]             Test Summary Report (STR.md + STR.pdf) from the latest runs
+#   ./run.sh cycle [--keep] [--user PARABANK2]       all → ui → manual (headless) → load → report
 #   ./run.sh keep <runId|last>                       move a run to results/kept/ (committed)
 #   ./run.sh list                                    show results/index.md
 #   ./run.sh latest [api|ui|manual|repro|load]            path of the latest summary.md
 set -euo pipefail
 cd "$(dirname "$0")"
 
-usage() { sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+usage() { sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 [[ $# -ge 1 ]] || usage
 cmd=$1; shift
 
@@ -47,6 +49,16 @@ case $cmd in
   ui)      need_env; need_chrome; node_env tests/scripts/ui-crosscheck.mjs "${rest[0]:-latest}" "$user" || status=$? ;;
   repro)   need_env; node_env tests/scripts/repro-defects.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
   load)    need_env; need_k6; need_postman; node_env tests/load/run-load.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
+  report)  need_chrome; node tests/scripts/build-str.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
+  cycle)   # one full test cycle; every step runs even if an earlier one found failures, then the report
+           need_env; need_postman; need_k6
+           k=(); [[ $keep == 1 ]] && k=(--keep)
+           ./run.sh all --user "$user" ${k[@]+"${k[@]}"} || true
+           ./run.sh ui latest --user "$user" ${k[@]+"${k[@]}"} || true
+           ./run.sh manual --headless ${k[@]+"${k[@]}"} || true
+           ./run.sh load ${k[@]+"${k[@]}"} || true
+           if [[ $keep == 1 ]]; then ./run.sh report --kept --publish; else ./run.sh report; fi
+           exit ;;
   keep)    node tests/scripts/results.mjs keep "${rest[0]:-last}"; exit ;;
   list)    node tests/scripts/results.mjs list; exit ;;
   latest)  node tests/scripts/results.mjs latest ${rest[0]+"${rest[0]}"}; exit ;;
@@ -54,5 +66,5 @@ case $cmd in
 esac
 
 # exit 3 = BLOCKED before a run folder of this command existed: nothing to keep
-if [[ $keep == 1 && $cmd != setup && $status != 3 ]]; then node tests/scripts/results.mjs keep last; fi
+if [[ $keep == 1 && $cmd != setup && $cmd != report && $status != 3 ]]; then node tests/scripts/results.mjs keep last; fi
 exit $status

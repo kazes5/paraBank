@@ -14,6 +14,7 @@
     "results": "./run.sh list"
   },
   "devDependencies": {
+    "marked": "^15.0.12",
     "playwright": "1.49.1"
   }
 }

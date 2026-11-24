@@ -8,7 +8,7 @@ import { join, dirname, normalize } from 'node:path';
 import { ROOT } from './lib/common.mjs';
 
 const ROOTS = /^(evidence|results|tests|docs|scripts|postman)\//;
-const docs = ['README.md', 'plan.md', 'STD.md', 'Bug_Reports.md', 'Business_Rules.md', 'parabank_test_approach.md'];
+const docs = ['README.md', 'STR.md', 'plan.md', 'STD.md', 'Bug_Reports.md', 'Business_Rules.md', 'parabank_test_approach.md'];
 const walk = (d) => readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; });
 for (const d of ['evidence', 'results']) docs.push(...walk(d).filter((f) => f.endsWith('.md')));
 
