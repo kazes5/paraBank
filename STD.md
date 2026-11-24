@@ -13,7 +13,7 @@
 |---|---|---|---|
 | **Contract (C#)** | What the API promises | The Swagger file only: paths, required parameters, response schemas, operation descriptions | FAIL → defect |
 | **Rule (A#)** | A business rule we *propose* | Banking or REST norms; not written anywhere, not yet confirmed | FAIL → *candidate* defect, severity by risk; the rule goes to R&D for confirmation (§6) |
-| **Observed (O#)** | How the system behaved during exploration | Stage 1 runs (`evidence/stage1/`) | Not a requirement. Used for test data and to make checks concrete. A difference is reported as *behavior changed* → NEEDS-CLARIFICATION, never FAIL on its own and never proof of correctness |
+| **Observed (O#)** | How the system behaved during exploration | Stage 1 runs (`evidence/exploration/`) | Not a requirement. Used for test data and to make checks concrete. A difference is reported as *behavior changed* → NEEDS-CLARIFICATION, never FAIL on its own and never proof of correctness |
 | **Open** | Nothing to go on (e.g. exact error codes) | — | NEEDS-CLARIFICATION → record what the API does; never counted as PASS |
 
 ---
@@ -69,10 +69,10 @@
 | O1 | Opening an account moves 100.00 from the source account into the new one; the create response shows balance 0 | `observations.json` J06, J06b | Expected balances after J06 |
 | O2 | Date filters accept only `MM-dd-yyyy` (ISO dates return an empty list); month accepts a name, number or `All`; type accepts `Credit`, `Debit`, `All` (case-sensitive); `Transaction.date` is epoch ms at 00:00 UTC of the booking day | `observations.json` J11, J12a–i | Filter test data; how a row's date is read |
 | O3 | A new customer starts with one checking account of 515.50 | Stage 0, `observations.json` J04 | Funding of test accounts |
-| O4 | Loan of 500 with 50 down was approved: a LOAN account was created holding 500.00; the source account went down by 50 and shows a "Down Payment for Loan # &lt;L&gt;" debit; the loan account has **no transactions**. The web UI shows the same. *(Stage 1 recorded no transactions on either account; Stage 3 corrected this: the down payment row exists.)* | `observations.json` J13, J13b; Stage 3 J13e; `evidence/stage3-ui/crosscheck.md` | Loan test data; the ledger gap is evidence E14 |
+| O4 | Loan of 500 with 50 down was approved: a LOAN account was created holding 500.00; the source account went down by 50 and shows a "Down Payment for Loan # &lt;L&gt;" debit; the loan account has **no transactions**. The web UI shows the same. *(Stage 1 recorded no transactions on either account; Stage 3 corrected this: the down payment row exists.)* | `observations.json` J13, J13b; Stage 3 J13e; `results/kept/2026-11-23T16-30-07Z-ui/summary.md` | Loan test data; the ledger gap is evidence E14 |
 | O5 | Successful money calls answer 200 with plain text starting "Successfully …" (bill pay and loan answer JSON) | `observations.json` J07–J10 | Success-message checks |
 | O6 | The public site rate-limits bursts (HTTP 429); a 1.5 s pause between calls avoids it | Stage 1 run log | Request pacing; a 429 makes a test BLOCKED |
-| O7 | Unloaded response times: reads p50 241 ms / p95 670 ms, money writes p50 244 ms / p95 295 ms | `evidence/stage1/latency-baseline.md` | Basis for the SLA model (§4) |
+| O7 | Unloaded response times: reads p50 241 ms / p95 670 ms, money writes p50 244 ms / p95 295 ms | `evidence/exploration/latency-baseline.md` | Basis for the SLA model (§4) |
 
 ## 3. Risks
 
@@ -130,7 +130,7 @@ Score = impact (1–5) × likelihood (1–3). Higher score = tested first. Likel
   - **A p95 verdict needs at least 20 requests to the endpoint.** In functional runs (NFR-01) most endpoints have fewer, so p95 is reported for information only; the verdict comes from the load test (NFR-02).
 
 **Test data**
-- Only our own users (Rktest1, Rktest2, or a new one created by `scripts/stage0-setup.mjs`).
+- Only our own users (Rktest1, Rktest2, or a new one created by `tests/scripts/setup-users.mjs`).
 - Every run creates fresh accounts, so tests survive the site's data resets.
 - Small amounts (1–200), so the expected results are easy to calculate.
 - The sub-cent test (TRF-09) breaks accounts, so it runs by hand, last, on throwaway accounts.
@@ -345,7 +345,7 @@ Requests are shown with credentials removed. Amounts and balances are copied fro
 
 | # | Finding | Rule broken | Test | Request | Response | Balances before → after | Time (UTC) | Evidence |
 |---|---|---|---|---|---|---|---|---|
-| E1 | 0.005 is accepted and both accounts can no longer be read | A5, A8 | TRF-09 | `POST /transfer?fromAccountId=28551&toAccountId=28773&amount=0.005` | 200 "Successfully transferred $0.005…" | 28551: 99.99 → **500 error** · 28773: 100.01 → **500 error**; account list for customer 17762 → 500 | 13:05:17 | `evidence/stage1/repro-subcent-transfer.log` (reproduction on fresh accounts; first seen at probe E-TRF7, 12:58:55) |
+| E1 | 0.005 is accepted and both accounts can no longer be read | A5, A8 | TRF-09 | `POST /transfer?fromAccountId=28551&toAccountId=28773&amount=0.005` | 200 "Successfully transferred $0.005…" | 28551: 99.99 → **500 error** · 28773: 100.01 → **500 error**; account list for customer 17762 → 500 | 13:05:17 | `evidence/exploration/repro-subcent-transfer.log` (reproduction on fresh accounts; first seen at probe E-TRF7, 12:58:55) |
 | E2 | Profile including SSN returned to an anonymous caller | A6 | CUST-03 | `GET /customers/17096` — no cookie, no credentials | 200, full Customer incl. SSN | — | 12:58:45 | `observations.json` probe E-AUTH5 |
 | E3 | Negative transfer moves money the other way | A3 | TRF-03 | `POST /transfer?fromAccountId=23001&toAccountId=21780&amount=-1` | 200 "Successfully transferred $-1…" | 23001: 100.00 → **101.00** · 21780: 277.50 → **276.50** | 12:58:49 | `observations.json` probe E-TRF2 |
 | E4 | Transfer above the balance accepted | A4 | TRF-02 | `POST /transfer?fromAccountId=23001&toAccountId=21780&amount=100000` | 200 "Successfully transferred $100000…" | 23001: 101.00 → **−99,899.00** · 21780: 276.50 → 100,276.50 | 12:58:50 | `observations.json` probe E-TRF3 |
@@ -358,10 +358,10 @@ Requests are shown with credentials removed. Amounts and balances are copied fro
 | E11 | Transfer to the same account accepted | A10 | TRF-05 | `POST /transfer?fromAccountId=23001&toAccountId=23001&amount=1` | 200 "Successfully transferred $1…" | 23001 unchanged | 12:58:51 | `observations.json` probe E-TRF4 |
 | E12 | Empty payee accepted | A11 | BILL-03 | `POST /billpay?accountId=23223&amount=1`, body `{}` | 200 `{"payeeName":null,"amount":1,…}` | 23223: −199,900.00 → −199,901.00; transaction "Bill Payment to null" | 13:06:29 | `observations-from-E-DEP1.json` probe E-BIL2 |
 | E13 | Missing amount or `CREDIT` filter gives a server error | C1, A8 | TRF-07, HIST-04 | `POST /transfer?fromAccountId=23001&toAccountId=21780` · `GET /accounts/21780/transactions/month/November/type/CREDIT` | 500 HTML error page (both) | unchanged | 12:58:53 · 12:58:37 | `observations.json` probes E-TRF6, J12g |
-| E14 | Approved loan is not recorded in the loan account history (the down payment debit on the source account is recorded) | A12 (proposed) | LOAN-01, JRN-01 J13e | `POST /requestLoan?customerId=17096&amount=500&downPayment=50&fromAccountId=21780` | 200 `approved: true`, loan account 24666 | 21780: 335.50 → 285.50; loan account 24666 = 500.00 with **0 transactions** | 12:58:39 | `observations.json` probes J13, J13b; `GET /accounts/24666/transactions` = `[]`. Confirmed in Stage 3 (loan account 75726, API and web UI: no transactions) — `evidence/stage3-ui/activity-L-75726.png` |
+| E14 | Approved loan is not recorded in the loan account history (the down payment debit on the source account is recorded) | A12 (proposed) | LOAN-01, JRN-01 J13e | `POST /requestLoan?customerId=17096&amount=500&downPayment=50&fromAccountId=21780` | 200 `approved: true`, loan account 24666 | 21780: 335.50 → 285.50; loan account 24666 = 500.00 with **0 transactions** | 12:58:39 | `observations.json` probes J13, J13b; `GET /accounts/24666/transactions` = `[]`. Confirmed in Stage 3 (loan account 75726, API and web UI: no transactions) — `results/kept/2026-11-23T16-30-07Z-ui/screenshots/activity-L-75726.png` |
 | E15 | New-account response shows a different balance than the account | A7 | JRN-01 (J06) | `POST /createAccount?customerId=17096&newAccountType=1&fromAccountId=21780` | 200 `{"id":24555,…,"balance":0}`; `GET /accounts/24555` → 100.00 | 21780: 415.50 → 315.50 | 12:58:30 | `observations.json` probes J06, J06b |
 
-All evidence files are in `evidence/stage1/`. The `.md` files list every probe in one table; the `.json` files hold the full requests and responses, with passwords and SSNs removed. Latency samples: `latency-baseline.md`.
+All evidence files are in `evidence/exploration/`. The `.md` files list every probe in one table; the `.json` files hold the full requests and responses, with passwords and SSNs removed. Latency samples: `latency-baseline.md`.
 
 ## 6. Open questions for the product/R&D team
 

@@ -3,7 +3,7 @@
 **System:** ParaBank REST API, `https://parabank.parasoft.com/parabank/services/bank` (public shared instance)
 **Date:** 2026-11-23 (runs 12:58–13:12 UTC)
 **Users (own, registered in Stage 0):** Rktest2 (customer 17096), Rktest1 (customer 17762)
-**Evidence:** `evidence/stage1/observations.json` / `.md` (journey walk + edge probes, Rktest2), `observations-from-E-DEP1.*` (remaining edge probes, Rktest1), `repro-subcent-transfer.log`. Credentials and SSN are redacted.
+**Evidence:** `evidence/exploration/observations.json` / `.md` (journey walk + edge probes, Rktest2), `observations-from-E-DEP1.*` (remaining edge probes, Rktest1), `repro-subcent-transfer.log`. Credentials and SSN are redacted.
 
 ---
 

@@ -3,14 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "register": "node scripts/register-user.mjs",
-    "test:all": "./run-all.sh",
-    "test:smoke": "./start-smoke.sh",
-    "test:journey": "./start-journey.sh",
-    "test:suites": "./start-suites.sh",
-    "test:stage3": "./start-all.sh",
-    "setup": "node --env-file=.env scripts/stage0-setup.mjs",
-    "test:manual": "./start-manual.sh"
+    "setup": "./run.sh setup",
+    "test:smoke": "./run.sh smoke",
+    "test:suites": "./run.sh suites",
+    "test:journey": "./run.sh journey",
+    "test:all": "./run.sh all",
+    "test:manual": "./run.sh manual",
+    "test:ui": "./run.sh ui",
+    "test:repro": "./run.sh repro",
+    "results": "./run.sh list"
   },
   "devDependencies": {
     "playwright": "1.49.1"

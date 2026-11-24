@@ -1,0 +1,55 @@
+{
+  "users": {
+    "R": "qa_s4_mwti1l42",
+    "L": "qa_s4_mwti5prg"
+  },
+  "steps": [
+    {
+      "label": "Control: bill pay 1.00 with full payee",
+      "kind": "control",
+      "at": "2026-11-23T16:49:23.912Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=99258&amount=1",
+      "requestBody": "{\"name\":\"City Utilities\",\"address\":{\"street\":\"1 Main St\",\"city\":\"Springfield\",\"state\":\"IL\",\"zipCode\":\"62701\"},\"phoneNumber\":\"5550100\",\"accountNumber\":99369}",
+      "status": 200,
+      "ms": 234,
+      "response": "{\"payeeName\":\"City Utilities\",\"amount\":1,\"accountId\":99258}",
+      "before": {
+        "99258": 104
+      },
+      "after": {
+        "99258": 103
+      },
+      "expect": "S −1, BillPayResult"
+    },
+    {
+      "label": "Bill pay 1.00 with empty payee {}",
+      "kind": "fail",
+      "at": "2026-11-23T16:49:29.142Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=99258&amount=1",
+      "requestBody": "{}",
+      "status": 200,
+      "ms": 238,
+      "response": "{\"payeeName\":null,\"amount\":1,\"accountId\":99258}",
+      "before": {
+        "99258": 103
+      },
+      "after": {
+        "99258": 102
+      },
+      "expect": "4xx, no money taken"
+    },
+    {
+      "label": "Transactions of S with amount 1.00",
+      "kind": "state",
+      "at": "2026-11-23T16:49:30.883Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions/amount/1",
+      "status": 200,
+      "ms": 239,
+      "response": "[{\"id\":152893,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":153115,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":158110,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":158221,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Received\"},{\"id\":158332,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Bill Payment to City Utilities\"},{\"id\":158443,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Bill Payment to null\"}]",
+      "expect": "no \"Bill Payment to null\" row"
+    }
+  ]
+}

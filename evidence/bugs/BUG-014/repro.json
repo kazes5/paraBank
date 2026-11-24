@@ -1,0 +1,30 @@
+{
+  "users": {
+    "R": "qa_s4_mwti1l42",
+    "L": "qa_s4_mwti5prg"
+  },
+  "steps": [
+    {
+      "label": "Control: onDate in MM-dd-yyyy",
+      "kind": "control",
+      "at": "2026-11-23T16:50:04.087Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions/onDate/11-23-2026",
+      "status": 200,
+      "ms": 233,
+      "response": "[{\"id\":152560,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":152893,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":153115,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":153337,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":-1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":153559,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":-5.00,\"description\":\"Deposit via Web Service\"},{\"id\":153670,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":-5.00,\"description\":\"Withdraw via Web Service\"},{\"id\":153781,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":-5.00,\"description\":\"Bill Payment to City Utilities\"},{\"id\":153892,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Funds Transfer Sent\"},{\"id\":154114,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Deposit via Web Service\"},{\"id\":156445,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Withdraw via Web Service\"},{\"id\":158110,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":158221,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Received\"},{\"id\":158332,\"accountId\":99258,\"type",
+      "expect": "today's rows"
+    },
+    {
+      "label": "onDate in ISO yyyy-MM-dd",
+      "kind": "fail",
+      "at": "2026-11-23T16:50:05.849Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions/onDate/2026-11-23",
+      "status": 200,
+      "ms": 261,
+      "response": "[]",
+      "expect": "400 with a message (or the same rows)"
+    }
+  ]
+}

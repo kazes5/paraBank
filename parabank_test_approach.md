@@ -3,7 +3,7 @@
 **Author:** Roy Kazes  
 **Date:** 2026-11-23  
 **Status:** Proposal based on supplied exercise and OpenAPI file; **no API tests have been executed and no actual defects are claimed**.  
-**Primary sources:** `01_Exercise_Instructions.md` and `02_parabank_openapi.json` (OpenAPI 3.0.1, API version 3.0.0).  
+**Primary sources:** `docs/exercise/01_Exercise_Instructions.md` and `docs/exercise/02_parabank_openapi.json` (OpenAPI 3.0.1, API version 3.0.0).  
 **Audience:** R&D and a QA hiring panel.
 
 ## 1. Objective and review standard
@@ -207,7 +207,7 @@ Use a currency-safe comparison approach (integer minor units or a documented rou
 
 **Suggested copy/paste Claude prompt:**
 
-> Read `01_Exercise_Instructions.md`, `02_parabank_openapi.json`, and this plan. Do not make any HTTP calls yet. First produce an endpoint-scope inventory, a rule-confidence/ambiguity register and a prioritized 25+ case STD. Choose 12–15 nonredundant cases suitable for Postman, with explicit before/after banking-state assertions. Keep unknown exact HTTP error codes marked NEEDS_SPEC. Do not generate tests for excluded/admin endpoints. Do not access other people's accounts or perform load/security attacks. Never store real credentials or customer data in committed files. Then generate a portable Postman v2.1 collection and a blank environment template. Do not report a bug or pass/fail result without genuine execution evidence. Pause for human approval before any live write request.
+> Read `docs/exercise/01_Exercise_Instructions.md`, `docs/exercise/02_parabank_openapi.json`, and this plan. Do not make any HTTP calls yet. First produce an endpoint-scope inventory, a rule-confidence/ambiguity register and a prioritized 25+ case STD. Choose 12–15 nonredundant cases suitable for Postman, with explicit before/after banking-state assertions. Keep unknown exact HTTP error codes marked NEEDS_SPEC. Do not generate tests for excluded/admin endpoints. Do not access other people's accounts or perform load/security attacks. Never store real credentials or customer data in committed files. Then generate a portable Postman v2.1 collection and a blank environment template. Do not report a bug or pass/fail result without genuine execution evidence. Pause for human approval before any live write request.
 
 **Optional defensive measure:** Add an allowlist in any runner/wrapper that rejects all operations except the specified in-scope ones; block the prohibited endpoints explicitly. A natural-language restriction in `CLAUDE.md` is useful context but not a deterministic security boundary.
 

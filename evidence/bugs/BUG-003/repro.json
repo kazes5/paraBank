@@ -1,0 +1,100 @@
+{
+  "users": {
+    "R": "qa_s4_mwti1l42",
+    "L": "qa_s4_mwti5prg"
+  },
+  "steps": [
+    {
+      "label": "Control: transfer 1.00 S → T",
+      "kind": "control",
+      "at": "2026-11-23T16:48:22.567Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=99258&toAccountId=99369&amount=1",
+      "status": 200,
+      "ms": 244,
+      "response": "Successfully transferred $1 from account #99258 to account #99369",
+      "before": {
+        "99258": 99,
+        "99369": 101
+      },
+      "after": {
+        "99258": 98,
+        "99369": 102
+      },
+      "expect": "S −1, T +1"
+    },
+    {
+      "label": "Transfer −1.00 S → T",
+      "kind": "fail",
+      "at": "2026-11-23T16:48:31.283Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=99258&toAccountId=99369&amount=-1",
+      "status": 200,
+      "ms": 238,
+      "response": "Successfully transferred $-1 from account #99258 to account #99369",
+      "before": {
+        "99258": 98,
+        "99369": 102
+      },
+      "after": {
+        "99258": 99,
+        "99369": 101
+      },
+      "expect": "4xx, nothing moves"
+    },
+    {
+      "label": "Deposit −5.00 into S",
+      "kind": "fail",
+      "at": "2026-11-23T16:48:36.516Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=99258&amount=-5",
+      "status": 200,
+      "ms": 239,
+      "response": "Successfully deposited $-5 to account #99258",
+      "before": {
+        "99258": 99
+      },
+      "after": {
+        "99258": 94
+      },
+      "expect": "4xx, nothing moves"
+    },
+    {
+      "label": "Withdraw −5.00 from S",
+      "kind": "fail",
+      "at": "2026-11-23T16:48:41.759Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=99258&amount=-5",
+      "status": 200,
+      "ms": 226,
+      "response": "Successfully withdrew $-5 from account #99258",
+      "before": {
+        "99258": 94
+      },
+      "after": {
+        "99258": 99
+      },
+      "expect": "4xx, nothing moves"
+    },
+    {
+      "label": "Bill pay −5.00 from S",
+      "kind": "fail",
+      "at": "2026-11-23T16:48:50.498Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=99258&amount=-5",
+      "requestBody": "{\"name\":\"City Utilities\",\"address\":{\"street\":\"1 Main St\",\"city\":\"Springfield\",\"state\":\"IL\",\"zipCode\":\"62701\"},\"phoneNumber\":\"5550100\",\"accountNumber\":99369}",
+      "status": 200,
+      "ms": 228,
+      "response": "{\"payeeName\":\"City Utilities\",\"amount\":-5,\"accountId\":99258}",
+      "before": {
+        "99258": 99,
+        "99369": 101
+      },
+      "after": {
+        "99258": 104,
+        "99369": 101
+      },
+      "expect": "4xx, nothing moves"
+    }
+  ]
+}

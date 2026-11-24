@@ -1,0 +1,48 @@
+{
+  "id": "2026-11-23T16-04-00Z-api",
+  "kind": "api",
+  "started": "2026-11-23T16:04:00Z",
+  "commit": "(before reorganization)",
+  "user": "Rktest2",
+  "phases": [
+    "smoke",
+    "suites",
+    "journey"
+  ],
+  "scope": "all",
+  "phaseResults": [
+    {
+      "phase": "smoke",
+      "exitCode": 0,
+      "seconds": 16
+    },
+    {
+      "phase": "suites",
+      "exitCode": 1,
+      "seconds": 179
+    },
+    {
+      "phase": "journey",
+      "exitCode": 1,
+      "seconds": 80
+    }
+  ],
+  "accounts": {
+    "A": 54192,
+    "B": 75504,
+    "L": 75726,
+    "S": 72174,
+    "T": 72285
+  },
+  "note": "Official Stage 3 run; migrated from evidence/stage3/2026-11-23T16-04-00-002Z",
+  "counts": {
+    "PASS": 19,
+    "FAIL": 21,
+    "NEEDS-CLARIFICATION": 1,
+    "BLOCKED": 0,
+    "NOT RUN": 5
+  },
+  "smokeFailed": false,
+  "nfr01": "PASS",
+  "requests": 151
+}

@@ -1,0 +1,36 @@
+{
+  "users": {
+    "R": "qa_s4_mwti1l42",
+    "L": "qa_s4_mwti5prg"
+  },
+  "steps": [
+    {
+      "label": "Transaction list: type of the date field",
+      "kind": "fail",
+      "at": "2026-11-23T16:50:07.576Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions",
+      "status": 200,
+      "ms": 226,
+      "response": "[{\"id\":152560,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":152893,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":153115,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":153337,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":-1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":153559,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":-5.00,\"description\":\"Deposit via Web Service\"},{\"id\":153670,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":-5.00,\"description\":\"Withdraw via Web Service\"},{\"id\":153781,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":-5.00,\"description\":\"Bill Payment to City Utilities\"},{\"id\":153892,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Funds Transfer Sent\"},{\"id\":154114,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Deposit via Web Service\"},{\"id\":156445,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Withdraw via Web Service\"},{\"id\":158110,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":158221,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Received\"},{\"id\":158332,\"accountId\":99258,\"type",
+      "expect": "Transaction.date as date-time string (Swagger)"
+    },
+    {
+      "label": "LoanResponse.responseDate type (same call as BUG-006)",
+      "kind": "fail",
+      "at": "2026-11-23T16:50:51.453Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=60497&amount=500&downPayment=50&fromAccountId=99258",
+      "status": 200,
+      "ms": 374,
+      "response": "{\"responseDate\":1795452649663,\"loanProviderName\":\"Wealth Securities Dynamic Loans (WSDL)\",\"approved\":true,\"accountId\":102810}",
+      "before": {
+        "99258": 203.01
+      },
+      "after": {
+        "99258": 153.01
+      },
+      "expect": "responseDate as date-time string (Swagger)"
+    }
+  ]
+}

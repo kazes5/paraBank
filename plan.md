@@ -1,6 +1,6 @@
 # ParaBank Banking API — QA Exercise Execution Plan
 
-**Source:** `01_Exercise_Instructions.md` (contract: ParaBank OpenAPI)
+**Source:** `docs/exercise/01_Exercise_Instructions.md` (contract: ParaBank OpenAPI)
 **System under test:** ParaBank REST API — `https://parabank.parasoft.com/parabank/services/bank`
 **Goal:** Decide, with evidence, whether the API is ready for release, and deliver the six artifacts the exercise asks for.
 
@@ -100,6 +100,30 @@ flowchart TD
 ```
 
 ---
+
+## Running the tests repeatedly
+
+Every test run goes through one command, and every run gets its own folder. Details are in `README.md`.
+
+| Command | What it runs | Stage |
+|---|---|---|
+| `./run.sh setup` | Register or verify the `.env` test users | 0 |
+| `./run.sh smoke` · `suites` · `journey` · `all` | Postman collection via the Postman CLI | 3 |
+| `./run.sh ui [apiRunId]` | Web UI cross-check of an API run | 3 |
+| `./run.sh manual [cases]` | Manual cases in a visible browser, with screenshots | 3 |
+| `./run.sh repro [--publish]` | Reproduce every known defect on fresh throwaway users | 4 |
+| `./run.sh keep <runId>` · `list` · `latest` | Results housekeeping | — |
+
+**Run folders:**
+- Every run writes `results/runs/<UTC time>-<kind>/` (kind = `api`, `ui`, `manual`, `repro`).
+- Each folder holds `summary.md`, `results.json`, `run.json`, `logs/`, `reports/` and `screenshots/`.
+- Run folders are git-ignored until kept: `--keep` or `./run.sh keep <runId>` moves the run to `results/kept/`, which is committed.
+
+**Index and history:**
+- `results/index.md` lists every run.
+- `results/history.md` shows each case's verdict across the last 10 API runs and flags verdicts that changed.
+
+**Frozen evidence:** `evidence/` holds the evidence cited by the documents: `exploration/` from Stage 1 and `bugs/` from Stage 4. Runs never overwrite it; only `./run.sh repro --publish` refreshes the bug bundles.
 
 ## Stage 0 — Setup
 
@@ -441,7 +465,7 @@ Coverage: positive ✔, negative ✔, boundary ✔, security/authorization ✔, 
    - Fails intermittently → repeat 3×; record frequency; check site health (possible shared-environment noise).
 4. **Rule out the test.** Verify the assertion against the rules ledger and the web UI; if the rule is unclear → NEEDS-CLARIFICATION, not a defect.
 5. **Collect logs and evidence** (bundle per failure):
-   - Run report: Postman CLI / Newman JSON report of the journey run and the isolating suite run.
+   - Run report: the run folders (`logs/`, `reports/`, `summary.md`) of the journey run and the isolating suite run.
    - Per failed request (written by the test script to the console and report): `runId`, test ID, timestamp (UTC), method, URL (credentials redacted), request params/body, status, response headers and body, response time.
    - State: balances before/after, related transaction list.
    - Web UI cross-check: screenshot of the account/transaction page.
@@ -521,11 +545,11 @@ Each suite folder can be run alone (`--folder "14 TRF Transfer"`) after `10 Suit
 9. Run sequentially — never parallel.
 
 ### 3.3 Execution
-1. Run `00 Smoke` from the command line (`postman collection run` / `newman run`) with a JSON report. **Fail → stop**, record BLOCKED.
-2. Run `10` + all suites (P1 first, then P2/P3).
-3. Run `01 Customer Journey`. A failing step is compared with its mapped suite (§2.5).
-4. Cross-check J09, J10, J13 and TRF-01 in the web UI — `node --env-file=.env scripts/stage3-ui-crosscheck.mjs` (local Chrome via Playwright; compares every page with the API; report and screenshots in `evidence/stage3-ui/`).
-5. Record results per case: PASS / FAIL / BLOCKED / NEEDS-CLARIFICATION.
+1. Run `00 Smoke` with the Postman CLI (`./run.sh smoke`). **Fail → stop**, record BLOCKED.
+2. Run `10` + all suites (`./run.sh suites`).
+3. Run `01 Customer Journey` (`./run.sh journey`). A failing step is compared with its mapped suite (§2.5). `./run.sh all` runs steps 1–3 in order and stops after a failed smoke.
+4. Cross-check J09, J10, J13 and TRF-01 in the web UI (`./run.sh ui`). It uses local Chrome via Playwright, compares every page with the API, and reads the account IDs from the latest API run. Reference run: `results/kept/2026-11-23T16-30-07Z-ui/`.
+5. Record results per case: PASS / FAIL / BLOCKED / NEEDS-CLARIFICATION. Written automatically to `summary.md` in the run folder.
 
 ```mermaid
 flowchart TD
@@ -552,7 +576,7 @@ flowchart TD
 
 1. For each journey failure, follow the isolation workflow (§2.5) and record the outcome: *endpoint defect* / *sequence defect* / *intermittent* / *test issue* / *needs clarification*.
 2. For each endpoint-suite failure: reproduce once more in isolation; confirm inputs that fail vs. pass.
-3. Assemble an **evidence bundle** per failure: `evidence/<defect-id>/` — run report extract, request/response logs (redacted), balances before/after, transaction list, UI screenshot, minimal reproduction sequence.
+3. Assemble an **evidence bundle** per failure: `evidence/bugs/<defect-id>/` — run report extract, request/response logs (redacted), balances before/after, transaction list, UI screenshot, minimal reproduction sequence.
 4. Jira-style report per defect:
    - Title (endpoint + behavior)
    - Environment, date/time, `runId`
@@ -596,7 +620,7 @@ flowchart TD
 
 **Objective:** Deliverable 4 — basic load test of `POST /transfer` and `GET /accounts/{accountId}`.
 
-**SLAs (self-defined)** — the same endpoint-class model as `STD.md` §4, based on the measured baseline in `evidence/stage1/latency-baseline.md` (reads p95 670 ms, money writes p95 295 ms):
+**SLAs (self-defined)** — the same endpoint-class model as `STD.md` §4, based on the measured baseline in `evidence/exploration/latency-baseline.md` (reads p95 670 ms, money writes p95 295 ms):
 
 | Class (load target) | p95 response time | Error rate (HTTP + body checks) | Timeout |
 |---|---|---|---|

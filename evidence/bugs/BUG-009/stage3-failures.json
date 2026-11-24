@@ -1,0 +1,22 @@
+{
+  "sourceRun": "results/kept/2026-11-23T16-04-00Z-api",
+  "records": [
+    {
+      "phase": "journey",
+      "kind": "FAILED",
+      "runId": "2026-11-23T16-07-17-514Z",
+      "at": "2026-11-23T16:07:28.955Z",
+      "case": "JRN-01 J06b",
+      "request": "JRN-01 J06b · read-back B",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/75504",
+      "requestBody": "",
+      "status": 200,
+      "ms": 233,
+      "response": "{\"id\":75504,\"customerId\":37409,\"type\":\"SAVINGS\",\"balance\":100.00}",
+      "failures": [
+        "[A7] create response balance = account balance (0 vs 10000 cents): expected +0 to deeply equal 10000"
+      ]
+    }
+  ]
+}

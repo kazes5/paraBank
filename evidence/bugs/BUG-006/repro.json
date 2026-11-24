@@ -1,0 +1,58 @@
+{
+  "users": {
+    "R": "qa_s4_mwti1l42",
+    "L": "qa_s4_mwti5prg"
+  },
+  "steps": [
+    {
+      "label": "Request loan 500, down payment 50, from S",
+      "kind": "fail",
+      "at": "2026-11-23T16:50:51.453Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=60497&amount=500&downPayment=50&fromAccountId=99258",
+      "status": 200,
+      "ms": 374,
+      "response": "{\"responseDate\":1795452649663,\"loanProviderName\":\"Wealth Securities Dynamic Loans (WSDL)\",\"approved\":true,\"accountId\":102810}",
+      "before": {
+        "99258": 203.01
+      },
+      "after": {
+        "99258": 153.01
+      },
+      "expect": "LoanResponse; loan and down payment recorded"
+    },
+    {
+      "label": "Loan account",
+      "kind": "state",
+      "at": "2026-11-23T16:50:53.184Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/102810",
+      "status": 200,
+      "ms": 230,
+      "response": "{\"id\":102810,\"customerId\":60497,\"type\":\"LOAN\",\"balance\":500.00}",
+      "expect": "LOAN account"
+    },
+    {
+      "label": "Transactions of the loan account",
+      "kind": "fail",
+      "at": "2026-11-23T16:50:54.924Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/102810/transactions",
+      "status": 200,
+      "ms": 238,
+      "response": "[]",
+      "expect": "at least one entry recording the loan"
+    },
+    {
+      "label": "Transactions of S with amount 50.00",
+      "kind": "control",
+      "at": "2026-11-23T16:50:56.704Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions/amount/50",
+      "status": 200,
+      "ms": 279,
+      "response": "[{\"id\":160219,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":50.00,\"description\":\"Down Payment for Loan # 102810\"}]",
+      "expect": "down payment Debit 50.00"
+    }
+  ]
+}

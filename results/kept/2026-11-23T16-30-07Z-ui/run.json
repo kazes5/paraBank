@@ -1,0 +1,21 @@
+{
+  "id": "2026-11-23T16-30-07Z-ui",
+  "kind": "ui",
+  "started": "2026-11-23T16:30:07.676Z",
+  "user": "Rktest2",
+  "scope": "cross-check of 2026-11-23T16-04-00Z-api",
+  "apiRun": "2026-11-23T16-04-00Z-api",
+  "accounts": {
+    "A": 54192,
+    "B": 75504,
+    "L": 75726,
+    "S": 72174,
+    "T": 72285
+  },
+  "counts": {
+    "MATCH": 24,
+    "MISMATCH": 0,
+    "RULE NOT MET": 1
+  },
+  "note": "Migrated from evidence/stage3-ui"
+}

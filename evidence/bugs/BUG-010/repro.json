@@ -1,0 +1,72 @@
+{
+  "users": {
+    "R": "qa_s4_mwti1l42",
+    "L": "qa_s4_mwti5prg"
+  },
+  "steps": [
+    {
+      "label": "Transfer 0.00 S → T",
+      "kind": "fail",
+      "at": "2026-11-23T16:48:59.258Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=99258&toAccountId=99369&amount=0",
+      "status": 200,
+      "ms": 231,
+      "response": "Successfully transferred $0 from account #99258 to account #99369",
+      "before": {
+        "99258": 104,
+        "99369": 101
+      },
+      "after": {
+        "99258": 104,
+        "99369": 101
+      },
+      "expect": "4xx, no transaction"
+    },
+    {
+      "label": "Deposit 0.00 into S",
+      "kind": "fail",
+      "at": "2026-11-23T16:49:04.510Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=99258&amount=0",
+      "status": 200,
+      "ms": 239,
+      "response": "Successfully deposited $0 to account #99258",
+      "before": {
+        "99258": 104
+      },
+      "after": {
+        "99258": 104
+      },
+      "expect": "4xx, no transaction"
+    },
+    {
+      "label": "Withdraw 0.00 from S",
+      "kind": "fail",
+      "at": "2026-11-23T16:49:09.739Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=99258&amount=0",
+      "status": 200,
+      "ms": 245,
+      "response": "Successfully withdrew $0 from account #99258",
+      "before": {
+        "99258": 104
+      },
+      "after": {
+        "99258": 104
+      },
+      "expect": "4xx, no transaction"
+    },
+    {
+      "label": "Transactions of S: 0.00 rows recorded?",
+      "kind": "state",
+      "at": "2026-11-23T16:49:11.665Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions/amount/0",
+      "status": 200,
+      "ms": 425,
+      "response": "[{\"id\":153892,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Funds Transfer Sent\"},{\"id\":154114,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Deposit via Web Service\"},{\"id\":156445,\"accountId\":99258,\"type\":\"Debit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Withdraw via Web Service\"}]",
+      "expect": "no 0.00 rows"
+    }
+  ]
+}

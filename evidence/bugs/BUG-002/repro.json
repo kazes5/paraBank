@@ -1,0 +1,49 @@
+{
+  "users": {
+    "R": "qa_s4_mwti1l42",
+    "L": "qa_s4_mwti5prg"
+  },
+  "steps": [
+    {
+      "label": "Profile of the customer, no cookie or credentials",
+      "kind": "fail",
+      "at": "2026-11-23T16:48:01.432Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/60497",
+      "status": 200,
+      "ms": 247,
+      "response": "{\"id\":60497,\"firstName\":\"QA\",\"lastName\":\"Stage4\",\"address\":{\"street\":\"1 Test St\",\"city\":\"Testville\",\"state\":\"TS\",\"zipCode\":\"00000\"},\"phoneNumber\":\"5550000\",\"ssn\":\"<REDACTED>\"}",
+      "expect": "401/403, no data"
+    },
+    {
+      "label": "Account of the customer, no cookie or credentials",
+      "kind": "fail",
+      "at": "2026-11-23T16:48:03.178Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258",
+      "status": 200,
+      "ms": 243,
+      "response": "{\"id\":99258,\"customerId\":60497,\"type\":\"CHECKING\",\"balance\":100.00}",
+      "expect": "401/403, no data"
+    },
+    {
+      "label": "Transfer 1.00 S → T with no cookie or credentials",
+      "kind": "fail",
+      "at": "2026-11-23T16:48:12.070Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=99258&toAccountId=99369&amount=1",
+      "status": 200,
+      "ms": 233,
+      "response": "Successfully transferred $1 from account #99258 to account #99369",
+      "before": {
+        "99258": 100,
+        "99369": 100
+      },
+      "after": {
+        "99258": 99,
+        "99369": 101
+      },
+      "expect": "401/403, nothing moves"
+    }
+  ]
+}
