@@ -1,0 +1,46 @@
+
+
+  █ THRESHOLDS 
+
+    errors
+    ✓ 'rate<0.10' rate=0.00%
+
+    http_req_duration
+    ✓ 'p(95)<5000' p(95)=729.62ms
+
+    rate_limited
+    ✓ 'count<1' count=0
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 160     1.406284/s
+    checks_succeeded...: 100.00% 160 out of 160
+    checks_failed......: 0.00%   0 out of 160
+
+    ✓ transfer status 200
+    ✓ transfer success text
+
+    CUSTOM
+    errors.........................: 0.00% 0 out of 80
+    rate_limited...................: 0     0/s
+    transfer_ok....................: 80    0.703142/s
+
+    HTTP
+    http_req_duration..............: min=233.37ms med=270.39ms p(90)=326.94ms p(95)=729.62ms max=736.11ms count=80
+      { expected_response:true }...: min=233.37ms med=270.39ms p(90)=326.94ms p(95)=729.62ms max=736.11ms count=80
+    http_req_failed................: 0.00% 0 out of 80
+    http_reqs......................: 80    0.703142/s
+
+    EXECUTION
+    iteration_duration.............: min=1.8s     med=7.5s     p(90)=7.54s    p(95)=7.55s    max=7.61s    count=80
+    iterations.....................: 80    0.703142/s
+    vus............................: 5     min=5       max=5
+    vus_max........................: 5     min=5       max=5
+
+    NETWORK
+    data_received..................: 62 kB 543 B/s
+    data_sent......................: 12 kB 107 B/s
+
+
+

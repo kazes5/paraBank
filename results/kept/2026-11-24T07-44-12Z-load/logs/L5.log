@@ -1,0 +1,51 @@
+
+
+  █ THRESHOLDS 
+
+    errors
+    ✓ 'rate<0.10' rate=0.00%
+
+    http_req_duration
+    ✓ 'p(95)<5000' p(95)=360.64ms
+
+    rate_limited
+    ✓ 'count<1' count=0
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 685     5.694298/s
+    checks_succeeded...: 100.00% 685 out of 685
+    checks_failed......: 0.00%   0 out of 685
+
+    ✓ transfer status 200
+    ✓ transfer success text
+    ✓ GET status 200
+    ✓ GET id matches
+    ✓ GET balance is a number
+    ✓ GET type CHECKING
+    ✓ S balance never goes up
+
+    CUSTOM
+    errors.........................: 0.00% 0 out of 161
+    rate_limited...................: 0     0/s
+    transfer_ok....................: 40    0.332514/s
+
+    HTTP
+    http_req_duration..............: min=235.3ms med=290.09ms p(90)=349.32ms p(95)=360.64ms max=748.28ms count=161
+      { expected_response:true }...: min=235.3ms med=290.09ms p(90)=349.32ms p(95)=360.64ms max=748.28ms count=161
+    http_req_failed................: 0.00% 0 out of 161
+    http_reqs......................: 161   1.338368/s
+
+    EXECUTION
+    iteration_duration.............: min=236ms   med=290.7ms  p(90)=350.03ms p(95)=361.26ms max=798.21ms count=161
+    iterations.....................: 161   1.338368/s
+    vus............................: 0     min=0        max=0
+    vus_max........................: 5     min=5        max=5
+
+    NETWORK
+    data_received..................: 79 kB 653 B/s
+    data_sent......................: 15 kB 125 B/s
+
+
+

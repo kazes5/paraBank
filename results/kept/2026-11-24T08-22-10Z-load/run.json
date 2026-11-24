@@ -1,0 +1,20 @@
+{
+  "id": "2026-11-24T08-22-10Z-load",
+  "kind": "load",
+  "started": "2026-11-24T08:22:10.234Z",
+  "commit": "1828de4",
+  "scope": "L1–L6",
+  "dry": false,
+  "finished": "2026-11-24T08:41:11.228Z",
+  "fixture": {
+    "customerId": 45845,
+    "S": 62295,
+    "T": 62406
+  },
+  "counts": {
+    "PASS": 6,
+    "RECON FAIL": 1
+  },
+  "reconciliation": "FAIL",
+  "smokeAfter": "PASS"
+}

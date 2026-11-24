@@ -6,6 +6,7 @@
 - ParaBank public sandbox `https://parabank.parasoft.com/parabank/services/bank`, behind Cloudflare.
 - Client: Node 24 `fetch` and Postman CLI 1.93.1, no cookies or auth headers (the API has none).
 - Stage 3 detection run `2026-11-23T16-04-00Z-api` (Rktest2, customer 37409).
+- Stage 5 load run `2026-11-24T07-44-12Z-load` and isolation run `2026-11-24T08-03-30Z-load` (k6 2.4.0 and Node `fetch`, throwaway customers 33746 and 42959) — BUG-016.
 - Stage 4 reproduction run on fresh throwaway users: user R `qa_s4_mwti1l42` (customer 60497) and user L `qa_s4_mwti5prg` (customer 62495), 16:48–16:52 UTC.
 
 **How each defect was confirmed:**
@@ -22,6 +23,7 @@
 | ID | Title | Severity | Priority | Scope | Cases | Basis |
 |---|---|---|---|---|---|---|
 | [BUG-001](#bug-001) | Transfer of 0.005 is accepted and makes both accounts and the customer's account list unreadable (500) | Critical | P1 | In scope | TRF-09 | A5, A8 |
+| [BUG-016](#bug-016) | Concurrent transfers from the same account lose debits: money is created (found by the load test) | Critical | P1 | In scope | NFR-02 (L4, L6) | A1, A7 |
 | [BUG-002](#bug-002) | No authentication: anyone can read a customer's profile (incl. SSN) and accounts, and move their money | Critical | P1 | In scope | CUST-03, ACCT-04 | A6 |
 | [BUG-003](#bug-003) | Negative amounts are accepted and move money in the opposite direction | Critical | P1 | In scope | TRF-03, DEP-03, WDR-03, BILL-04 | A3 |
 | [BUG-004](#bug-004) | Transfer, withdraw and bill pay accept amounts above the balance (unlimited overdraft) | High | P1 | In scope | TRF-02, WDR-02, BILL-02 | A4 |
@@ -68,6 +70,7 @@ Every non-passing result from Stage 3 and the manual tests, and what it turned o
 | JRN-01 J13e | FAIL | **Journey isolation:** suite case LOAN-01 fails the same way on fresh data | Endpoint defect → BUG-006 |
 | AUTH-03 (manual) | FAIL | Design issue, confirmed on user R | Endpoint defect → BUG-008 |
 | TRF-09 (manual) | FAIL | Reproduced 3 times on 3 different users (Stage 1, manual run, user R) | Endpoint defect → BUG-001 |
+| NFR-02 L6 (load test) | FAIL | **Isolated on a fresh throwaway user:** 5 sequential transfers reconcile; 3 rounds of 5 simultaneous transfers lose 1 debit | Endpoint defect (concurrency) → BUG-016 |
 | AUTH-05 (manual) | BLOCKED | Cloudflare firewall answers 403 before ParaBank | Environment, not a ParaBank result → re-test on a local instance |
 | TRF-08 (manual) | NEEDS-CLARIFICATION | Same transfer booked twice, no warning | Spec question S6 |
 | LOAN-03 | NEEDS-CLARIFICATION | Denied with "insufficient funds" (no rule exists) | Spec question S8 |
@@ -637,6 +640,50 @@ GET /parabank/services/bank/accounts/99258/transactions
 - The JSON serializer writes dates as timestamps.
 - Clients generated from the Swagger file fail to parse responses.
 - `Transaction.date` also loses the time of day (always 00:00 UTC), so the intended timezone is unclear (S10).
+
+---
+
+<a id="bug-016"></a>
+**ID:** BUG-016
+**Title:** `POST /transfer` loses debits when several transfers from the same account run at the same time: the source balance drops less than the money sent, so money is created
+**Endpoint / area:** `POST /transfer` (in scope) · effect on `GET /accounts/{id}` balance
+**Environment:** public sandbox, 2026-11-24 07:44–08:41 UTC; load runs `2026-11-24T07-44-12Z-load` (customer 33746) and `2026-11-24T08-22-10Z-load` (customer 45845), isolation run `2026-11-24T08-03-30Z-load` (customer 42959), both throwaway customers
+**Severity:** Critical · **Priority:** P1
+**Related test case:** NFR-02 — detected by the load test's reconciliation (L6) after L4 "concurrent transfers"; isolated with a sequential control on a fresh customer
+
+**Steps to reproduce:**
+1. Open accounts S and T for one customer; deposit 500.00 into S.
+2. Control: send 5 transfers of 1.00 from S to T **one after another**. S drops 5.00, T rises 5.00.
+3. Send 5 transfers of 1.00 from S to T **at the same moment** (5 parallel requests). Repeat a few times, 7.5 s apart.
+4. Read `GET /accounts/S`, `GET /accounts/T` and `GET /accounts/S/transactions`.
+
+**Request:**
+```
+5 × in parallel:
+POST /parabank/services/bank/transfer?fromAccountId=58521&toAccountId=58632&amount=1.00
+Accept: application/json
+```
+
+**Actual result:**
+```
+every request: 200  Successfully transferred $1.00 from account #58521 to account #58632
+isolation, round 3: S −4.00, T +5.00 → S balance is 1.00 higher than the sum of its own transactions
+load run 1: 151 confirmed transfers → S −119.00, T +151.00, 151 debit rows on S → 32.00 created
+load run 2 (balances after each test): L3 sequential 0.00 gap · L4 5-at-once +16.00 · L5 0.00 gap
+```
+
+**Expected result:** S decreases by exactly the confirmed amount and T increases by the same; S + T stays constant; each balance equals the sum of its account's transactions — however many requests arrive at once. Basis: A1 (a transfer takes and adds the same amount), A7 (the same data agrees across endpoints: balance vs. history).
+
+**Evidence:**
+- `evidence/bugs/BUG-016/repro.md` (both runs, every snapshot)
+- `evidence/bugs/BUG-016/load-reconciliation.json`, `evidence/bugs/BUG-016/isolation.json`
+- `results/kept/2026-11-24T07-44-12Z-load/summary.md`, `results/kept/2026-11-24T08-22-10Z-load/summary.md` (per-test balances), `results/kept/2026-11-24T08-03-30Z-load/summary.md`
+
+**Notes / suspected cause / impact:**
+- Classic **lost update**: the debit reads the source balance, subtracts and writes it back without a row lock or atomic update, so parallel requests overwrite each other's debit. The credit side and the transaction rows are written correctly, which is why the history and the balance disagree.
+- Intermittent, and only with simultaneous requests: 32 of 80 (load run 1) and 16 of 80 (load run 2, all in L4) and 1 of 15 (isolation run); never with sequential requests (L3, control). Functional tests (always sequential) cannot find it.
+- Impact: money is created out of nothing, and an account's balance no longer matches its statement. At realistic traffic (two payments leaving one account together) balances drift silently. Combined with BUG-002 anyone can trigger it on any account.
+- Not found: whether deposit, withdraw and bill pay share the problem (not load-tested; same pattern likely).
 
 ---
 

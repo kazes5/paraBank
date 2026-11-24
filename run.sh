@@ -6,13 +6,14 @@
 #   ./run.sh manual [AUTH-03 AUTH-05 TRF-08 TRF-09] [--headless] [--keep]
 #   ./run.sh ui [apiRunId|latest] [--user PARABANK2] [--keep]
 #   ./run.sh repro [--publish] [--keep]
+#   ./run.sh load [--dry] [--keep]                   k6 load session L1-L6 (tests/load/load_test_plan.md)
 #   ./run.sh keep <runId|last>                       move a run to results/kept/ (committed)
 #   ./run.sh list                                    show results/index.md
-#   ./run.sh latest [api|ui|manual|repro]            path of the latest summary.md
+#   ./run.sh latest [api|ui|manual|repro|load]            path of the latest summary.md
 set -euo pipefail
 cd "$(dirname "$0")"
 
-usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+usage() { sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 [[ $# -ge 1 ]] || usage
 cmd=$1; shift
 
@@ -29,6 +30,7 @@ done
 
 need_env()    { [[ -f .env ]] || { echo "No .env found: copy .env.example to .env and fill in the test users." >&2; exit 2; }; }
 need_postman(){ command -v postman >/dev/null || { echo "Postman CLI not found: https://learning.postman.com/docs/postman-cli/postman-cli-installation/" >&2; exit 2; }; }
+need_k6()     { command -v k6 >/dev/null || { echo "k6 not found: brew install k6" >&2; exit 2; }; }
 need_chrome() { [[ -d "/Applications/Google Chrome.app" ]] || command -v google-chrome >/dev/null || echo "Note: Google Chrome not found; Playwright uses channel 'chrome'." >&2; }
 node_env()    { node --env-file=.env "$@"; }
 
@@ -44,11 +46,13 @@ case $cmd in
   manual)  need_env; need_chrome; node_env tests/scripts/manual-tests.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
   ui)      need_env; need_chrome; node_env tests/scripts/ui-crosscheck.mjs "${rest[0]:-latest}" "$user" || status=$? ;;
   repro)   need_env; node_env tests/scripts/repro-defects.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
+  load)    need_env; need_k6; need_postman; node_env tests/load/run-load.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
   keep)    node tests/scripts/results.mjs keep "${rest[0]:-last}"; exit ;;
   list)    node tests/scripts/results.mjs list; exit ;;
   latest)  node tests/scripts/results.mjs latest ${rest[0]+"${rest[0]}"}; exit ;;
   *)       usage ;;
 esac
 
-if [[ $keep == 1 && $cmd != setup ]]; then node tests/scripts/results.mjs keep last; fi
+# exit 3 = BLOCKED before a run folder of this command existed: nothing to keep
+if [[ $keep == 1 && $cmd != setup && $status != 3 ]]; then node tests/scripts/results.mjs keep last; fi
 exit $status

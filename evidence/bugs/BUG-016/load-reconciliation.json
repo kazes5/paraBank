@@ -1,0 +1,102 @@
+{
+  "sourceRun": "results/kept/2026-11-24T07-44-12Z-load",
+  "fixture": {
+    "username": "qa_load_mwue2bh3",
+    "customerId": 33746,
+    "A": 45534,
+    "S": 45756,
+    "T": 45867,
+    "before": {
+      "at": "2026-11-24T07:44:29.758Z",
+      "S": {
+        "balance": 600,
+        "cents": 60000,
+        "transactions": 2
+      },
+      "T": {
+        "balance": 100,
+        "cents": 10000,
+        "transactions": 1
+      }
+    }
+  },
+  "reconciliation": {
+    "rows": [
+      {
+        "check": "S decreased by successful transfers × 1.00",
+        "expected": -15100,
+        "actual": -11900,
+        "result": "MISMATCH"
+      },
+      {
+        "check": "T increased by successful transfers × 1.00",
+        "expected": 15100,
+        "actual": 15100,
+        "result": "MATCH"
+      },
+      {
+        "check": "S + T unchanged",
+        "expected": 0,
+        "actual": 3200,
+        "result": "MISMATCH"
+      },
+      {
+        "check": "S transactions added",
+        "expected": 151,
+        "actual": 151,
+        "result": "MATCH"
+      },
+      {
+        "check": "T transactions added",
+        "expected": 151,
+        "actual": 151,
+        "result": "MATCH"
+      }
+    ],
+    "verdict": "FAIL",
+    "after": {
+      "at": "2026-11-24T08:02:18.653Z",
+      "S": {
+        "balance": 481,
+        "cents": 48100,
+        "transactions": 153
+      },
+      "T": {
+        "balance": 251,
+        "cents": 25100,
+        "transactions": 152
+      }
+    },
+    "transfers": {
+      "ok": 151,
+      "unsure": 0
+    }
+  },
+  "transfers": [
+    {
+      "test": "L1",
+      "confirmed": 0,
+      "unsure": 0
+    },
+    {
+      "test": "L2",
+      "confirmed": 0,
+      "unsure": 0
+    },
+    {
+      "test": "L3",
+      "confirmed": 31,
+      "unsure": 0
+    },
+    {
+      "test": "L4",
+      "confirmed": 80,
+      "unsure": 0
+    },
+    {
+      "test": "L5",
+      "confirmed": 40,
+      "unsure": 0
+    }
+  ]
+}

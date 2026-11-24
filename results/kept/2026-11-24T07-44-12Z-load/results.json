@@ -1,0 +1,308 @@
+{
+  "fixture": {
+    "username": "qa_load_mwue2bh3",
+    "customerId": 33746,
+    "A": 45534,
+    "S": 45756,
+    "T": 45867,
+    "before": {
+      "at": "2026-11-24T07:44:29.758Z",
+      "S": {
+        "balance": 600,
+        "cents": 60000,
+        "transactions": 2
+      },
+      "T": {
+        "balance": 100,
+        "cents": 10000,
+        "transactions": 1
+      }
+    }
+  },
+  "tests": [
+    {
+      "test": "L1",
+      "exit": 0,
+      "rows": [
+        {
+          "label": "L1",
+          "name": "GET /accounts/{id}",
+          "n": 61,
+          "rate": 0.68,
+          "p50": 243,
+          "p90": 316,
+          "p95": 320,
+          "max": 741,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": 0,
+          "target": 1000,
+          "verdict": "PASS",
+          "growth": null
+        }
+      ],
+      "failed": "",
+      "transferOk": 0,
+      "transferUnsure": 0,
+      "rateLimited": 0
+    },
+    {
+      "test": "L2",
+      "exit": 0,
+      "rows": [
+        {
+          "label": "L2",
+          "name": "GET /accounts/{id}",
+          "n": 231,
+          "rate": 1.3,
+          "p50": 277,
+          "p90": 364,
+          "p95": 415,
+          "max": 698,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": 0,
+          "target": 1000,
+          "verdict": "PASS",
+          "growth": 1.3
+        },
+        {
+          "label": "L2 step 1",
+          "name": "GET /accounts/{id}",
+          "n": 29,
+          "rate": 0.7,
+          "p50": 260,
+          "p90": 387,
+          "p95": 420,
+          "max": 698,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": null,
+          "target": 1000,
+          "verdict": "PASS",
+          "growth": 1.31
+        },
+        {
+          "label": "L2 step 2",
+          "name": "GET /accounts/{id}",
+          "n": 45,
+          "rate": 1.02,
+          "p50": 273,
+          "p90": 391,
+          "p95": 399,
+          "max": 445,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": null,
+          "target": 1000,
+          "verdict": "PASS",
+          "growth": 1.25
+        },
+        {
+          "label": "L2 step 3",
+          "name": "GET /accounts/{id}",
+          "n": 68,
+          "rate": 1.52,
+          "p50": 273,
+          "p90": 362,
+          "p95": 403,
+          "max": 446,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": null,
+          "target": 1000,
+          "verdict": "PASS",
+          "growth": 1.26
+        },
+        {
+          "label": "L2 step 4",
+          "name": "GET /accounts/{id}",
+          "n": 89,
+          "rate": 2.02,
+          "p50": 282,
+          "p90": 369,
+          "p95": 415,
+          "max": 444,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": null,
+          "target": 1000,
+          "verdict": "PASS",
+          "growth": 1.3
+        }
+      ],
+      "failed": "",
+      "transferOk": 0,
+      "transferUnsure": 0,
+      "rateLimited": 0
+    },
+    {
+      "test": "L3",
+      "exit": 0,
+      "rows": [
+        {
+          "label": "L3",
+          "name": "POST /transfer",
+          "n": 31,
+          "rate": 0.52,
+          "p50": 263,
+          "p90": 346,
+          "p95": 436,
+          "max": 802,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": 0,
+          "target": 1500,
+          "verdict": "PASS",
+          "growth": null
+        }
+      ],
+      "failed": "",
+      "transferOk": 31,
+      "transferUnsure": 0,
+      "rateLimited": 0
+    },
+    {
+      "test": "L4",
+      "exit": 0,
+      "rows": [
+        {
+          "label": "L4",
+          "name": "POST /transfer",
+          "n": 80,
+          "rate": 0.71,
+          "p50": 248,
+          "p90": 313,
+          "p95": 574,
+          "max": 683,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": 0,
+          "target": 1500,
+          "verdict": "PASS",
+          "growth": 1.32
+        }
+      ],
+      "failed": "",
+      "transferOk": 80,
+      "transferUnsure": 0,
+      "rateLimited": 0
+    },
+    {
+      "test": "L5",
+      "exit": 0,
+      "rows": [
+        {
+          "label": "L5",
+          "name": "POST /transfer",
+          "n": 40,
+          "rate": 0.34,
+          "p50": 285,
+          "p90": 347,
+          "p95": 396,
+          "max": 747,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": 0,
+          "target": 1500,
+          "verdict": "PASS",
+          "growth": 0.91
+        },
+        {
+          "label": "L5",
+          "name": "GET /accounts/{id}",
+          "n": 121,
+          "rate": 1.01,
+          "p50": 290,
+          "p90": 349,
+          "p95": 357,
+          "max": 748,
+          "httpErrors": 0,
+          "timeouts": 0,
+          "limited": 0,
+          "errorRate": 0,
+          "failedChecks": 0,
+          "target": 1000,
+          "verdict": "PASS",
+          "growth": 1.12
+        }
+      ],
+      "failed": "",
+      "transferOk": 40,
+      "transferUnsure": 0,
+      "rateLimited": 0
+    }
+  ],
+  "reconciliation": {
+    "rows": [
+      {
+        "check": "S decreased by successful transfers × 1.00",
+        "expected": -15100,
+        "actual": -11900,
+        "result": "MISMATCH"
+      },
+      {
+        "check": "T increased by successful transfers × 1.00",
+        "expected": 15100,
+        "actual": 15100,
+        "result": "MATCH"
+      },
+      {
+        "check": "S + T unchanged",
+        "expected": 0,
+        "actual": 3200,
+        "result": "MISMATCH"
+      },
+      {
+        "check": "S transactions added",
+        "expected": 151,
+        "actual": 151,
+        "result": "MATCH"
+      },
+      {
+        "check": "T transactions added",
+        "expected": 151,
+        "actual": 151,
+        "result": "MATCH"
+      }
+    ],
+    "verdict": "FAIL",
+    "after": {
+      "at": "2026-11-24T08:02:18.653Z",
+      "S": {
+        "balance": 481,
+        "cents": 48100,
+        "transactions": 153
+      },
+      "T": {
+        "balance": 251,
+        "cents": 25100,
+        "transactions": 152
+      }
+    },
+    "transfers": {
+      "ok": 151,
+      "unsure": 0
+    }
+  },
+  "smokeAfter": "PASS",
+  "notes": []
+}

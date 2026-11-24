@@ -1,0 +1,100 @@
+{
+  "fixture": {
+    "username": "qa_load_mwuer4fg",
+    "customerId": 42959,
+    "A": 57744,
+    "S": 58521,
+    "T": 58632,
+    "before": {
+      "at": "2026-11-24T08:03:47.635Z",
+      "S": {
+        "balance": 600,
+        "cents": 60000,
+        "transactions": 2
+      },
+      "T": {
+        "balance": 100,
+        "cents": 10000,
+        "transactions": 1
+      }
+    }
+  },
+  "steps": [
+    {
+      "label": "control",
+      "sent": 5,
+      "ok": 5,
+      "S": {
+        "balance": 59500,
+        "historySum": 59500,
+        "transactions": 7
+      },
+      "T": {
+        "balance": 10500,
+        "historySum": 10500,
+        "transactions": 6
+      },
+      "dS": -500,
+      "dT": 500,
+      "lost": 0,
+      "totalDrift": 0
+    },
+    {
+      "label": "round 1",
+      "sent": 5,
+      "ok": 5,
+      "S": {
+        "balance": 59000,
+        "historySum": 59000,
+        "transactions": 12
+      },
+      "T": {
+        "balance": 11000,
+        "historySum": 11000,
+        "transactions": 11
+      },
+      "dS": -500,
+      "dT": 500,
+      "lost": 0,
+      "totalDrift": 0
+    },
+    {
+      "label": "round 2",
+      "sent": 5,
+      "ok": 5,
+      "S": {
+        "balance": 58500,
+        "historySum": 58500,
+        "transactions": 17
+      },
+      "T": {
+        "balance": 11500,
+        "historySum": 11500,
+        "transactions": 16
+      },
+      "dS": -500,
+      "dT": 500,
+      "lost": 0,
+      "totalDrift": 0
+    },
+    {
+      "label": "round 3",
+      "sent": 5,
+      "ok": 5,
+      "S": {
+        "balance": 58100,
+        "historySum": 58000,
+        "transactions": 22
+      },
+      "T": {
+        "balance": 12000,
+        "historySum": 12000,
+        "transactions": 21
+      },
+      "dS": -400,
+      "dT": 500,
+      "lost": 1,
+      "totalDrift": 1
+    }
+  ]
+}

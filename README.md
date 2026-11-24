@@ -9,7 +9,7 @@ Test design, automated tests and defect reports for the ParaBank REST API (`http
 | The staged plan and how the work was done | [`plan.md`](plan.md) |
 | The test design: rules, risks, 47 test cases, SLA model | [`STD.md`](STD.md) |
 | What the API does and doesn't do: contract, observed behavior, business rules | [`Business_Rules.md`](Business_Rules.md) |
-| The defects (15 bug reports) and the questions for R&D | [`Bug_Reports.md`](Bug_Reports.md) |
+| The defects (16 bug reports) and the questions for R&D | [`Bug_Reports.md`](Bug_Reports.md) |
 | The latest results, and every run | [`results/index.md`](results/index.md) |
 | How each case's verdict changed across runs | [`results/history.md`](results/history.md) |
 | The evidence cited by the documents | [`evidence/`](evidence/): `exploration/` (Stage 1) and `bugs/BUG-0NN/` (Stage 4) |
@@ -18,7 +18,7 @@ Test design, automated tests and defect reports for the ParaBank REST API (`http
 
 ## Quick start
 
-Requirements: Node 20+, the [Postman CLI](https://learning.postman.com/docs/postman-cli/postman-cli-installation/), Google Chrome (only for the browser tests), and `npm install` (Playwright).
+Requirements: Node 20+, [k6](https://k6.io) (load tests only), the [Postman CLI](https://learning.postman.com/docs/postman-cli/postman-cli-installation/), Google Chrome (only for the browser tests), and `npm install` (Playwright).
 
 ```bash
 cp .env.example .env        # fill in the test users (never committed)
@@ -36,6 +36,7 @@ cp .env.example .env        # fill in the test users (never committed)
 | `./run.sh ui [apiRunId]` | Web UI cross-check of an API run (default: the latest) | ~1 min |
 | `./run.sh manual [AUTH-03 …]` | Manual cases in a visible Chrome window, with captioned screenshots (`--headless` to hide it) | ~2 min |
 | `./run.sh repro [--publish]` | Reproduce every known defect on fresh throwaway users | ~5 min |
+| `./run.sh load [--dry]` | k6 load session L1–L6 ([`tests/load/load_test_plan.md`](tests/load/load_test_plan.md)) | ~18 min |
 
 **Options:**
 - `--user PARABANK2`: run as the second `.env` user.
@@ -73,6 +74,7 @@ screenshots/    browser runs only
 README.md  run.sh                      start here · single entry point
 plan.md  STD.md  Business_Rules.md  Bug_Reports.md  parabank_test_approach.md
 docs/exercise/                         provided exercise files and templates (00–06, OpenAPI)
+tests/load/                            load test plan + k6 scripts (Stage 5)
 tests/postman/                         ParaBank_QA collection + environment (legacy/ = original login-only files)
 tests/scripts/                         build-collection, run-api, summarize, ui-crosscheck, manual-tests,
                                        repro-defects, setup-users, explore, results, check-links, lib/
@@ -94,5 +96,5 @@ evidence/                              exploration/ (Stage 1), bugs/BUG-0NN/ (St
 | 2 Test design | `STD.md` |
 | 3 Postman build and execution | `tests/postman/`, `results/kept/*-api`, `*-ui`, `*-manual` |
 | 4 Failure isolation and bug reports | `Bug_Reports.md`, `evidence/bugs/` |
-| 5 Load test | *next* |
+| 5 Load test | `tests/load/`, `results/kept/*-load` |
 | 6 Test summary report | *later* |
