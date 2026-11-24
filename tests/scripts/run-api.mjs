@@ -1,7 +1,9 @@
 // API test runner (plan.md Stage 3): smoke gate -> endpoint suites -> customer journey.
 //
-// - Credentials and profile come from .env and are passed with --env-var; nothing secret is
-//   written to the collection or environment files.
+// - Credentials and profile come from .env. They are handed to the Postman CLI in a private
+//   temporary environment file (folder 0700, file 0600, outside the repo, deleted after the run,
+//   also on Ctrl+C or Stop), never on the command line, where any local process could read them
+//   from the process list. Nothing secret is written to the committed collection or environment.
 // - Output: results/runs/<runId>-api/ — logs/ (redacted CLI output), reports/ (Postman YAML),
 //   run.json, then summary.md + results.json from summarize.mjs. Index and history are rebuilt.
 // - Smoke failing stops the run: suites and journey are BLOCKED.
@@ -10,7 +12,8 @@
 //        node --env-file=.env tests/scripts/run-api.mjs [PREFIX] [phase ...]
 
 import { spawnSync } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { API, readUser, redact, redactTree, newRun } from './lib/common.mjs';
 import { summarize } from './summarize.mjs';
@@ -20,7 +23,7 @@ const args = process.argv.slice(2);
 const prefix = args[0] && /^[A-Z0-9_]+$/.test(args[0]) ? args.shift() : 'PARABANK';
 const phases = args.length ? args : ['smoke', 'suites', 'journey'];
 const u = readUser(prefix);
-// Values passed to the collection as Postman environment variables (never written to disk).
+// Values passed to the collection as Postman environment variables (only in the private temp file below).
 const vars = {
   baseUrl: API,
   username: u.username,
@@ -71,21 +74,43 @@ for (const p of phases)
 const run = newRun('api', { user: u.username, phases, scope: phases.length === 3 ? 'all' : phases.join(', ') });
 const logs = run.sub('logs');
 const summary = [];
+
+// Private environment file: the committed environment (variable names and types) with this run's
+// values filled in. The folder is created 0700 and the file 0600, so only this OS user can read it.
+const tmpDir = mkdtempSync(join(tmpdir(), 'parabank-env-'));
+const envFile = join(tmpDir, 'environment.json');
+const cleanup = () => rmSync(tmpDir, { recursive: true, force: true });
+// Delete it on every exit path: normal end, Ctrl+C, and Stop from the web page (SIGTERM).
+// With these handlers the signal waits until the running Postman CLI returns, then cleans up.
+process.on('exit', cleanup);
+for (const sig of ['SIGINT', 'SIGTERM'])
+  process.on(sig, () => {
+    cleanup();
+    process.exit(130);
+  });
+const base = JSON.parse(readFileSync('tests/postman/ParaBank_QA.postman_environment.json', 'utf8'));
+const values = { ...vars, runId: run.id };
+const known = new Set(base.values.map((v) => v.key));
+base.values = [
+  ...base.values.map((v) => (v.key in values ? { ...v, value: String(values[v.key]) } : v)),
+  ...Object.entries(values)
+    .filter(([k]) => !known.has(k))
+    .map(([key, value]) => ({ key, value: String(value), type: 'default', enabled: true })),
+];
+writeFileSync(envFile, JSON.stringify(base), { mode: 0o600 });
+
 for (const phase of phases) {
   const reportDir = join(run.dir, 'reports', phase);
-  // Postman CLI arguments: collection + environment, the phase's folders, the .env values,
-  // the run ID (logged in FAILED records), 1.5 s between requests (site rate limit), 5 s timeout,
-  // no upload to Postman's cloud, and a per-phase report folder.
+  // Postman CLI arguments: collection + the private environment file (credentials, profile and run ID),
+  // the phase's folders, 1.5 s between requests (site rate limit), 5 s timeout,
+  // no upload to Postman's cloud, and a per-phase report folder. No secret appears on the command line.
   const cliArgs = [
     'collection',
     'run',
     'tests/postman/ParaBank_QA.postman_collection.json',
     '-e',
-    'tests/postman/ParaBank_QA.postman_environment.json',
+    envFile,
     ...PHASE_ITEMS[phase].flatMap((i) => ['-i', i]),
-    ...Object.entries(vars).flatMap(([k, v]) => ['--env-var', `${k}=${v}`]),
-    '--env-var',
-    `runId=${run.id}`,
     '--delay-request',
     '1500',
     '--timeout-request',
