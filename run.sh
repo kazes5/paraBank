@@ -7,15 +7,16 @@
 #   ./run.sh ui [apiRunId|latest] [--user PARABANK2] [--keep]
 #   ./run.sh repro [--publish] [--keep]
 #   ./run.sh load [--dry] [--keep]                   k6 load session L1-L6 (tests/load/load_test_plan.md)
+#   ./run.sh auto [--user PARABANK2] [--keep]        coded tests: pytest + requests (tests/automation)
 #   ./run.sh report [--kept] [--publish]             Test Summary Report (STR.md + STR.pdf) from the latest runs
-#   ./run.sh cycle [--keep] [--user PARABANK2]       all → ui → manual (headless) → load → report
+#   ./run.sh cycle [--keep] [--user PARABANK2]       all → ui → manual (headless) → auto → load → report
 #   ./run.sh keep <runId|last>                       move a run to results/kept/ (committed)
 #   ./run.sh list                                    show results/index.md
-#   ./run.sh latest [api|ui|manual|repro|load]            path of the latest summary.md
+#   ./run.sh latest [api|ui|manual|repro|load|auto]  path of the latest summary.md
 set -euo pipefail
 cd "$(dirname "$0")"
 
-usage() { sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+usage() { sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 [[ $# -ge 1 ]] || usage
 cmd=$1; shift
 
@@ -49,6 +50,14 @@ case $cmd in
   ui)      need_env; need_chrome; node_env tests/scripts/ui-crosscheck.mjs "${rest[0]:-latest}" "$user" || status=$? ;;
   repro)   need_env; node_env tests/scripts/repro-defects.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
   load)    need_env; need_k6; need_postman; node_env tests/load/run-load.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
+  auto)    need_env
+           venv=tests/automation/.venv
+           # (re)install when the venv is missing or requirements.txt changed since the last install
+           if [[ ! -x $venv/bin/python || tests/automation/requirements.txt -nt $venv/.installed ]]; then
+             { [[ -x $venv/bin/python ]] || python3 -m venv "$venv"; } && "$venv/bin/pip" install -q -r tests/automation/requirements.txt && touch "$venv/.installed"
+           fi
+           (cd tests/automation && AUTO_USER=$user .venv/bin/python -m pytest ${rest[@]+"${rest[@]}"}) || status=$?
+           node tests/scripts/results.mjs index >/dev/null ;;
   report)  need_chrome; node tests/scripts/build-str.mjs ${rest[@]+"${rest[@]}"} || status=$? ;;
   cycle)   # one full test cycle; every step runs even if an earlier one found failures, then the report
            need_env; need_postman; need_k6
@@ -56,6 +65,7 @@ case $cmd in
            ./run.sh all --user "$user" ${k[@]+"${k[@]}"} || true
            ./run.sh ui latest --user "$user" ${k[@]+"${k[@]}"} || true
            ./run.sh manual --headless ${k[@]+"${k[@]}"} || true
+           ./run.sh auto --user "$user" ${k[@]+"${k[@]}"} || true
            ./run.sh load ${k[@]+"${k[@]}"} || true
            if [[ $keep == 1 ]]; then ./run.sh report --kept --publish; else ./run.sh report; fi
            exit ;;

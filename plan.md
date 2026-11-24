@@ -15,7 +15,7 @@
 | 4 Isolation and bug reports | ✅ Done | `1828de4` | `Bug_Reports.md`, `evidence/bugs/` (BUG-001 … BUG-016, S-LOAN) | 15 defects from Stage 3: 3 Critical, 5 High, 7 Medium (BUG-016 added in Stage 5: 4 Critical in total). Every failure isolated and reproduced on fresh throwaway users, with a passing control input. Re-reproduced 2026-11-23 (`./run.sh repro`): all 15 still fail |
 | 5 Load and performance | ✅ Done | — | `tests/load/` (plan, k6 scripts, runner), `results/kept/2026-11-24T07-44-12Z-load`, isolation `results/kept/2026-11-24T08-03-30Z-load` | Speed: every SLA met (read p95 320 → 415 ms at 0.68 → 2 req/s; transfer p95 436 → 574 ms with 5 at once), 0 errors, 0 × 429. **Correctness FAIL:** concurrent transfers lost debits (money created): 32.00 in run 1, 16.00 in re-run `results/kept/2026-11-24T08-22-10Z-load`, and per-test balances place all of it in L4 (5 at once). Sequential L3 and L5 reconcile → **BUG-016 (Critical)**, isolated on a fresh customer. NFR-02 = FAIL |
 | 6 Test summary report | ✅ Done | — | `STR.md`, `STR.pdf`, generator `tests/scripts/build-str.mjs` | **NO-GO**: 4 Critical defects open (BUG-001, BUG-002, BUG-003, BUG-016). Generated from the latest complete runs of each kind, so every cycle gets its own report (`./run.sh report`, or automatically at the end of `./run.sh cycle`) |
-| 7 Optional automation | ◐ Partly covered | — | `run.sh` | One-command runs exist for every layer; coded tests (pytest/Newman) not written |
+| 7 Optional automation | ✅ Done | — | `tests/automation/` (pytest + requests, README), `./run.sh auto`, run `results/kept/2026-11-24T09-10-37Z-auto` | 5 STD cases in code: JRN-01 (J02–J17, 42 checks), TRF-01, TRF-03, DEP-01, ACCT-03. 4 PASS, 2 XFAIL on known defects (journey: BUG-009, BUG-015, BUG-006; TRF-03: BUG-003). Known defects are `xfail(strict=True)`, so a fix turns the run red as a retest signal. Request/response log written on every failure |
 | 8 Packaging | ⬜ Not started | — | the repository | Credential scan and forbidden-endpoint guard already run on every change |
 
 ### Changes made during execution (vs. the original plan)
@@ -150,8 +150,9 @@ Every test run goes through one command, and every run gets its own folder. Deta
 | `./run.sh manual [cases]` | Manual cases in a visible browser, with screenshots | 3 |
 | `./run.sh repro [--publish]` | Reproduce every known defect on fresh throwaway users | 4 |
 | `./run.sh load [--dry]` | k6 load session L1–L6 | 5 |
+| `./run.sh auto` | Coded tests (pytest + requests) | 7 |
 | `./run.sh report [--kept] [--publish]` | Test Summary Report (STR.md + STR.pdf) from the latest runs | 6 |
-| `./run.sh cycle [--keep]` | Whole cycle: all → ui → manual → load → report | 3–6 |
+| `./run.sh cycle [--keep]` | Whole cycle: all → ui → manual → auto → load → report | 3–7 |
 | `./run.sh keep <runId>` · `list` · `latest` | Results housekeeping | — |
 
 **Run folders:**
@@ -756,7 +757,7 @@ flowchart TD
 
 ## Stage 7 — Optional automation
 
-**Status:** ◐ Partly covered: `./run.sh` already runs every layer with one command and writes logs on failure. The coded tests below are still optional.
+**Status:** ✅ Done. `tests/automation/` (see its README) automates five STD cases with pytest + requests, run by `./run.sh auto` (also part of `./run.sh cycle`). The plan's "TRF-04" and "ACC-03" are TRF-03 (negative amount) and ACCT-03 in the STD numbering.
 
 Deliverable 6 (bonus): 4–5 coded tests (e.g. pytest + requests, or Newman over the exported collection), covering both layers:
 1. Customer journey — onboarding through reconciliation (J02–J17) as one test
@@ -793,7 +794,7 @@ Credentials from environment variables; on failure, write the request/response l
    - [x] Bug reports, evidence bundles and spec questions
    - [x] Load test scripts and results
    - [x] Test Summary Report (STR)
-   - [ ] (Optional) Automation code
+   - [x] (Optional) Automation code
 ```mermaid
 flowchart LR
     A[Redact credentials in exports, reports, logs, evidence] --> B[Search files for password and SSN]

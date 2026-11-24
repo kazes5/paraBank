@@ -23,3 +23,5 @@ node_modules/
 # Test runs: every run stays local unless kept (./run.sh keep <runId> moves it to results/kept/)
 results/runs/
 results/.last-run
+tests/automation/.venv/
+__pycache__/

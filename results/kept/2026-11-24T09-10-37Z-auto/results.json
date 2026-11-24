@@ -1,0 +1,52 @@
+{
+  "outcomes": [
+    {
+      "test": "test_unknown_account_returns_error[-1]",
+      "case": "ACCT-03",
+      "verdict": "PASSED",
+      "seconds": 2.2,
+      "known": "",
+      "message": ""
+    },
+    {
+      "test": "test_unknown_account_returns_error[0]",
+      "case": "ACCT-03",
+      "verdict": "PASSED",
+      "seconds": 1.8,
+      "known": "",
+      "message": ""
+    },
+    {
+      "test": "test_customer_journey",
+      "case": "JRN-01",
+      "verdict": "XFAIL",
+      "seconds": 78.8,
+      "known": "",
+      "message": "test_journey.py:48: XFailed"
+    },
+    {
+      "test": "test_transfer_conserves_total",
+      "case": "TRF-01",
+      "verdict": "PASSED",
+      "seconds": 15.7,
+      "known": "",
+      "message": ""
+    },
+    {
+      "test": "test_negative_transfer_rejected",
+      "case": "TRF-03",
+      "verdict": "XFAIL",
+      "seconds": 8.7,
+      "known": "BUG-003",
+      "message": "test_money.py:55: AssertionError"
+    },
+    {
+      "test": "test_deposit_increases_balance",
+      "case": "DEP-01",
+      "verdict": "PASSED",
+      "seconds": 8.7,
+      "known": "",
+      "message": ""
+    }
+  ]
+}

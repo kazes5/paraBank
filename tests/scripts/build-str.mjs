@@ -34,6 +34,7 @@ const src = {
   load: latest((r) => r.kind === 'load' && !r.dry && r.scope === 'L1–L6' && existsSync(join(r.dir, 'results.json'))),
   isolation: latest((r) => r.kind === 'load' && r.scope === 'concurrency isolation'),
   repro: latest((r) => r.kind === 'repro'),
+  auto: latest((r) => r.kind === 'auto' && existsSync(join(r.dir, 'results.json'))),
 };
 if (!src.api) { console.error(`No complete API run${keptOnly ? ' among kept runs' : ''}: run ./run.sh all first.`); process.exit(2); }
 
@@ -193,6 +194,8 @@ function build(docDir) {
     ...(journeySteps.length ? [`- Failing steps: ${journeySteps.join(', ')}. Each was isolated to an endpoint defect (BUG-009, BUG-015, BUG-006).`] : []),
     '- The money steps (deposit, transfer, bill pay) reconciled.', '',
     `**UI cross-check:** ${src.ui ? `${src.ui.counts?.MATCH ?? 0} checks match the API, ${src.ui.counts?.MISMATCH ?? 0} mismatch, and ${src.ui.counts?.['RULE NOT MET'] ?? 0} rule is not met (A12: the loan is missing from the history in the UI as well as the API).` : 'not run in this cycle.'}`, '',
+    ...(src.auto ? (() => { const o = readJson(join(src.auto.dir, 'results.json')).outcomes; const c = (v) => o.filter((x) => x.verdict === v).length;
+      return [`**Coded tests (pytest + requests):** ${c('PASSED')} passed, ${c('XFAIL')} failed only on known defects, ${c('FAILED')} new failures, ${c('XPASS')} known defects no longer reproducing. They are an independent second implementation of JRN-01, TRF-01, TRF-03, DEP-01 and ACCT-03 (${link('run', join(src.auto.dir, 'summary.md'))} · ${link('README', 'tests/automation/README.md')}).`, '']; })() : []),
     `**Full results:**`,
     `- per-case table: ${link('API run summary', join(src.api.dir, 'summary.md'))};`,
     `- manual evidence: ${src.manual ? link('manual run', join(src.manual.dir, 'summary.md')) : '—'};`,
@@ -321,6 +324,7 @@ function build(docDir) {
     '| Web UI cross-check of the latest API run | `./run.sh ui latest` |',
     '| Manual cases with screenshots (visible Chrome) | `./run.sh manual AUTH-03 AUTH-05 TRF-08 TRF-09` |',
     '| Load test L1–L6 | `./run.sh load` |',
+    '| Coded tests (pytest): JRN-01, TRF-01, TRF-03, DEP-01, ACCT-03 | `./run.sh auto` |',
     '| Reproduce every defect on fresh throwaway users | `./run.sh repro` |',
     '| Rebuild this report | `./run.sh report [--kept] [--publish]` |', '',
     '**Failing request per defect** (from the evidence bundles; host `https://parabank.parasoft.com/parabank/services/bank`):', '',
