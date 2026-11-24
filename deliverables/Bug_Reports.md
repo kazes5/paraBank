@@ -1,14 +1,16 @@
 # Bug Reports — ParaBank REST API
 
-**Candidate:** Roy Kazes · **Date:** 2026-11-24 (fresh full cycle; first edition 2026-11-23) · **Format:** `docs/exercise/05_Bug_Report_Template.md`
+**Candidate:** Roy Kazes · **Date:** <!-- auto:cycle-date -->2026-11-24<!-- /auto:cycle-date --> (latest full test cycle; first edition 2026-11-23) · **Format:** `docs/exercise/05_Bug_Report_Template.md`
 
 **Environment (all reports):**
 - ParaBank public sandbox `https://parabank.parasoft.com/parabank/services/bank`, behind Cloudflare.
 - Client: Node 24 `fetch` and Postman CLI 1.93.1, no cookies or auth headers (the API has none).
 - Stage 1 exploration on a throwaway customer (`qa_s1_…`, customer 15098), 2026-11-24 — `evidence/exploration/`.
-- Stage 3 detection run `2026-11-24T11-16-14Z-api` (<USERNAME>, customer 18317); UI cross-check `2026-11-24T11-21-47Z-ui`; manual run `2026-11-24T11-22-15Z-manual`.
-- Stage 5 load run `2026-11-24T11-41-04Z-load` and isolation run `2026-11-24T11-55-56Z-load` (k6 2.4.0 and Node `fetch`, throwaway customers 12656 and 14543) — BUG-016.
-- Stage 4 reproduction run `2026-11-24T12-07-32Z-repro` on fresh throwaway users: user R `qa_s4_mwungyju` (customer 16541) and user L `qa_s4_mwunlevw` (customer 16652), 12:07–12:12 UTC.
+<!-- auto:test-runs -->
+- Stage 3 detection run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md) (<USERNAME>); UI cross-check [`2026-11-24T11-21-47Z-ui`](../results/kept/2026-11-24T11-21-47Z-ui/summary.md); manual run [`2026-11-24T11-22-15Z-manual`](../results/kept/2026-11-24T11-22-15Z-manual/summary.md).
+- Stage 5 load run [`2026-11-24T11-41-04Z-load`](../results/kept/2026-11-24T11-41-04Z-load/summary.md) and isolation run [`2026-11-24T11-55-56Z-load`](../results/kept/2026-11-24T11-55-56Z-load/summary.md) (k6 and Node `fetch`, throwaway customers 12656 and 14543) — BUG-016.
+- Stage 4 reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on fresh throwaway users: user R `qa_s4_mwungyju` (customer 16541) and user L `qa_s4_mwunlevw` (customer 16652), 12:07–12:12 UTC.
+<!-- /auto:test-runs -->
 - The public site wiped its data several times during the day, so account and customer numbers restart; every number below belongs to the run named next to it.
 
 **How each defect was confirmed:**
@@ -91,41 +93,43 @@ No functional failure was a sequence/state defect, and none was intermittent: ev
 **ID:** BUG-001
 **Title:** `POST /transfer` accepts 0.005 and leaves both accounts, and the customer's account list, permanently returning HTTP 500
 **Endpoint / area:** `POST /transfer` (in scope) · effect on `GET /accounts/{id}`, `GET /customers/{id}/accounts`, web UI
-**Environment:** public sandbox, 2026-11-24 12:12:10 UTC (user R, customer 16541); also in the Stage 1 exploration (2026-11-24, throwaway customer 15098) and the manual run `2026-11-24T11-22-15Z-manual` (throwaway customer 21092)
+**Environment:** <!-- auto:bug-env:BUG-001 -->public sandbox, 2026-11-24 12:12:02–12:12:12 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); manual run [`2026-11-24T11-22-15Z-manual`](../results/kept/2026-11-24T11-22-15Z-manual/summary.md) (TRF-09)<!-- /auto:bug-env:BUG-001 -->; also in the Stage 1 exploration (throwaway customer, `evidence/exploration/`)
 **Severity:** Critical · **Priority:** P1
 **Related test case:** TRF-09 · detected in Stage 1 exploration (probe E-TRF7), reproduced in the manual test and the Stage 4 run
 
 **Steps to reproduce:**
-1. Open two accounts X and Y for the same customer (each starts with the site's opening amount, here 100.00).
-2. Control: `POST /transfer?fromAccountId=X&toAccountId=Y&amount=0.01` → 200; X 99.99, Y 100.01.
+1. Open two accounts X and Y for the same customer (each starts with the site's opening amount).
+2. Control: `POST /transfer?fromAccountId=X&toAccountId=Y&amount=0.01` → 200; X −0.01, Y +0.01.
 3. `POST /transfer?fromAccountId=X&toAccountId=Y&amount=0.005`.
 4. `GET /accounts/X`, `GET /accounts/Y`, `GET /customers/{id}/accounts`; open Accounts Overview in the web UI.
 
+<!-- auto:bug-result:BUG-001 -->
 **Request:**
 ```
 POST /parabank/services/bank/transfer?fromAccountId=25110&toAccountId=25221&amount=0.005
-Accept: application/json
+GET /parabank/services/bank/customers/16541/accounts
 ```
 
 **Actual result:**
 ```
-control 0.01 → 200; X 100.00 → 99.99, Y 100.00 → 100.01
-0.005 → 200  Successfully transferred $0.005 from account #25110 to account #25221
-then: GET /accounts/25110 → 500 · GET /accounts/25221 → 500 · GET /customers/16541/accounts → 500 (HTML error page)
-web UI Accounts Overview → "An internal error has occurred and has been logged."
+control · Control: transfer 0.01 X → Y → 200 Successfully transferred $0.01 from account #25110 to account #25221   25110: 100.00 → 99.99 · 25221: 100.00 → 100.01
+tested  · Transfer 0.005 X → Y → 200 Successfully transferred $0.005 from account #25110 to account #25221   25110: 99.99 → NaN · 25221: 100.01 → NaN
+tested  · Customer account list after the 0.005 transfer → 500 <!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www…
+manual · TRF-09: FAIL — Rule A5/A8: transfer of 0.005 answered 200 "Successfully transferred $0.005 from account #2877"; afterwards account 28773 → 500, account 28884 → 500, account list → 500. The accounts can no longer be read (reproduces Sta…
 ```
+<!-- /auto:bug-result:BUG-001 -->
 
 **Expected result:** The amount is rejected with 400 (or rounded to cents), and the accounts stay readable. Basis: A5 (amounts have at most 2 decimals), A8 (bad input → 4xx, never 5xx).
 
 **Evidence:**
 - `evidence/bugs/BUG-001/repro.md`
 - `evidence/exploration/observations.md` (probe E-TRF7, run last because it breaks the accounts)
-- `results/kept/2026-11-24T11-22-15Z-manual/screenshots/19-TRF-09-transfer-0.005.png` … `24-TRF-09-ui-activity.png`
+- Manual run <!-- auto:run:manual -->[`2026-11-24T11-22-15Z-manual`](../results/kept/2026-11-24T11-22-15Z-manual/summary.md)<!-- /auto:run:manual -->: screenshots `19-TRF-09-transfer-0.005.png` … `24-TRF-09-ui-activity.png` in its `screenshots/` folder
 
 **Notes / suspected cause / impact:**
 - Likely cause: the amount is stored with more precision than the balance column allows (or a rounding exception on read), so every later read of those accounts fails.
 - One request permanently locks a customer out of **all** their accounts, in the API and the UI. Combined with BUG-002, anyone could do this to any customer.
-- Accounts broken in this cycle, all on throwaway customers: 19671/19782 (Stage 1), 28773/28884 (manual run), 25110/25221 (Stage 4). Recovery needs a data fix.
+- Every run of this test breaks two accounts, so it only ever runs on throwaway customers (Stage 1 exploration, manual TRF-09, Stage 4 reproduction); the account numbers are in each run's evidence. Recovery needs a data fix.
 
 ---
 
@@ -133,27 +137,32 @@ web UI Accounts Overview → "An internal error has occurred and has been logged
 **ID:** BUG-002
 **Title:** API has no authentication: any caller can read any customer's profile (including SSN) and accounts, and move their money
 **Endpoint / area:** all endpoints; shown on `GET /customers/{id}`, `GET /accounts/{id}`, `POST /transfer` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:07:42–12:07:53 UTC (user R, customer 16541)
+**Environment:** <!-- auto:bug-env:BUG-002 -->public sandbox, 2026-11-24 12:07:42–12:07:53 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-002 -->
 **Severity:** Critical · **Priority:** P1
 **Related test case:** CUST-03, ACCT-04
 
 **Steps to reproduce:**
-1. Without logging in, and with no cookie or `Authorization` header, call `GET /customers/16541`.
-2. Call `GET /accounts/22557`.
-3. Call `POST /transfer?fromAccountId=22557&toAccountId=22668&amount=1`.
+1. Without logging in, and with no cookie or `Authorization` header, call `GET /customers/{customerId}` for a customer that is not yours.
+2. Call `GET /accounts/{S}` for one of its accounts.
+3. Call `POST /transfer?fromAccountId=S&toAccountId=T&amount=1`.
 
+<!-- auto:bug-result:BUG-002 -->
 **Request:**
 ```
 GET /parabank/services/bank/customers/16541
-Accept: application/json        (no Cookie, no Authorization)
+GET /parabank/services/bank/accounts/22557
+POST /parabank/services/bank/transfer?fromAccountId=22557&toAccountId=22668&amount=1
 ```
 
 **Actual result:**
 ```
-200 {"id":16541,"firstName":"QA","lastName":"Throwaway","address":{...},"phoneNumber":"5550000","ssn":"<REDACTED>"}
-GET /accounts/22557 → 200 {"id":22557,"customerId":16541,"type":"CHECKING","balance":100.00}
-POST /transfer ... amount=1 → 200 "Successfully transferred $1 ..."   22557: 100 → 99; 22668: 100 → 101
+tested  · Profile of the customer, no cookie or credentials → 200 {"id":16541,"firstName":"QA","lastName":"Throwaway","address":{"street":"1 Test St","city":"Testville","state":"TS","zipCode":"00000"},"phoneNumber":"…
+tested  · Account of the customer, no cookie or credentials → 200 {"id":22557,"customerId":16541,"type":"CHECKING","balance":100.00}
+tested  · Transfer 1.00 S → T with no cookie or credentials → 200 Successfully transferred $1 from account #22557 to account #22668   22557: 100.00 → 99.00 · 22668: 100.00 → 101.00
+Stage 3 · CUST-03: [A6] rejected with 401 or 403 (got 200) · [A6] no SSN in the response
+Stage 3 · ACCT-04: [A6] rejected with 401 or 403 (got 200) · [A6] no balance data returned
 ```
+<!-- /auto:bug-result:BUG-002 -->
 
 **Expected result:** 401 or 403 and no data; no money moves. Basis: A6 (only the logged-in owner can see or move their money). The Swagger file declares no security scheme, so this needs R&D confirmation (S1). It may be intended for a demo; it must not exist in a real bank.
 
@@ -170,7 +179,7 @@ POST /transfer ... amount=1 → 200 "Successfully transferred $1 ..."   22557: 1
 **ID:** BUG-003
 **Title:** Negative amounts are accepted by transfer, deposit, withdraw and bill pay, and move money in the opposite direction
 **Endpoint / area:** `POST /transfer`, `/deposit`, `/withdraw`, `/billpay` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:08:03–12:08:31 UTC (user R, accounts S 22557, T 22668)
+**Environment:** <!-- auto:bug-env:BUG-003 -->public sandbox, 2026-11-24 12:08:03–12:08:31 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-003 -->
 **Severity:** Critical · **Priority:** P1
 **Related test case:** TRF-03, DEP-03, WDR-03, BILL-04
 
@@ -181,18 +190,29 @@ POST /transfer ... amount=1 → 200 "Successfully transferred $1 ..."   22557: 1
 4. `POST /withdraw?accountId=S&amount=-5`.
 5. `POST /billpay?accountId=S&amount=-5` with a full payee.
 
+<!-- auto:bug-result:BUG-003 -->
 **Request:**
 ```
 POST /parabank/services/bank/transfer?fromAccountId=22557&toAccountId=22668&amount=-1
+POST /parabank/services/bank/deposit?accountId=22557&amount=-5
+POST /parabank/services/bank/withdraw?accountId=22557&amount=-5
+POST /parabank/services/bank/billpay?accountId=22557&amount=-5
+{"name":"City Utilities","address":{"street":"1 Main St","city":"Springfield","state":"IL","zipCode":"62701"},"phoneNumber":"5550100","accountNumber":22668}
 ```
 
 **Actual result:**
 ```
-transfer -1 → 200 "Successfully transferred $-1 ..."   S 98 → 99,  T 102 → 101   (money taken from the destination)
-deposit  -5 → 200 "Successfully deposited $-5 ..."     S 99 → 94
-withdraw -5 → 200 "Successfully withdrew $-5 ..."      S 94 → 99                 (cash "withdrawal" adds money)
-billpay  -5 → 200 {"payeeName":"City Utilities","amount":-5,...}   S 99 → 104    (paying a bill adds money)
+control · Control: transfer 1.00 S → T → 200 Successfully transferred $1 from account #22557 to account #22668   22557: 99.00 → 98.00 · 22668: 101.00 → 102.00
+tested  · Transfer −1.00 S → T → 200 Successfully transferred $-1 from account #22557 to account #22668   22557: 98.00 → 99.00 · 22668: 102.00 → 101.00
+tested  · Deposit −5.00 into S → 200 Successfully deposited $-5 to account #22557   22557: 99.00 → 94.00
+tested  · Withdraw −5.00 from S → 200 Successfully withdrew $-5 from account #22557   22557: 94.00 → 99.00
+tested  · Bill pay −5.00 from S → 200 {"payeeName":"City Utilities","amount":-5,"accountId":22557}   22557: 99.00 → 104.00 · 22668: 101.00 → 101.00
+Stage 3 · TRF-03: [A3] rejected with 4xx (got 200) · [A3] account 26886 balance unchanged (-100000 -> -99900 cents) · [A3] account 26997 balance unchanged (120000 -> 119900 cents)
+Stage 3 · DEP-03: [A3] rejected with 4xx (got 200) · [A3] account 27108 balance unchanged (10000 -> 9500 cents) · [A3] no transaction added to S (new: ["Credit -500"])
+Stage 3 · WDR-03: [A3] rejected with 4xx (got 200) · [A3] account 27219 balance unchanged (-100000 -> -99500 cents) · [A3] no transaction added to S (new: ["Debit -500"])
+Stage 3 · BILL-04: [A3] rejected with 4xx (got 200) · [A3] account 27330 balance unchanged (-100100 -> -99600 cents) · [A3] no transaction added to S (new: ["Debit -500"])
 ```
+<!-- /auto:bug-result:BUG-003 -->
 
 **Expected result:** 400 for any amount ≤ 0; balances unchanged. Basis: A3 (amounts must be greater than zero).
 
@@ -212,27 +232,36 @@ billpay  -5 → 200 {"payeeName":"City Utilities","amount":-5,...}   S 99 → 10
 **ID:** BUG-004
 **Title:** Transfer, withdraw and bill pay accept amounts above the account balance (unlimited overdraft)
 **Endpoint / area:** `POST /transfer`, `/withdraw`, `/billpay` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:10:04–12:10:23 UTC (user R, T 22668)
+**Environment:** <!-- auto:bug-env:BUG-004 -->public sandbox, 2026-11-24 12:10:04–12:10:23 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-004 -->
 **Severity:** High · **Priority:** P1
 **Related test case:** TRF-02, WDR-02, BILL-02
 
 **Steps to reproduce:**
-1. Control: transfer T's exact balance (102.00) to S → 200, T = 0.00.
+1. Control: transfer T's exact balance to S → 200, T = 0.00.
 2. `POST /transfer?fromAccountId=T&toAccountId=S&amount=0.01` (T holds 0.00).
 3. `POST /withdraw?accountId=T&amount=1000`.
 4. `POST /billpay?accountId=T&amount=1000` with a full payee.
 
+<!-- auto:bug-result:BUG-004 -->
 **Request:**
 ```
+POST /parabank/services/bank/transfer?fromAccountId=22668&toAccountId=22557&amount=0.01
 POST /parabank/services/bank/withdraw?accountId=22668&amount=1000
+POST /parabank/services/bank/billpay?accountId=22668&amount=1000
+{"name":"City Utilities","address":{"street":"1 Main St","city":"Springfield","state":"IL","zipCode":"62701"},"phoneNumber":"5550100","accountNumber":22557}
 ```
 
 **Actual result:**
 ```
-transfer 0.01 → 200   T 0.00 → -0.01
-withdraw 1000 → 200   T -0.01 → -1000.01
-billpay  1000 → 200   T -1000.01 → -2000.01
+control · Control: transfer the exact balance of T to S → 200 Successfully transferred $102.00 from account #22668 to account #22557   22557: 101.00 → 203.00 · 22668: 102.00 → 0.00
+tested  · Transfer 0.01 more than T holds (T = 0.00) → 200 Successfully transferred $0.01 from account #22668 to account #22557   22557: 203.00 → 203.01 · 22668: 0.00 → -0.01
+tested  · Withdraw 1000.00 from T → 200 Successfully withdrew $1000 from account #22668   22668: -0.01 → -1000.01
+tested  · Bill pay 1000.00 from T → 200 {"payeeName":"City Utilities","amount":1000,"accountId":22668}   22668: -1000.01 → -2000.01
+Stage 3 · TRF-02: [A4] rejected with 4xx (got 200) · [A4] account 26886 balance unchanged (0 -> -100000 cents) · [A4] account 26997 balance unchanged (20000 -> 120000 cents)
+Stage 3 · WDR-02: [A4] rejected with 4xx (got 200) · [A4] account 27219 balance unchanged (9500 -> -100000 cents) · [A4] no transaction added to S (new: ["Debit 109500"])
+Stage 3 · BILL-02: [A4] rejected with 4xx (got 200) · [A4] account 27330 balance unchanged (9500 -> -100000 cents) · [A4] no transaction added to S (new: ["Debit 109500"])
 ```
+<!-- /auto:bug-result:BUG-004 -->
 
 **Expected result:** Rejected (4xx, e.g. "insufficient funds"); balance unchanged. Basis: A4 (you can't take out more money than the account holds). No overdraft policy is documented anywhere (S2); the web UI also offers no overdraft.
 
@@ -252,15 +281,16 @@ billpay  1000 → 200   T -1000.01 → -2000.01
 **ID:** BUG-005
 **Title:** `requestLoan` approves a loan whose down payment is larger than the source account's balance and debits it, leaving the account negative
 **Endpoint / area:** `POST /requestLoan` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:10:43 UTC (user R, S 22557)
+**Environment:** <!-- auto:bug-env:BUG-005 -->public sandbox, 2026-11-24 12:10:43–12:10:43 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-005 -->
 **Severity:** High · **Priority:** P1
 **Related test case:** LOAN-04 (redesigned so that only this rule applies: the loan amount stays above the down payment)
 
 **Steps to reproduce:**
 1. Make sure the customer's total balance across accounts is positive (it is for a new customer).
-2. Source account S holds 153.01.
-3. `POST /requestLoan?customerId=16541&amount=1000&downPayment=253.01&fromAccountId=22557`.
+2. Read the balance B of source account S.
+3. `POST /requestLoan?customerId={id}&amount=1000&downPayment=B+100.00&fromAccountId=S` (the down payment is 100.00 more than S holds; the loan stays above the down payment).
 
+<!-- auto:bug-result:BUG-005 -->
 **Request:**
 ```
 POST /parabank/services/bank/requestLoan?customerId=16541&amount=1000&downPayment=253.01&fromAccountId=22557
@@ -268,10 +298,10 @@ POST /parabank/services/bank/requestLoan?customerId=16541&amount=1000&downPaymen
 
 **Actual result:**
 ```
-200 {"responseDate":1795522241311,"loanProviderName":"Wealth Securities Dynamic Loans (WSDL)","approved":true,"accountId":23001}
-S 153.01 → -100.00
-Stage 3 (LOAN-04, down payment = S + 10.00, loan = down payment + 100.00): approved; S 30.00 → -10.00, a loan account opened, a 40.00 down-payment Debit added to S
+tested  · Request loan 1000 with down payment 253.01 (S holds 153.01) → 200 {"responseDate":1795522241311,"loanProviderName":"Wealth Securities Dynamic Loans (WSDL)","approved":true,"accountId":23001}   22557: 153.01 → -100.00
+Stage 3 · LOAN-04: [A4] denied (got 200, approved true) · [A4] account 27552 balance unchanged (3000 -> -1000 cents) · [A4] no loan account opened
 ```
+<!-- /auto:bug-result:BUG-005 -->
 
 **Expected result:** Denied (`approved: false` with a reason), nothing changes. Basis: A4. ParaBank itself denies loans with "insufficient funds for down payment" in other cases (S-LOAN), so the intent exists.
 
@@ -289,34 +319,40 @@ Stage 3 (LOAN-04, down payment = S + 10.00, loan = down payment + 100.00): appro
 **ID:** BUG-006
 **Title:** An approved loan is not recorded in the loan account's transaction history: the account shows a 500.00 balance with no transaction explaining it
 **Endpoint / area:** `POST /requestLoan`; `GET /accounts/{loanId}/transactions` (in scope); web UI account activity
-**Environment:** public sandbox, 2026-11-24 12:10:30–12:10:36 UTC (user R, loan account 22890)
+**Environment:** <!-- auto:bug-env:BUG-006 -->public sandbox, 2026-11-24 12:10:30–12:10:36 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-006 -->
 **Severity:** High · **Priority:** P2
 **Related test case:** LOAN-01, JRN-01 J13e
 
 **Steps to reproduce:**
-1. `POST /requestLoan?customerId=16541&amount=500&downPayment=50&fromAccountId=22557` → approved, `accountId` 22890.
-2. `GET /accounts/22890` → LOAN, balance 500.00.
-3. `GET /accounts/22890/transactions`.
-4. Control: `GET /accounts/22557/transactions/amount/50` (source account).
+1. `POST /requestLoan?customerId={id}&amount=500&downPayment=50&fromAccountId=S` → approved; the response's `accountId` is the new loan account L.
+2. `GET /accounts/L` → LOAN, balance 500.00.
+3. `GET /accounts/L/transactions`.
+4. Control: `GET /accounts/S/transactions/amount/50` (source account: the down payment is there).
 
+<!-- auto:bug-result:BUG-006 -->
 **Request:**
 ```
+POST /parabank/services/bank/requestLoan?customerId=16541&amount=500&downPayment=50&fromAccountId=22557
 GET /parabank/services/bank/accounts/22890/transactions
 ```
 
 **Actual result:**
 ```
-200 []
-source account: [{"id":69088,"type":"Debit","amount":50.00,"description":"Down Payment for Loan # 22890"}]   ← recorded
-web UI activity of a loan account: "No transactions found." (results/kept/2026-11-24T11-21-47Z-ui/screenshots/activity-L-28329.png)
+tested  · Request loan 500, down payment 50, from S → 200 {"responseDate":1795522229153,"loanProviderName":"Wealth Securities Dynamic Loans (WSDL)","approved":true,"accountId":22890}   22557: 203.01 → 153.01
+read    · Loan account → 200 {"id":22890,"customerId":16541,"type":"LOAN","balance":500.00}
+tested  · Transactions of the loan account → 200 []
+control · Transactions of S with amount 50.00 → 200 [{"id":69088,"accountId":22557,"type":"Debit","date":1795478400000,"amount":50.00,"description":"Down Payment for Loan # 22890"}]
+Stage 3 · LOAN-01: [C1] loanResponse schema (data.responseDate should be string) · [A12] the loan is recorded in the loan account history (found 0)
+Stage 3 · JRN-01 J13e: [A12] the loan is recorded in the loan account history (found 0)
 ```
+<!-- /auto:bug-result:BUG-006 -->
 
 **Expected result:** The loan account history holds at least one entry that explains its balance (loan disbursement / principal). Basis: A2 (every money movement creates a matching transaction) and A12, both proposed rules. How a loan should appear is open question S7/Q9.
 
 **Evidence:**
 - `evidence/bugs/BUG-006/repro.md`
 - `evidence/bugs/BUG-006/stage3-failures.json`
-- `results/kept/2026-11-24T11-21-47Z-ui/summary.md` (check J13: UI and API agree, 0 rows)
+- UI cross-check <!-- auto:run:ui -->[`2026-11-24T11-21-47Z-ui`](../results/kept/2026-11-24T11-21-47Z-ui/summary.md)<!-- /auto:run:ui --> (check J13: UI and API agree, 0 rows)
 - STD §5.9 E14
 
 **Notes / suspected cause / impact:**
@@ -330,7 +366,7 @@ web UI activity of a loan account: "No transactions found." (results/kept/2026-1
 **ID:** BUG-007
 **Title:** `POST /billpay` with an empty payee `{}` is accepted and takes the money ("Bill Payment to null")
 **Endpoint / area:** `POST /billpay` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:09:04–12:09:11 UTC (user R, S 22557)
+**Environment:** <!-- auto:bug-env:BUG-007 -->public sandbox, 2026-11-24 12:09:04–12:09:11 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-007 -->
 **Severity:** High · **Priority:** P2
 **Related test case:** BILL-03
 
@@ -339,19 +375,21 @@ web UI activity of a loan account: "No transactions found." (results/kept/2026-1
 2. `POST /billpay?accountId=S&amount=1` with body `{}`.
 3. `GET /accounts/S/transactions/amount/1`.
 
+<!-- auto:bug-result:BUG-007 -->
 **Request:**
 ```
 POST /parabank/services/bank/billpay?accountId=22557&amount=1
-Content-Type: application/json
-
 {}
 ```
 
 **Actual result:**
 ```
-200 {"payeeName":null,"amount":1,"accountId":22557}     S 103 → 102
-a "Bill Payment to null" debit is recorded
+control · Control: bill pay 1.00 with full payee → 200 {"payeeName":"City Utilities","amount":1,"accountId":22557}   22557: 104.00 → 103.00
+tested  · Bill pay 1.00 with empty payee {} → 200 {"payeeName":null,"amount":1,"accountId":22557}   22557: 103.00 → 102.00
+read    · Transactions of S with amount 1.00 → 200 [{"id":65314,"accountId":22557,"type":"Debit","date":1795478400000,"amount":1.00,"description":"Funds Transfer Sent"},{"id":65536,"accountId":22557,"t…
+Stage 3 · BILL-03: [A11] rejected with 4xx (got 200) · [A11] account 27330 balance unchanged (-100000 -> -100100 cents) · [A11] no transaction added to S (new: ["Debit 100"])
 ```
+<!-- /auto:bug-result:BUG-007 -->
 
 **Expected result:** 400 naming the missing payee fields; no money taken. Basis: A11 (bill pay needs a payee; the web UI bill-pay form marks every field as required). Required fields are open question S5.
 
@@ -368,14 +406,15 @@ a "Bill Payment to null" debit is recorded
 **ID:** BUG-008
 **Title:** API login sends the password in the URL path (`GET /login/{username}/{password}`)
 **Endpoint / area:** `GET /login/{username}/{password}` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:07:54 UTC (user R); manual run `2026-11-24T11-22-15Z-manual`
+**Environment:** <!-- auto:bug-env:BUG-008 -->public sandbox, 2026-11-24 12:07:54–12:07:54 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); manual run [`2026-11-24T11-22-15Z-manual`](../results/kept/2026-11-24T11-22-15Z-manual/summary.md) (AUTH-03)<!-- /auto:bug-env:BUG-008 -->
 **Severity:** High · **Priority:** P2
 **Related test case:** AUTH-03 (manual)
 
 **Steps to reproduce:**
 1. Open the API documentation: login is `GET /login/{username}/{password}`.
-2. `GET /login/qa_s4_mwungyju/NotMyRealPassword-123` (deliberately wrong password).
+2. `GET /login/{username}/NotMyRealPassword-123` (deliberately wrong password).
 
+<!-- auto:bug-result:BUG-008 -->
 **Request:**
 ```
 GET /parabank/services/bank/login/qa_s4_mwungyju/NotMyRealPassword-123
@@ -383,14 +422,15 @@ GET /parabank/services/bank/login/qa_s4_mwungyju/NotMyRealPassword-123
 
 **Actual result:**
 ```
-400 Invalid username and/or password     ← the server reads the password from the URL path
+tested  · Login with a wrong password: the server parses the password from the URL path → 400 Invalid username and/or password
+manual · AUTH-03: FAIL — Rule A6 not met: the only API login is GET /login/{username}/{password}, so the password travels in the URL path (server answered 400 "Invalid username and/or password" to the wrong password, proving it reads it from the…
 ```
+<!-- /auto:bug-result:BUG-008 -->
 
 **Expected result:** Credentials sent in a POST body or an `Authorization` header over HTTPS, never in the URL. Basis: A6 and common security practice (URLs end up in proxy, CDN and server access logs, and in browser history).
 
 **Evidence:**
-- `results/kept/2026-11-24T11-22-15Z-manual/screenshots/01-AUTH-03-swagger.png`
-- `results/kept/2026-11-24T11-22-15Z-manual/screenshots/02-AUTH-03-wrong-password.png`
+- Manual run <!-- auto:run:manual -->[`2026-11-24T11-22-15Z-manual`](../results/kept/2026-11-24T11-22-15Z-manual/summary.md)<!-- /auto:run:manual -->: screenshots `01-AUTH-03-swagger.png` and `02-AUTH-03-wrong-password.png` in its `screenshots/` folder
 - `evidence/bugs/BUG-008/repro.md`
 
 **Notes / suspected cause / impact:**
@@ -402,16 +442,17 @@ GET /parabank/services/bank/login/qa_s4_mwungyju/NotMyRealPassword-123
 
 <a id="bug-009"></a>
 **ID:** BUG-009
-**Title:** `POST /createAccount` response shows balance 0 while the new account actually holds its opening amount (100.00 here)
+**Title:** `POST /createAccount` response shows balance 0 while the new account actually holds its opening amount
 **Endpoint / area:** `POST /createAccount` (extended)
-**Environment:** public sandbox, 2026-11-24 12:09:52–12:09:54 UTC (user R)
+**Environment:** <!-- auto:bug-env:BUG-009 -->public sandbox, 2026-11-24 12:09:52–12:09:54 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-009 -->
 **Severity:** Medium · **Priority:** P2
 **Related test case:** JRN-01 J06b (detected by the journey; no suite case covers this endpoint)
 
 **Steps to reproduce:**
-1. `POST /createAccount?customerId=16541&newAccountType=0&fromAccountId=22446`.
+1. `POST /createAccount?customerId={id}&newAccountType=0&fromAccountId=A`.
 2. `GET /accounts/{id}` for the returned ID.
 
+<!-- auto:bug-result:BUG-009 -->
 **Request:**
 ```
 POST /parabank/services/bank/createAccount?customerId=16541&newAccountType=0&fromAccountId=22446
@@ -419,12 +460,13 @@ POST /parabank/services/bank/createAccount?customerId=16541&newAccountType=0&fro
 
 **Actual result:**
 ```
-200 {"id":22779,"customerId":16541,"type":"CHECKING","balance":0}
-GET /accounts/22779 → {"id":22779,...,"balance":100.00}      source 22446: 315.50 → 215.50
-journey J06b (Stage 3 run): 0 vs 10000 cents
+tested  · Open a new CHECKING account from A → 200 {"id":22779,"customerId":16541,"type":"CHECKING","balance":0}   22446: 315.50 → 215.50
+read    · Read the new account → 200 {"id":22779,"customerId":16541,"type":"CHECKING","balance":100.00}
+Stage 3 · JRN-01 J06b: [A7] create response balance = account balance (0 vs 10000 cents)
 ```
+<!-- /auto:bug-result:BUG-009 -->
 
-**Expected result:** The response shows the real balance (the opening amount moved in, 100.00 here; the amount itself is a site setting, S12). Basis: A7 (the same data looks the same from every endpoint).
+**Expected result:** The response shows the real balance (the opening amount moved in; the amount itself is a site setting, S12). Basis: A7 (the same data looks the same from every endpoint).
 
 **Evidence:**
 - `evidence/bugs/BUG-009/repro.md`
@@ -442,7 +484,7 @@ journey J06b (Stage 3 run): 0 vs 10000 cents
 **ID:** BUG-010
 **Title:** Zero amounts are accepted by transfer, deposit and withdraw and recorded as 0.00 transactions
 **Endpoint / area:** `POST /transfer`, `/deposit`, `/withdraw` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:08:39–12:08:52 UTC (user R, S 22557)
+**Environment:** <!-- auto:bug-env:BUG-010 -->public sandbox, 2026-11-24 12:08:39–12:08:52 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-010 -->
 **Severity:** Medium · **Priority:** P2
 **Related test case:** TRF-04, DEP-02, WDR-04
 
@@ -452,16 +494,25 @@ journey J06b (Stage 3 run): 0 vs 10000 cents
 3. `POST /withdraw?accountId=S&amount=0`.
 4. `GET /accounts/S/transactions/amount/0`.
 
+<!-- auto:bug-result:BUG-010 -->
 **Request:**
 ```
+POST /parabank/services/bank/transfer?fromAccountId=22557&toAccountId=22668&amount=0
 POST /parabank/services/bank/deposit?accountId=22557&amount=0
+POST /parabank/services/bank/withdraw?accountId=22557&amount=0
 ```
 
 **Actual result:**
 ```
-all three → 200 "Successfully ... $0 ..."; balances unchanged
-transactions/amount/0 → 3 rows: Debit 0.00 "Funds Transfer Sent", Credit 0.00 "Deposit via Web Service", Debit 0.00 "Withdraw via Web Service"
+tested  · Transfer 0.00 S → T → 200 Successfully transferred $0 from account #22557 to account #22668   22557: 104.00 → 104.00 · 22668: 101.00 → 101.00
+tested  · Deposit 0.00 into S → 200 Successfully deposited $0 to account #22557   22557: 104.00 → 104.00
+tested  · Withdraw 0.00 from S → 200 Successfully withdrew $0 from account #22557   22557: 104.00 → 104.00
+read    · Transactions of S: 0.00 rows recorded? → 200 [{"id":66535,"accountId":22557,"type":"Debit","date":1795478400000,"amount":0.00,"description":"Funds Transfer Sent"},{"id":66757,"accountId":22557,"t…
+Stage 3 · TRF-04: [A3] rejected with 4xx (got 200) · [A3] no transaction added to S (new: ["Debit 0"]) · [A3] no transaction added to T (new: ["Credit 0"])
+Stage 3 · DEP-02: [A3] rejected with 4xx (got 200) · [A3] no transaction added to S (new: ["Credit 0"])
+Stage 3 · WDR-04: [A3] rejected with 4xx (got 200) · [A3] no transaction added to S (new: ["Debit 0"])
 ```
+<!-- /auto:bug-result:BUG-010 -->
 
 **Expected result:** 400; no transaction recorded. Basis: A3.
 
@@ -478,7 +529,7 @@ transactions/amount/0 → 3 rows: Debit 0.00 "Funds Transfer Sent", Credit 0.00 
 **ID:** BUG-011
 **Title:** Transfer from an account to itself is accepted and recorded
 **Endpoint / area:** `POST /transfer` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:08:57–12:08:58 UTC (user R, S 22557)
+**Environment:** <!-- auto:bug-env:BUG-011 -->public sandbox, 2026-11-24 12:08:57–12:08:58 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-011 -->
 **Severity:** Medium · **Priority:** P2
 **Related test case:** TRF-05
 
@@ -486,6 +537,7 @@ transactions/amount/0 → 3 rows: Debit 0.00 "Funds Transfer Sent", Credit 0.00 
 1. `POST /transfer?fromAccountId=S&toAccountId=S&amount=1`.
 2. `GET /accounts/S/transactions/amount/1`.
 
+<!-- auto:bug-result:BUG-011 -->
 **Request:**
 ```
 POST /parabank/services/bank/transfer?fromAccountId=22557&toAccountId=22557&amount=1
@@ -493,9 +545,11 @@ POST /parabank/services/bank/transfer?fromAccountId=22557&toAccountId=22557&amou
 
 **Actual result:**
 ```
-200 "Successfully transferred $1 from account #22557 to account #22557"   balance unchanged (104.00)
-a "Funds Transfer Sent" debit and a "Funds Transfer Received" credit of 1.00 are added to S
+tested  · Transfer 1.00 S → S → 200 Successfully transferred $1 from account #22557 to account #22557   22557: 104.00 → 104.00
+read    · Transactions of S with amount 1.00 → 200 [{"id":65314,"accountId":22557,"type":"Debit","date":1795478400000,"amount":1.00,"description":"Funds Transfer Sent"},{"id":65536,"accountId":22557,"t…
+Stage 3 · TRF-05: [A10] rejected with 4xx (got 200) · [A10] no transaction added to S (new: ["Credit 100","Debit 100"])
 ```
+<!-- /auto:bug-result:BUG-011 -->
 
 **Expected result:** 400 ("source and destination must differ"); nothing recorded. Basis: A10 (proposed; S4).
 
@@ -512,7 +566,7 @@ a "Funds Transfer Sent" debit and a "Funds Transfer Received" credit of 1.00 are
 **ID:** BUG-012
 **Title:** `POST /transfer` without an amount returns 500 (HTML error page); a non-numeric amount returns 404
 **Endpoint / area:** `POST /transfer` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:09:19–12:09:37 UTC (user R)
+**Environment:** <!-- auto:bug-env:BUG-012 -->public sandbox, 2026-11-24 12:09:19–12:09:37 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-012 -->
 **Severity:** Medium · **Priority:** P2
 **Related test case:** TRF-07
 
@@ -521,17 +575,21 @@ a "Funds Transfer Sent" debit and a "Funds Transfer Received" credit of 1.00 are
 2. `POST /transfer?fromAccountId=S&toAccountId=T` (no amount).
 3. `POST /transfer?fromAccountId=S&toAccountId=T&amount=abc`.
 
+<!-- auto:bug-result:BUG-012 -->
 **Request:**
 ```
 POST /parabank/services/bank/transfer?fromAccountId=22557&toAccountId=22668
+POST /parabank/services/bank/transfer?fromAccountId=22557&toAccountId=22668&amount=abc
 ```
 
 **Actual result:**
 ```
-no amount   → 500 <!DOCTYPE html> ... <title>ParaBank | Error</title> ...
-amount=abc  → 404 (empty body)
-balances unchanged in both cases
+control · Control: transfer 1.00 S → T → 200 Successfully transferred $1 from account #22557 to account #22668   22557: 102.00 → 101.00 · 22668: 101.00 → 102.00
+tested  · Transfer without amount → 500 <!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www…   22557: 101.00 → 101.00 · 22668: 102.00 → 102.00
+tested  · Transfer with amount "abc" → 404    22557: 101.00 → 101.00 · 22668: 102.00 → 102.00
+Stage 3 · TRF-07: [C1] rejected with 4xx (got 500) · [A8] no server error (got 500)
 ```
+<!-- /auto:bug-result:BUG-012 -->
 
 **Expected result:** 400 with a message naming the missing or invalid parameter. Basis: C1 (amount is a required parameter) and A8 (bad input → 4xx, never 5xx).
 
@@ -551,7 +609,7 @@ balances unchanged in both cases
 **ID:** BUG-013
 **Title:** `GET .../transactions/month/{month}/type/{type}` returns 500 for any type other than `Credit`, `Debit`, `All` (e.g. `CREDIT`)
 **Endpoint / area:** transaction month/type filter (in scope)
-**Environment:** public sandbox, 2026-11-24 12:09:38–12:09:42 UTC (user R, S 22557)
+**Environment:** <!-- auto:bug-env:BUG-013 -->public sandbox, 2026-11-24 12:09:38–12:09:42 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-013 -->
 **Severity:** Medium · **Priority:** P2
 **Related test case:** HIST-04
 
@@ -560,15 +618,21 @@ balances unchanged in both cases
 2. `GET /accounts/S/transactions/month/November/type/CREDIT`.
 3. `GET /accounts/S/transactions/month/November/type/foo`.
 
+<!-- auto:bug-result:BUG-013 -->
 **Request:**
 ```
 GET /parabank/services/bank/accounts/22557/transactions/month/November/type/CREDIT
+GET /parabank/services/bank/accounts/22557/transactions/month/November/type/foo
 ```
 
 **Actual result:**
 ```
-500 <!DOCTYPE html> ... <title>ParaBank | Error</title> ...      (same for "foo")
+control · Control: month filter with type Credit → 200 [{"id":64981,"accountId":22557,"type":"Credit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Received"},{"id":65980,"accountId":2…
+tested  · Month filter with type CREDIT → 500 <!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www…
+tested  · Month filter with type foo → 500 <!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www…
+Stage 3 · HIST-04: [A8] no server error (got 500) · [A8] rejected with 4xx (got 500)
 ```
+<!-- /auto:bug-result:BUG-013 -->
 
 **Expected result:** 400 listing the allowed values, or case-insensitive matching. Basis: A8. The allowed values are not documented (S9).
 
@@ -585,14 +649,15 @@ GET /parabank/services/bank/accounts/22557/transactions/month/November/type/CRED
 **ID:** BUG-014
 **Title:** Date filters silently return an empty list when the date is in another format (e.g. ISO `2026-11-24`)
 **Endpoint / area:** `GET .../transactions/onDate/{onDate}` (and `fromDate/toDate`) (in scope)
-**Environment:** public sandbox, 2026-11-24 12:09:44–12:09:45 UTC (user R, S 22557)
+**Environment:** <!-- auto:bug-env:BUG-014 -->public sandbox, 2026-11-24 12:09:44–12:09:45 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-014 -->
 **Severity:** Medium · **Priority:** P3
 **Related test case:** HIST-05
 
 **Steps to reproduce:**
-1. Control: `GET /accounts/S/transactions/onDate/11-24-2026` → today's rows.
-2. `GET /accounts/S/transactions/onDate/2026-11-24`.
+1. Control: `GET /accounts/S/transactions/onDate/{today as MM-dd-yyyy}` → today's rows.
+2. `GET /accounts/S/transactions/onDate/{today as yyyy-MM-dd}`.
 
+<!-- auto:bug-result:BUG-014 -->
 **Request:**
 ```
 GET /parabank/services/bank/accounts/22557/transactions/onDate/2026-11-24
@@ -600,8 +665,11 @@ GET /parabank/services/bank/accounts/22557/transactions/onDate/2026-11-24
 
 **Actual result:**
 ```
-200 []        (the same account has rows dated 2026-11-24: control returns them)
+control · Control: onDate in MM-dd-yyyy → 200 [{"id":64981,"accountId":22557,"type":"Credit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Received"},{"id":65314,"accountId":2…
+tested  · onDate in ISO yyyy-MM-dd → 200 []
+Stage 3 · HIST-05: [A8] rejected with 4xx (got 200)
 ```
+<!-- /auto:bug-result:BUG-014 -->
 
 **Expected result:** 400 "date must be MM-dd-yyyy", or the same rows as the control. Basis: A8. The date format is not documented (S10).
 
@@ -617,7 +685,7 @@ GET /parabank/services/bank/accounts/22557/transactions/onDate/2026-11-24
 **ID:** BUG-015
 **Title:** Date fields are returned as epoch-millisecond numbers, but the contract declares date-time strings (`Transaction.date`, `LoanResponse.responseDate`)
 **Endpoint / area:** every transaction endpoint; `POST /requestLoan` (in scope)
-**Environment:** public sandbox, 2026-11-24 12:09:47 and 12:10:30 UTC (user R)
+**Environment:** <!-- auto:bug-env:BUG-015 -->public sandbox, 2026-11-24 12:09:47–12:10:30 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541); detected by API run [`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:bug-env:BUG-015 -->
 **Severity:** Medium · **Priority:** P3
 **Related test case:** HIST-01, LOAN-01, JRN-01 J13a
 
@@ -625,16 +693,22 @@ GET /parabank/services/bank/accounts/22557/transactions/onDate/2026-11-24
 1. `GET /accounts/S/transactions` and check the type of `date`.
 2. `POST /requestLoan?...` and check the type of `responseDate`.
 
+<!-- auto:bug-result:BUG-015 -->
 **Request:**
 ```
 GET /parabank/services/bank/accounts/22557/transactions
+POST /parabank/services/bank/requestLoan?customerId=16541&amount=500&downPayment=50&fromAccountId=22557
 ```
 
 **Actual result:**
 ```
-[{"id":64981,"accountId":22557,"type":"Credit","date":1795478400000,"amount":100.00,...}]
-{"responseDate":1795522229153,"loanProviderName":"...","approved":true,"accountId":22890}
+tested  · Transaction list: type of the date field → 200 [{"id":64981,"accountId":22557,"type":"Credit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Received"},{"id":65314,"accountId":2…
+tested  · LoanResponse.responseDate type (same call as BUG-006) → 200 {"responseDate":1795522229153,"loanProviderName":"Wealth Securities Dynamic Loans (WSDL)","approved":true,"accountId":22890}   22557: 203.01 → 153.01
+Stage 3 · LOAN-01: [C1] loanResponse schema (data.responseDate should be string) · [A12] the loan is recorded in the loan account history (found 0)
+Stage 3 · HIST-01: [C1] Transaction.date is a date-time string (got number)
+Stage 3 · JRN-01 J13a: [C1] loanResponse schema (data.responseDate should be string)
 ```
+<!-- /auto:bug-result:BUG-015 -->
 
 **Expected result:** ISO 8601 strings, as declared in `docs/exercise/02_parabank_openapi.json` (`type: string, format: date-time`). Basis: C1.
 
@@ -654,37 +728,41 @@ GET /parabank/services/bank/accounts/22557/transactions
 **ID:** BUG-016
 **Title:** `POST /transfer` loses debits when several transfers from the same account run at the same time: the source balance drops less than the money sent, so money is created
 **Endpoint / area:** `POST /transfer` (in scope) · effect on `GET /accounts/{id}` balance
-**Environment:** public sandbox, 2026-11-24 11:41–12:00 UTC; load run `2026-11-24T11-41-04Z-load` (customer 12656) and isolation run `2026-11-24T11-55-56Z-load` (customer 14543), both throwaway customers. First seen on 2026-11-23/24 in two earlier load runs (32.00 and 16.00 created), which were replaced by this cycle's runs
+**Environment:** <!-- auto:bug-env:BUG-016 -->public sandbox, 2026-11-24 11:41–11:57 UTC; load run [`2026-11-24T11-41-04Z-load`](../results/kept/2026-11-24T11-41-04Z-load/summary.md) (throwaway customer 12656) and isolation run [`2026-11-24T11-55-56Z-load`](../results/kept/2026-11-24T11-55-56Z-load/summary.md) (throwaway customer 14543)<!-- /auto:bug-env:BUG-016 -->. First seen on 2026-11-23/24 in two earlier load runs (32.00 and 16.00 created), which were replaced by this cycle's runs
 **Severity:** Critical · **Priority:** P1
 **Related test case:** NFR-02 — detected by the load test's reconciliation (L6) after L4 "concurrent transfers"; isolated with a sequential control on a fresh customer
 
 **Steps to reproduce:**
-1. Open accounts S and T for one customer; deposit 500.00 into S (the isolation run starts with S 600.00, T 100.00).
+1. Open accounts S and T for one customer; deposit 500.00 into S (with the site's opening amount of 100.00, S starts at 600.00 and T at 100.00).
 2. Control: send 5 transfers of 1.00 from S to T **one after another**. S drops 5.00, T rises 5.00.
 3. Send 5 transfers of 1.00 from S to T **at the same moment** (5 parallel requests). Repeat a few times, 7.5 s apart.
 4. Read `GET /accounts/S`, `GET /accounts/T` and `GET /accounts/S/transactions`.
 
+<!-- auto:bug-result:BUG-016 -->
 **Request:**
 ```
 5 × in parallel:
 POST /parabank/services/bank/transfer?fromAccountId=17451&toAccountId=17562&amount=1.00
-Accept: application/json
 ```
 
 **Actual result:**
 ```
-every request: 200  Successfully transferred $1.00 from account #17451 to account #17562
-isolation: control (5 sequential) and round 1 reconcile; round 2: S −4.00, T +5.00 → S balance is 1.00 higher than the sum of its own transactions
-load run: 111 confirmed transfers → S −96.00, T +111.00, 111 debit rows on S → 15.00 created
-balances after each test: L3 sequential 0.00 gap · L4 5-at-once +15.00 (L5 not started: stop rule after a balance gap)
+every request: 200 "Successfully transferred $1.00 …"
+isolation · control: 5/5 confirmed, S -5.00, T +5.00 → reconciles
+isolation · round 1: 5/5 confirmed, S -5.00, T +5.00 → reconciles
+isolation · round 2: 5/5 confirmed, S -4.00, T +5.00 → 1.00 not debited from S (S is now 1.00 above the sum of its own transactions)
+isolation · round 3: 5/5 confirmed, S -5.00, T +5.00 → reconciles
+load run: 111 confirmed transfers → S -96.00, T +111.00 (expected S -111.00) → reconciliation FAIL
+balances after each test: L1 gap 0.00 · L2 gap 0.00 · L3 gap 0.00 · L4 gap +15.00 · L5 not started
 ```
+<!-- /auto:bug-result:BUG-016 -->
 
 **Expected result:** S decreases by exactly the confirmed amount and T increases by the same; S + T stays constant; each balance equals the sum of its account's transactions — however many requests arrive at once. Basis: A1 (a transfer takes and adds the same amount), A7 (the same data agrees across endpoints: balance vs. history).
 
 **Evidence:**
 - `evidence/bugs/BUG-016/repro.md` (both runs, every snapshot)
 - `evidence/bugs/BUG-016/load-reconciliation.json`, `evidence/bugs/BUG-016/isolation.json`
-- `results/kept/2026-11-24T11-41-04Z-load/summary.md` (per-test balances), `results/kept/2026-11-24T11-55-56Z-load/summary.md`
+- Load run <!-- auto:run:load -->[`2026-11-24T11-41-04Z-load`](../results/kept/2026-11-24T11-41-04Z-load/summary.md)<!-- /auto:run:load --> (per-test balances) and isolation run <!-- auto:run:isolation -->[`2026-11-24T11-55-56Z-load`](../results/kept/2026-11-24T11-55-56Z-load/summary.md)<!-- /auto:run:isolation -->
 
 **Notes / suspected cause / impact:**
 - Classic **lost update**: the debit reads the source balance, subtracts and writes it back without a row lock or atomic update, so parallel requests overwrite each other's debit. The credit side and the transaction rows are written correctly, which is why the history and the balance disagree.
@@ -698,7 +776,7 @@ balances after each test: L3 sequential 0.00 gap · L4 5-at-once +15.00 (L5 not 
 **ID:** BUG-017
 **Title:** `sellPosition` accepts selling more shares than the position holds: the position goes negative and the sale price is credited, so money is created
 **Endpoint / area:** `POST /customers/{customerId}/sellPosition` (extended) · effect on the account balance and `GET /positions/{positionId}`
-**Environment:** public sandbox, 2026-11-24 12:10:48–12:11:00 UTC (user R, customer 16541, account A 22446, position 13128); first seen in the Stage 1 exploration (probe E-INV1, throwaway customer 15098)
+**Environment:** <!-- auto:bug-env:BUG-017 -->public sandbox, 2026-11-24 12:10:48–12:11:00 UTC; reproduction run [`2026-11-24T12-07-32Z-repro`](../results/kept/2026-11-24T12-07-32Z-repro/summary.md) on throwaway user qa_s4_mwungyju (customer 16541)<!-- /auto:bug-env:BUG-017 -->
 **Severity:** Critical · **Priority:** P1
 **Related test case:** Stage 1 exploration E-INV1 (no suite case: buy/sell is an extended endpoint, covered only by the journey's normal buy and sell, J14–J15)
 
@@ -708,6 +786,7 @@ balances after each test: L3 sequential 0.00 gap · L4 5-at-once +15.00 (L5 not 
 3. `POST /customers/{id}/sellPosition?accountId=A&positionId=P&shares=100&pricePerShare=10` (the position holds 1 share).
 4. `GET /positions/P`.
 
+<!-- auto:bug-result:BUG-017 -->
 **Request:**
 ```
 POST /parabank/services/bank/customers/16541/sellPosition?accountId=22446&positionId=13128&shares=100&pricePerShare=10
@@ -715,12 +794,12 @@ POST /parabank/services/bank/customers/16541/sellPosition?accountId=22446&positi
 
 **Actual result:**
 ```
-buy 2 × 10.00   → 200   A 215.50 → 195.50, shares 2          (control)
-sell 1 × 12.00  → 200   A 195.50 → 207.50, shares 1          (control)
-sell 100 × 10.00 → 200 [{"positionId":13128,...,"shares":-99,"purchasePrice":10.0000}]   A 207.50 → 1207.50
-GET /positions/13128 → shares -99
-Stage 1 (E-INV1): same result, A 100,276.50 → 101,276.50, shares 1 → -99
+control · Control: buy 2 shares × 10.00 from A → 200 [{"positionId":13128,"customerId":16541,"name":"QA Test Stock","symbol":"QATS","shares":2,"purchasePrice":10.0000}]   22446: 215.50 → 195.50
+control · Control: sell 1 share × 12.00 to A → 200 [{"positionId":13128,"customerId":16541,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000}]   22446: 195.50 → 207.50
+tested  · Sell 100 shares × 10.00 (the position holds 1) → 200 [{"positionId":13128,"customerId":16541,"name":"QA Test Stock","symbol":"QATS","shares":-99,"purchasePrice":10.0000}]   22446: 207.50 → 1207.50
+read    · Position after the oversell → 200 {"positionId":13128,"customerId":16541,"name":"QA Test Stock","symbol":"QATS","shares":-99,"purchasePrice":10.0000}
 ```
+<!-- /auto:bug-result:BUG-017 -->
 
 **Expected result:** Rejected (4xx, "not enough shares"); the position keeps 1 share and the account is unchanged. Basis: A4 (you can't take out more than you hold, here shares) and A1 (money moves only between real holdings: a sale credits only the value of shares actually owned).
 

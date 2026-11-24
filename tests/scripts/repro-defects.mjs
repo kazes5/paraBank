@@ -499,9 +499,22 @@ writeFileSync(
     '',
   ].join('\n'),
 );
-if (publish)
+// Site trouble (rate limit, gateway errors, e.g. during a site reset) makes the run BLOCKED: its
+// responses describe the site, not ParaBank, so nothing is published (exit 3). A plain 500 is a result.
+const siteTrouble = Object.values(bundles)
+  .flatMap((b) => b.steps)
+  .filter(
+    (st) => st.status === 429 || (st.status >= 502 && st.status <= 504) || (st.status >= 520 && st.status <= 530),
+  );
+if (publish && !siteTrouble.length)
   for (const b of Object.keys(bundles)) cpSync(join(OUT, b), join('evidence', 'bugs', b), { recursive: true });
 rebuildIndex();
+if (siteTrouble.length) {
+  console.error(
+    `BLOCKED: ${siteTrouble.length} response(s) were rate limits or gateway errors (${[...new Set(siteTrouble.map((st) => st.status))].join(', ')}); the site was unavailable${publish ? ', so nothing was published' : ''}. Re-run after ./run.sh setup.`,
+  );
+  process.exit(3);
+}
 console.log(
   `\nBundles: ${Object.keys(bundles).sort().join(' ')}${publish ? ' (published to evidence/bugs/)' : ''}\nRun: ${OUT}`,
 );

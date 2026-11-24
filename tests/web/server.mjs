@@ -272,6 +272,11 @@ async function runJob(ids, options) {
     s.exit = code;
     s.status = STATUS[code] || 'ERROR';
     s.finished = Date.now();
+    // Setup or the API smoke gate blocked: nothing after it can be trusted (as in ./run.sh cycle).
+    if ((s.id === 'setup' && s.status !== 'PASS') || (s.status === 'BLOCKED' && ['smoke', 'all'].includes(s.id))) {
+      addLine(s.id, `${s.label} is BLOCKED: the remaining steps are skipped. Run "Set up test users" and try again.`);
+      job.stopping = true;
+    }
     const after = lastRun();
     if (after && after !== before) s.run = runInfo(after);
     emit('job', publicJob());

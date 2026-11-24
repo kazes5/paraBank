@@ -16,7 +16,7 @@ The journey JRN-01 walks one customer through J02–J17: log in, open an account
 
 > `J13e [A12] the loan is recorded in the loan account history (found 0)`
 
-Evidence: [`results/kept/2026-11-24T11-16-14Z-api/summary.md`](../results/kept/2026-11-24T11-16-14Z-api/summary.md) (row JRN-01).
+Evidence: the latest API run <!-- auto:run:api -->[`2026-11-24T11-16-14Z-api`](../results/kept/2026-11-24T11-16-14Z-api/summary.md)<!-- /auto:run:api --> (row JRN-01: <!-- auto:jrn01 -->91/94<!-- /auto:jrn01 --> checks passed).
 
 ## 2. Isolate it with the endpoint suite
 

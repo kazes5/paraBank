@@ -13,6 +13,7 @@ import { pathToFileURL } from 'node:url';
 import { marked } from 'marked';
 import { chromium } from 'playwright';
 import { ROOT, allRuns, newRun, rebuildIndex, RUN_TYPES, MANUAL_CASES } from './lib/common.mjs';
+import { updateDocs } from './update-docs.mjs';
 
 // Options (--publish implies --kept, so the root deliverable only links to committed runs) and helpers.
 const args = process.argv.slice(2);
@@ -27,6 +28,9 @@ if (sinceIdx >= 0 && !(since && !Number.isNaN(Date.parse(since)))) {
   console.error('--since needs an ISO date-time, e.g. 2026-11-24T10:00:00Z');
   process.exit(2);
 }
+// Publishing refreshes the run-specific facts in every document first (bug reports, plan, submission
+// guide, …), so the STR reads the refreshed bug reports and all deliverables describe the same runs.
+if (publish) updateDocs({ since: since || undefined });
 const today = new Date().toISOString().slice(0, 10);
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8'));
 const esc = (s) => String(s ?? '').replace(/\|/g, '\\|');

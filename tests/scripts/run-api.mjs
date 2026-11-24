@@ -138,8 +138,11 @@ for (const phase of phases) {
     break;
   }
 }
-// Finish: record phase results, build summary.md / results.json, exit 0 only if every phase passed.
+// Finish: record phase results, build summary.md / results.json. Exit 0 if every phase passed,
+// 3 (BLOCKED) if the smoke gate failed (nothing else was tested: e.g. a site reset wiped the user;
+// run.sh does not keep a blocked run), otherwise 1 (failures found).
 run.update({ finished: new Date().toISOString(), phaseResults: summary });
 summarize(run.dir);
 console.log(`Run: ${run.dir}`);
-process.exit(summary.every((p) => p.exitCode === 0) ? 0 : 1);
+const smokeBlocked = summary.some((p) => p.phase === 'smoke' && p.exitCode !== 0);
+process.exit(summary.every((p) => p.exitCode === 0) ? 0 : smokeBlocked ? 3 : 1);

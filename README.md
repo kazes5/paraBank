@@ -14,7 +14,7 @@ Test design, automated tests and defect reports for the ParaBank REST API (`http
 | The test design: rules, risks, 47 test cases, SLA model | [`deliverables/STD.md`](deliverables/STD.md) |
 | Step-by-step test scenarios and expected results | [`docs/test-case-catalog.md`](docs/test-case-catalog.md) · [`Word document`](docs/test-case-catalog.docx) |
 | What the API does and doesn't do: contract, observed behavior, business rules | [`deliverables/Business_Rules.md`](deliverables/Business_Rules.md) |
-| The defects (17 bug reports) and the questions for R&D | [`deliverables/Bug_Reports.md`](deliverables/Bug_Reports.md) |
+| The defects (<!-- auto:defect-count -->17<!-- /auto:defect-count --> bug reports) and the questions for R&D | [`deliverables/Bug_Reports.md`](deliverables/Bug_Reports.md) |
 | The latest results, and every run | [`results/index.md`](results/index.md) |
 | How each case's verdict changed across runs | [`results/history.md`](results/history.md) |
 | The evidence cited by the documents | [`evidence/`](evidence/): `exploration/` (Stage 1) and `bugs/BUG-0NN/` (Stage 4) |
@@ -44,8 +44,9 @@ cp .env.example .env        # fill in the test users (never committed)
 | `./run.sh repro [--publish]` | Reproduce every known defect on fresh throwaway users | ~5 min |
 | `./run.sh web` | Test runner web page at http://127.0.0.1:4321 (see [below](#test-runner-web-page)) | — |
 | `./run.sh auto` | Coded tests, pytest + requests: JRN-01, TRF-01, TRF-03, DEP-01, ACCT-03 ([`tests/automation/README.md`](tests/automation/README.md)) | ~2 min |
-| `./run.sh cycle [--keep]` | One full test cycle: all → ui → manual (headless) → auto → load (→ isolate if reconciliation fails) → repro → report. The report uses only this cycle's runs; steps that found failures are listed at the end | ~50 min |
+| `./run.sh cycle [--keep]` | One full test cycle: setup → all → ui → manual (headless) → auto → load (→ isolate if reconciliation fails) → repro → report. Stops as BLOCKED, publishing nothing, if setup or the API smoke gate fails. The report uses only this cycle's runs; steps that found failures are listed at the end. With `--keep`, the evidence, the STR and every run-specific fact in the documents are refreshed from this cycle | ~50 min |
 | `./run.sh report [--kept] [--publish] [--since T]` | Test Summary Report (2 pages) and its detailed annex, Markdown + PDF, from the latest runs (with `--since`: only runs started after T); `--publish` updates `STR*.md` / `STR*.pdf` in the root | ~20 s |
+| `./run.sh docs [--check]` | Refresh every run-specific fact in the documents (`<!-- auto:… -->` blocks: bug report values, run links, counts) and the BUG-016 evidence from the latest kept runs; `--check` lists what is out of date. Also done by `report --publish` | <1 s |
 | `./run.sh isolate` | Concurrency isolation of a load reconciliation failure (5 sequential, then 3 × 5 simultaneous transfers) | ~1 min |
 | `./run.sh load [--dry]` | k6 load session L1–L6 ([`deliverables/load_test_plan.md`](deliverables/load_test_plan.md)) | ~18 min |
 | `./run.sh package` | Submission zip of the committed repository in `dist/` (refuses while changes are uncommitted) | ~2 s |
@@ -163,6 +164,7 @@ evidence/                              exploration/ (Stage 1), bugs/BUG-0NN/ (St
 
 **Checks:**
 - `node tests/scripts/check-links.mjs` verifies that every path the documents mention exists.
+- `./run.sh docs --check` lists any document whose run facts are out of date (exit 1).
 
 ## Stage map
 

@@ -1,8 +1,8 @@
 # BUG-016 — concurrent transfers lose debits (money created)
 
-Built from the two kept runs below (copied, not re-measured): the load session that detected it and the isolation run that pinned it to simultaneous requests. Machine-readable copies: `load-reconciliation.json`, `isolation.json`.
+Built by `tests/scripts/update-docs.mjs` from the two kept runs below (copied, not re-measured): the load session that detected it and the isolation run that pinned it to simultaneous requests. Machine-readable copies: `load-reconciliation.json`, `isolation.json`.
 
-## 1. Detection — load run `2026-11-24T11-41-04Z-load` (balances after each test, L6)
+## 1. Detection — load run `2026-11-24T11-41-04Z-load`
 
 ### Balances after each test
 
@@ -29,7 +29,6 @@ Before: S 600.00 (2 trx), T 100.00 (1 trx) · After: S 504.00 (113 trx), T 211.0
 
 Reconciliation: **FAIL** · smoke after load: **PASS**
 
-
 ## 2. Isolation — run `2026-11-24T11-55-56Z-load` (fresh throwaway customer, sequential control first)
 
 Throwaway customer 14543; S 17451 (start 600.00), T 17562 (start 100.00). Every transfer is 1.00 S → T.
@@ -42,6 +41,5 @@ Throwaway customer 14543; S 17451 (start 600.00), T 17562 (start 100.00). Every 
 | round 3 | 5 | 5 | -5.00 | 5.00 | 1.00 | 1.00 |
 
 Expected for every step: S change = −confirmed, T change = +confirmed, balance − history = 0.00, drift = 0.00.
-
 
 Full runs: [load summary](../../../results/kept/2026-11-24T11-41-04Z-load/summary.md) · [isolation summary](../../../results/kept/2026-11-24T11-55-56Z-load/summary.md).
