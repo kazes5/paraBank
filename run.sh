@@ -2,14 +2,16 @@
 # Single entry point for every test run. Results go to results/runs/<runId>/ (see README.md).
 #
 #   ./run.sh setup                                   register / verify the .env test users
+#   ./run.sh explore                                 Stage 1 exploration on a throwaway customer
 #   ./run.sh smoke|suites|journey|all [--user PARABANK2] [--keep]
 #   ./run.sh manual [AUTH-03 AUTH-05 TRF-08 TRF-09] [--headless] [--keep]
 #   ./run.sh ui [apiRunId|latest] [--user PARABANK2] [--keep]
 #   ./run.sh repro [--publish] [--keep]
-#   ./run.sh load [--dry] [--keep]                   k6 load session L1-L6 (tests/load/load_test_plan.md)
+#   ./run.sh load [--dry] [--keep]                   k6 load session L1-L6 (deliverables/load_test_plan.md)
+#   ./run.sh isolate [--keep]                        concurrency isolation of a load reconciliation failure
 #   ./run.sh auto [--user PARABANK2] [--keep]        coded tests: pytest + requests (tests/automation)
-#   ./run.sh report [--kept] [--publish]             Test Summary Report (STR.md + STR.pdf) from the latest runs
-#   ./run.sh cycle [--keep] [--user PARABANK2]       all → ui → manual (headless) → auto → load → report
+#   ./run.sh report [--kept] [--publish] [--since T] Test Summary Report (2 pages) + detailed annex
+#   ./run.sh cycle [--keep] [--user PARABANK2]       all → ui → manual → auto → load (→ isolate) → repro → report
 #   ./run.sh web [--port 4321]                       web page: choose steps, live progress, verdict and links
 #   ./run.sh package                                 submission zip in dist/ (committed content)
 #   ./run.sh keep <runId|last>                       move a run to results/kept/ (committed)
@@ -22,9 +24,9 @@ cd "$(dirname "$0")"
 
 # ---------------------------------------------------------------- arguments
 
-# Print the usage block above (lines 2-18) without the leading "# ".
+# Print the usage block above (lines 2-20) without the leading "# ".
 usage() {
-  sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'
   exit 2
 }
 
@@ -88,6 +90,13 @@ case $cmd in
     node_env tests/scripts/setup-users.mjs || status=$?
     ;;
 
+  # Stage 1 exploration: journey walk + edge probes on a throwaway customer, written to
+  # evidence/exploration/ (frozen evidence the business rules cite).
+  explore)
+    need_env
+    node_env tests/scripts/explore.mjs || status=$?
+    ;;
+
   # API tests with the Postman CLI. The collection is regenerated from the builder first,
   # so the JSON always matches build-collection.mjs. "all" runs the three phases in order.
   smoke|suites|journey|all)
@@ -127,6 +136,12 @@ case $cmd in
     node_env tests/load/run-load.mjs ${rest[@]+"${rest[@]}"} || status=$?
     ;;
 
+  # Isolation of a load reconciliation failure: 5 sequential, then 3 rounds of 5 simultaneous transfers.
+  isolate)
+    need_env
+    node_env tests/load/isolate-concurrency.mjs || status=$?
+    ;;
+
   # Coded tests with pytest. The virtual environment is created on first use and
   # reinstalled whenever requirements.txt is newer than the last install.
   auto)
@@ -147,21 +162,41 @@ case $cmd in
     node tests/scripts/build-str.mjs ${rest[@]+"${rest[@]}"} || status=$?
     ;;
 
-  # One full test cycle. Every step runs even if an earlier one found failures
-  # ("|| true"), and the report is built from whatever the cycle produced.
-  # With --keep every run is kept and the root STR.md / STR.pdf are republished.
+  # One full test cycle. Every step runs even if an earlier one found failures: failures are
+  # findings, and the report must show every layer. The report is built only from runs started in
+  # this cycle (--since), so a layer that crashed is reported as not run instead of being replaced by
+  # an older run. Steps that exited with an error are listed at the end, and the cycle exits 1.
+  # With --keep every run is kept and deliverables/STR*.md / STR*.pdf are republished.
   cycle)
     need_env
     need_postman
     need_k6
     k=()
     [[ $keep == 1 ]] && k=(--keep)
-    ./run.sh all --user "$user" ${k[@]+"${k[@]}"} || true
-    ./run.sh ui latest --user "$user" ${k[@]+"${k[@]}"} || true
-    ./run.sh manual --headless ${k[@]+"${k[@]}"} || true
-    ./run.sh auto --user "$user" ${k[@]+"${k[@]}"} || true
-    ./run.sh load ${k[@]+"${k[@]}"} || true
-    if [[ $keep == 1 ]]; then ./run.sh report --kept --publish; else ./run.sh report; fi
+    start=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    failed=()
+    step() { local name=$1; shift; "$@" || failed+=("$name (exit $?)"); }
+    step api ./run.sh all --user "$user" ${k[@]+"${k[@]}"}
+    step ui ./run.sh ui latest --user "$user" ${k[@]+"${k[@]}"}
+    step manual ./run.sh manual --headless ${k[@]+"${k[@]}"}
+    step auto ./run.sh auto --user "$user" ${k[@]+"${k[@]}"}
+    step load ./run.sh load ${k[@]+"${k[@]}"}
+    # A failed reconciliation is isolated right away (plan §2.5), so the report can link the evidence.
+    # Only a load run of this cycle counts (a blocked load step leaves the previous run as "latest").
+    if node -e 'const [f, t] = process.argv.slice(1); const r = require(require("path").resolve(f));
+        process.exit(r.reconciliation === "FAIL" && Date.parse(r.started) >= Date.parse(t) ? 0 : 1)' \
+        "$(dirname "$(node tests/scripts/results.mjs latest load)")/run.json" "$start" 2>/dev/null; then
+      step isolate ./run.sh isolate ${k[@]+"${k[@]}"}
+    fi
+    # Every known defect reproduced on fresh throwaway users (the bug evidence the report links).
+    if [[ $keep == 1 ]]; then step repro ./run.sh repro --publish --keep; else step repro ./run.sh repro; fi
+    if [[ $keep == 1 ]]; then
+      step report ./run.sh report --kept --publish --since "$start"
+    else
+      step report ./run.sh report --since "$start"
+    fi
+    echo "Cycle started $start. Steps that found failures or errors: ${failed[*]:-none}"
+    [[ ${#failed[@]} -eq 0 ]]
     exit
     ;;
 
@@ -209,7 +244,7 @@ esac
 # --keep moves the run this command just created to results/kept/.
 # Exit 3 = BLOCKED before this command created a run folder, so there is nothing to keep
 # ("last" would otherwise point at an older run, e.g. the smoke gate's).
-if [[ $keep == 1 && $cmd != setup && $cmd != report && $status != 3 ]]; then
+if [[ $keep == 1 && $cmd != setup && $cmd != explore && $cmd != report && $status != 3 ]]; then
   node tests/scripts/results.mjs keep last
 fi
 exit $status

@@ -1,0 +1,14 @@
+{
+  "id": "2026-11-24T11-22-15Z-manual",
+  "kind": "manual",
+  "started": "2026-11-24T11:22:15.758Z",
+  "commit": "44f050a",
+  "user": "<USERNAME>",
+  "scope": "AUTH-03, AUTH-05, TRF-08, TRF-09",
+  "finished": "2026-11-24T11:23:01.378Z",
+  "counts": {
+    "FAIL": 2,
+    "BLOCKED": 1,
+    "NEEDS-CLARIFICATION": 1
+  }
+}

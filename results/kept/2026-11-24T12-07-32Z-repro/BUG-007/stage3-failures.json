@@ -1,0 +1,116 @@
+{
+  "sourceRun": "results/kept/2026-11-24T11-16-14Z-api",
+  "records": [
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:19:09.819Z",
+      "case": "BILL-03",
+      "request": "BILL-03 · pay with an empty payee",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=1",
+      "requestBody": "{}",
+      "status": 200,
+      "ms": 223,
+      "response": "{\"payeeName\":null,\"amount\":1,\"accountId\":27330}",
+      "failures": [
+        "[A11] rejected with 4xx (got 200): expected 200 to be within 400..499"
+      ],
+      "snapPrev": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 9500,
+        "27441": 10000
+      },
+      "snapCur": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": -100000,
+        "27441": 10000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:19:11.571Z",
+      "case": "BILL-03",
+      "request": "BILL-03 · balances after",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts",
+      "requestBody": "",
+      "status": 200,
+      "ms": 224,
+      "response": "[{\"id\":22557,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1025.50},{\"id\":22779,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00},{\"id\":26886,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":26997,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1199.00},{\"id\":27108,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":95.00},{\"id\":27219,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":27330,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":-1001.00},{\"id\":27441,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00}]",
+      "failures": [
+        "[A11] account 27330 balance unchanged (-100000 -> -100100 cents): expected -100100 to deeply equal -100000"
+      ],
+      "snapPrev": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": -100000,
+        "27441": 10000
+      },
+      "snapCur": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": -100100,
+        "27441": 10000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:19:13.314Z",
+      "case": "BILL-03",
+      "request": "BILL-03 · ledger after (S)",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions",
+      "requestBody": "",
+      "status": 200,
+      "ms": 221,
+      "response": "[{\"id\":41116,\"accountId\":27330,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":41449,\"accountId\":27330,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":5.00,\"description\":\"Bill Payment to City Utilities\"},{\"id\":41560,\"accountId\":27330,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1095.00,\"description\":\"Bill Payment to City Utilities\"},{\"id\":41671,\"accountId\":27330,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Bill Payment to null\"}]",
+      "failures": [
+        "[A11] no transaction added to S (new: [\"Debit 100\"]): expected [ { id: 41671, …(5) } ] to deeply equal []"
+      ],
+      "snapPrev": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": -100000,
+        "27441": 10000
+      },
+      "snapCur": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": -100100,
+        "27441": 10000
+      }
+    }
+  ]
+}

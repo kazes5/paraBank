@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ParaBank Test Runner</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%23256%22/%3E%3Cpath d=%22M4 8l3 3 5-6%22 stroke=%22white%22 stroke-width=%222%22 fill=%22none%22/%3E%3C/svg%3E">
 <style>
   /* ---------------------------------------------------------------- colour tokens (light / dark) */
   :root {
@@ -113,7 +114,7 @@
       <div class="opts">
         <label>Run as <select id="user"></select></label>
         <label><input type="checkbox" id="keep"> <span>Keep the runs <span class="muted">(move them to results/kept/, to be committed)</span></span></label>
-        <label><input type="checkbox" id="publish"> <span>Publish the deliverables <span class="muted">(replace STR.md / STR.pdf and evidence/bugs/ in the repo root; implies Keep)</span></span></label>
+        <label><input type="checkbox" id="publish"> <span>Publish the deliverables <span class="muted">(replace deliverables/STR.md / STR.pdf and evidence/bugs/; implies Keep)</span></span></label>
         <label><input type="checkbox" id="showBrowser"> <span>Show the browser for manual cases</span></label>
       </div>
       <div class="actions">
@@ -128,7 +129,7 @@
       <div class="muted">
         <p style="margin-top:0">Requests are paced (the public site rate-limits), so a full cycle takes about 45 minutes. You can close this tab: the job keeps running and the page catches up when you return.</p>
         <p><b>FAIL</b> means failures were found. Today the known defects make the API tests, coded tests and defect reproduction fail by design; the report says whether anything new appeared.</p>
-        <p style="margin-bottom:0">The report uses the latest run of each kind: kinds you did not run come from earlier runs.</p>
+        <p style="margin-bottom:0">With test steps in the same job, the report uses only that job's runs (a layer that failed shows as not run). "Report only" uses the latest complete run of each type, listed under the links.</p>
       </div>
     </div>
   </section>
@@ -168,7 +169,7 @@ const fmt = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return s < 6
 const badge = (v) => `<span class="badge b-${esc(String(v).replace(/ /g, '-'))}">${esc(v)}</span>`;
 const PRESETS = {
   quick: ['setup', 'smoke', 'auto'],
-  full: ['setup', 'all', 'ui', 'manual', 'auto', 'repro', 'load', 'report'],
+  full: ['setup', 'all', 'ui', 'manual', 'auto', 'load', 'isolate', 'repro', 'report'],
   bugs: ['setup', 'repro', 'report'],
   report: ['report'],
   none: [],
@@ -278,13 +279,13 @@ function renderLinks() {
   const thisJob = jobRuns.length
     ? jobRuns.map((s) => li(s.run.files?.[0] || s.run.dir, `${s.label}`, !s.run.files?.length)).join('')
     : '<li class="muted">Appears when a job has run.</li>';
-  const latest = S.latest.map((r) => li(r.files?.[0] || r.dir, `${r.kind} · ${r.id.slice(0, 16).replace('T', ' ')}${r.kept ? ' · kept' : ''}`, !r.files?.length)).join('');
+  const latest = S.latest.map((r) => li(r.files?.[0] || r.dir, `${r.label || r.kind} · ${r.id.slice(0, 16).replace('T', ' ')}${r.kept ? ' · kept' : ''}`, !r.files?.length)).join('');
   $('links').innerHTML = `
     <div><h3>This job</h3><ul>${thisJob}</ul></div>
     <div><h3>Deliverables</h3><ul>${S.deliverables.map((d) => li(d.path, d.label)).join('')}</ul></div>
-    <div><h3>Bugs and evidence</h3><ul>${li('Bug_Reports.md', 'Bug reports')}${li('evidence/bugs', 'Defect evidence (all bundles)', true)}${li('evidence', 'All evidence', true)}</ul>
+    <div><h3>Bugs and evidence</h3><ul>${li('deliverables/Bug_Reports.md', 'Bug reports')}${li('evidence/bugs', 'Defect evidence (all bundles)', true)}${li('evidence', 'All evidence', true)}</ul>
       <div class="bugs" style="margin-top:8px">${S.bugs.map((b) => `<a href="${view(b)}/" target="_blank">${esc(b.split('/').pop())}</a>`).join('')}</div></div>
-    <div><h3>Latest run of each kind</h3><ul>${latest}${li('results/index.md', 'All runs (index)')}${li('results/history.md', 'Verdict history')}</ul></div>`;
+    <div><h3>Latest complete run of each type</h3><ul>${latest}${li('results/index.md', 'All runs (index)')}${li('results/history.md', 'Verdict history')}</ul></div>`;
 }
 
 // ---------------------------------------------------------------- live updates

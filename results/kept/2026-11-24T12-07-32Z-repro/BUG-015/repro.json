@@ -1,0 +1,36 @@
+{
+  "users": {
+    "R": "qa_s4_mwungyju",
+    "L": "qa_s4_mwunlevw"
+  },
+  "steps": [
+    {
+      "label": "Transaction list: type of the date field",
+      "kind": "fail",
+      "at": "2026-11-24T12:09:47.554Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions",
+      "status": 200,
+      "ms": 231,
+      "response": "[{\"id\":64981,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":65314,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":65536,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":65758,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":-1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":65980,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":-5.00,\"description\":\"Deposit via Web Service\"},{\"id\":66091,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":-5.00,\"description\":\"Withdraw via Web Service\"},{\"id\":66202,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":-5.00,\"description\":\"Bill Payment to City Utilities\"},{\"id\":66535,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":0.00,\"description\":\"Funds Transfer Sent\"},{\"id\":66757,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":0.00,\"description\":\"Deposit via Web Service\"},{\"id\":66868,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":0.00,\"description\":\"Withdraw via Web Service\"},{\"id\":66979,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":67090,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Received\"},{\"id\":67201,\"accountId\":22557,\"type\":\"Debit\",\"da",
+      "expect": "Transaction.date as date-time string (Swagger)"
+    },
+    {
+      "label": "LoanResponse.responseDate type (same call as BUG-006)",
+      "kind": "fail",
+      "at": "2026-11-24T12:10:30.939Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=16541&amount=500&downPayment=50&fromAccountId=22557",
+      "status": 200,
+      "ms": 305,
+      "response": "{\"responseDate\":1795522229153,\"loanProviderName\":\"Wealth Securities Dynamic Loans (WSDL)\",\"approved\":true,\"accountId\":22890}",
+      "before": {
+        "22557": 203.01
+      },
+      "after": {
+        "22557": 153.01
+      },
+      "expect": "responseDate as date-time string (Swagger)"
+    }
+  ]
+}

@@ -8,23 +8,23 @@
 
 | Stage | Status | Commit | Output | Result |
 |---|---|---|---|---|
-| 0 Setup | ✅ Done | `ccef039` | `tests/scripts/setup-users.mjs` (`./run.sh setup`), `.env`, `tests/postman/ParaBank_QA.postman_environment.json` | Two users (`PARABANK`, `PARABANK2`) registered or verified; IDs written to `.env`. Re-run after every site reset |
-| 1 Exploration | ✅ Done | `a68f27c` | `Business_Rules.md`, `evidence/exploration/` | Every in-scope endpoint probed; rules labelled Contract C#, Rule A#, Observed O#; latency baseline measured; sub-cent transfer defect found (E1) |
-| 2 Test design | ✅ Done | `a68f27c` | `STD.md` | 47 cases: smoke gate (6), suites 11–19, journey JRN-01 (J02–J17); SLA model (read p95 ≤ 1000 ms, write p95 ≤ 1500 ms) |
-| 3 Postman build and execution | ✅ Done | `457d6db`, `fc94862` | `tests/postman/`, `results/kept/2026-11-23T16-04-00Z-api`, `*-ui`, `*-manual` | API: 19 PASS · 21 FAIL · 1 NEEDS-CLARIFICATION · 5 run outside Postman (4 manual, NFR-02 in Stage 5). Repeat run `2026-11-23T17-20-52Z-api`: identical verdicts. UI cross-check: 24 MATCH, 1 RULE NOT MET (A12). Manual: 2 FAIL, 1 BLOCKED (firewall), 1 NEEDS-CLARIFICATION |
-| 4 Isolation and bug reports | ✅ Done | `1828de4` | `Bug_Reports.md`, `evidence/bugs/` (BUG-001 … BUG-016, S-LOAN) | 15 defects from Stage 3: 3 Critical, 5 High, 7 Medium (BUG-016 added in Stage 5: 4 Critical in total). Every failure isolated and reproduced on fresh throwaway users, with a passing control input. Re-reproduced 2026-11-23 (`./run.sh repro`): all 15 still fail |
-| 5 Load and performance | ✅ Done | — | `tests/load/` (plan, k6 scripts, runner), `results/kept/2026-11-24T07-44-12Z-load`, isolation `results/kept/2026-11-24T08-03-30Z-load` | Speed: every SLA met (read p95 320 → 415 ms at 0.68 → 2 req/s; transfer p95 436 → 574 ms with 5 at once), 0 errors, 0 × 429. **Correctness FAIL:** concurrent transfers lost debits (money created): 32.00 in run 1, 16.00 in re-run `results/kept/2026-11-24T08-22-10Z-load`, and per-test balances place all of it in L4 (5 at once). Sequential L3 and L5 reconcile → **BUG-016 (Critical)**, isolated on a fresh customer. NFR-02 = FAIL |
-| 6 Test summary report | ✅ Done | — | `STR.md`/`.pdf` (2 pages), `STR_Detailed.md`/`.pdf` (annex), generator `tests/scripts/build-str.mjs` | **NO-GO**: 4 Critical defects open (BUG-001, BUG-002, BUG-003, BUG-016). Generated from the latest complete runs of each kind, so every cycle gets its own report (`./run.sh report`, or automatically at the end of `./run.sh cycle`) |
-| 7 Optional automation | ✅ Done | — | `tests/automation/` (pytest + requests, README), `./run.sh auto`, run `results/kept/2026-11-24T09-10-37Z-auto` | 5 STD cases in code: JRN-01 (J02–J17, 42 checks), TRF-01, TRF-03, DEP-01, ACCT-03. 4 PASS, 2 XFAIL on known defects (journey: BUG-009, BUG-015, BUG-006; TRF-03: BUG-003). Known defects are `xfail(strict=True)`, so a fix turns the run red as a retest signal. Request/response log written on every failure |
+| 0 Setup | ✅ Done | `ccef039` | `tests/scripts/setup-users.mjs` (`./run.sh setup`), `.env`, `deliverables/postman/ParaBank_QA.postman_environment.json` | Two users (`PARABANK`, `PARABANK2`) registered or verified; IDs written to `.env`. Re-run after every site reset |
+| 1 Exploration | ✅ Done | `a68f27c`; rerun 2026-11-24 | `deliverables/Business_Rules.md`, `evidence/exploration/` (`./run.sh explore`) | Every in-scope endpoint probed; rules labelled Contract C#, Rule A#, Observed O#; latency baseline measured; sub-cent transfer defect found (E1). **Rerun 2026-11-24 on a throwaway customer** with the destructive 0.005 probe last: the probes that had only hit a broken account now ran on healthy ones and found the share oversell (E16 → BUG-017) |
+| 2 Test design | ✅ Done | `a68f27c` | `deliverables/STD.md` | 47 cases: smoke gate (6), suites 11–19, journey JRN-01 (J02–J17); SLA model (read p95 ≤ 1000 ms, write p95 ≤ 1500 ms) |
+| 3 Postman build and execution | ✅ Done | `457d6db`, `fc94862` | `deliverables/postman/`, `results/kept/2026-11-24T11-16-14Z-api`, `*-ui`, `*-manual` | Fresh cycle 2026-11-24: API 19 PASS · 21 FAIL · 1 NEEDS-CLARIFICATION · 5 run outside Postman (4 manual, NFR-02 in Stage 5), the same verdicts as the first run. Rejected money requests now also prove that no transaction row was added. UI cross-check: 24 MATCH, 1 RULE NOT MET (A12). Manual: 2 FAIL, 1 BLOCKED (firewall), 1 NEEDS-CLARIFICATION |
+| 4 Isolation and bug reports | ✅ Done | `1828de4` | `deliverables/Bug_Reports.md`, `evidence/bugs/` (BUG-001 … BUG-017, S-LOAN), run `results/kept/2026-11-24T12-07-32Z-repro` | 17 defects: 5 Critical, 5 High, 7 Medium (BUG-016 from Stage 5, BUG-017 from the Stage 1 rerun). Every failure isolated and reproduced on fresh throwaway users, with a passing control input; all reproduced again in the fresh cycle |
+| 5 Load and performance | ✅ Done | — | `tests/load/` (plan, k6 scripts, runner), `results/kept/2026-11-24T11-41-04Z-load`, isolation `results/kept/2026-11-24T11-55-56Z-load` | Fresh cycle: every SLA met (read p95 336 → 349 ms at 0.68 → 2 req/s; transfer p95 371 → 657 ms with 5 at once), 0 errors, 0 × 429. **Correctness FAIL:** concurrent transfers lost debits, 15.00 created, all in L4 (5 at once); L3 (sequential) reconciles; L5 not started (stop rule after a balance gap). Session verdict FAIL → **BUG-016 (Critical)**, isolated on a fresh customer. Earlier runs created 32.00 and 16.00. NFR-02 = FAIL |
+| 6 Test summary report | ✅ Done | — | `deliverables/STR.md`/`.pdf` (2 pages), `deliverables/STR_Detailed.md`/`.pdf` (annex), generator `tests/scripts/build-str.mjs` | **NO-GO**: 5 Critical defects open (BUG-001, BUG-002, BUG-003, BUG-016, BUG-017). `./run.sh cycle` builds it from that cycle's runs only (`--since`), so a layer that failed shows as not run instead of being replaced by older evidence. Every result sentence (SLA, reconciliation, layers tested) is computed from the runs |
+| 7 Optional automation | ✅ Done | — | `tests/automation/` (pytest + requests, README), `./run.sh auto`, run `results/kept/2026-11-24T11-23-02Z-auto` | 5 STD cases in code: JRN-01 (J02–J17, 42 checks), TRF-01, TRF-03, DEP-01, ACCT-03. 4 PASS, 2 XFAIL on known defects (journey: BUG-009, BUG-015, BUG-006; TRF-03: BUG-003). Known defects are `xfail(strict=True)`, so a fix turns the run red as a retest signal. Request/response log written on every failure |
 | Tooling: test runner web page | ✅ Done | `f12b53d` | `tests/web/` (`server.mjs`, `index.html`), `./run.sh web`, README *Test runner web page* | Local page (127.0.0.1:4321): choose steps or a preset, live progress per step with a redacted log and Stop, verdict (PASS / FAIL / BLOCKED / STOPPED) plus the STR's GO / NO-GO, links to reports, bugs, evidence and deliverables |
-| 8 Packaging | ✅ Done | — | `SUBMISSION.md`, `docs/walkthrough.md`, the repository (+ zip) | Full scan of every file and every commit: no password or SSN anywhere, `.env` never committed, no forbidden endpoint called. Test users' profile masked everywhere (text placeholders; masked screenshots, old screenshots removed). STR split into a 2-page report + detailed annex to meet the 1–2 page requirement. Final kept runs: API `2026-11-24T10-25-10Z-api` (same verdicts as before), UI `2026-11-24T10-29-47Z-ui`, manual `2026-11-24T10-30-26Z-manual` |
+| 8 Packaging | ✅ Done | — | `SUBMISSION.md`, `docs/walkthrough.md`, the repository (+ zip) | Full scan of every file and every commit: no password or SSN anywhere, `.env` never committed, no forbidden endpoint called. Test users' profile masked everywhere (text placeholders; masked screenshots, old screenshots removed). STR split into a 2-page report + detailed annex to meet the 1–2 page requirement. Then (2026-11-24) all previous test data was cleared and one fresh complete cycle was run and documented: exploration, API, UI, manual, coded, load, isolation, reproduction, report |
 
 ### Changes made during execution (vs. the original plan)
 
 | Area | Original plan | What was done | Why |
 |---|---|---|---|
 | Runner | Postman CLI or Newman, run by hand | Postman CLI 1.93 through `./run.sh` (`tests/scripts/run-api.mjs`); credentials passed in a private temporary environment file (0600, deleted after the run; until `8fc3b6b` they were passed with `--env-var`, visible in the process list) | One command per layer, nothing secret in committed files or on the command line |
-| Collection source | Built in Postman from the OpenAPI | Generated by `tests/scripts/build-collection.mjs` from the STD (152 requests); rebuilt before every run | Reviewable in Git, test IDs match the STD exactly |
+| Collection source | Built in Postman from the OpenAPI | Generated by `tests/scripts/build-collection.mjs` from the STD (184 requests); rebuilt before every run | Reviewable in Git, test IDs match the STD exactly |
 | Schema checks | tv4 | ajv in the Postman sandbox | tv4 is deprecated |
 | Pacing | Sequential | 1.5 s between requests, 5 s timeout, abort on HTTP 429 | Cloudflare rate-limits the public site |
 | Suite fixtures | One shared fixture folder | Each suite opens its own S/T accounts and deposits them back to 0 afterwards (`cleanup`) | Overdraft suites made the customer total negative, which denied later loans |
@@ -35,8 +35,11 @@
 | Bug reproduction | Re-run the failing case | `./run.sh repro`: two fresh throwaway users per run, control input next to each failing input, balances before/after | Proves each defect on clean data |
 | Repo layout | `evidence/<defect-id>/`, outputs per stage | Run folders `results/runs/<UTC>-<kind>/` (local) and `results/kept/` (committed); `results/index.md` + `history.md`; frozen evidence in `evidence/`; scripts in `tests/scripts/`; exercise files in `docs/exercise/` | Tests must run many times; see *Running the tests repeatedly* |
 | Exercise files | In the root | `docs/exercise/` | Deliverables stay in the root |
-| STR length | One report | `STR.md`/`.pdf` (2 pages, as the exercise asks) + `STR_Detailed.md`/`.pdf` (annex with all detail), both generated every cycle | The exercise asks for 1–2 pages; the detail (evidence links, reproduction) stays available |
+| Deliverables folder (2026-11-24) | Deliverables in the root | All deliverable documents and the Postman files in `deliverables/` (index `deliverables/README.md`); code deliverables (k6, pytest) stay in `tests/`, where the runners use them | One place for the reviewer; the code keeps working unchanged |
+| STR length | One report | `deliverables/STR.md`/`.pdf` (2 pages, as the exercise asks) + `deliverables/STR_Detailed.md`/`.pdf` (annex with all detail), both generated every cycle | The exercise asks for 1–2 pages; the detail (evidence links, reproduction) stays available |
 | Personal data | Redact passwords and SSNs | Also the test users' profile (username, name, address, phone): placeholders such as `<USERNAME>` in every file, masked in screenshots before capture; screenshots of the first UI and manual runs removed | The repository is public |
+| Review fixes (2026-11-24) | — | An external code review found weak oracles; all confirmed and fixed: rejected money requests check balances **and** ledger; LOAN-04 isolates one rule; a failed suite fixture makes its cases BLOCKED; HIST-01 counts in the smoke gate; NFR-01 fails on any endpoint over its p95 target; the load session fails on a k6 error or a failed after-load smoke, judges errors per endpoint, never lets unsure transfers hide a missing confirmed one, and stops after a balance gap (plan §5); the STR states only what the runs show and uses one cycle's runs | Test results must not depend on luck or on older evidence |
+| Fresh cycle (2026-11-24) | Results accumulated over two days | All previous runs and evidence were deleted and one complete cycle was run: `./run.sh explore`, then `./run.sh cycle --keep` (API, UI, manual, coded, load, isolation, reproduction, report) | One consistent, documented set of results; the rerun found BUG-017 |
 | Running the tests | Command line only | Also a local web page (`./run.sh web`): choose steps, live progress, verdict and links | Partial or full cycles without remembering commands; results and evidence one click away |
 
 ### Open items
@@ -113,11 +116,11 @@ Extended endpoints are included because the journey needs them. Their defects ar
 |---|---|---|---|
 | 0 | Setup | Registered user, environment file | API login returns own customer |
 | 1 | Exploration and business rules | Business-rules ledger, spec questions | Every endpoint called once; rules written down |
-| 2 | Test design (STD): journey + endpoint suites | `STD.md` | Journey specified; each in-scope endpoint has a suite; ≥ 25 cases; all 5 types covered |
+| 2 | Test design (STD): journey + endpoint suites | `deliverables/STD.md` | Journey specified; each in-scope endpoint has a suite; ≥ 25 cases; all 5 types covered |
 | 3 | Postman: build and execute both layers | Collection + environment exports, run reports | Journey run; all P1 suite cases run; ≥ 12 cases executed |
-| 4 | Failure isolation, log collection, bug reports | `Bug_Reports.md`, evidence bundles, spec ambiguities | Every failure isolated to an endpoint + input and documented |
+| 4 | Failure isolation, log collection, bug reports | `deliverables/Bug_Reports.md`, evidence bundles, spec ambiguities | Every failure isolated to an endpoint + input and documented |
 | 5 | Load and performance | k6 scripts, results, analysis | Baseline + higher run for both endpoints |
-| 6 | Test Summary Report (STR) | `STR.md` (1–2 pages) | Go / no-go with justification |
+| 6 | Test Summary Report (STR) | `deliverables/STR.md` (1–2 pages) | Go / no-go with justification |
 | 7 | Optional automation (bonus) | Coded journey + suite tests + README | Runs with one command |
 | 8 | Packaging and submission | One folder / email | Deliverables checklist complete |
 
@@ -210,7 +213,7 @@ flowchart TD
 
 ## Stage 1 — Exploration and business rules
 
-**Status:** ✅ Done (`a68f27c`). Probes in `tests/scripts/explore.mjs`; evidence in `evidence/exploration/`; ledger and spec questions in `Business_Rules.md`.
+**Status:** ✅ Done (`a68f27c`), rerun 2026-11-24 (`./run.sh explore`, throwaway customer, destructive probe last). Probes in `tests/scripts/explore.mjs`; evidence in `evidence/exploration/` (observations + latency baseline); ledger and spec questions in `deliverables/Business_Rules.md`.
 
 **Objective:** no spec exists — derive the rules from Swagger, the web UI and observed behavior. Both layers' assertions are built from these rules.
 
@@ -265,7 +268,7 @@ flowchart LR
 
 ## Stage 2 — Test design (STD)
 
-**Status:** ✅ Done (`a68f27c`). `STD.md`: 47 cases, journey JRN-01, suites 11–19, smoke gate, SLA model.
+**Status:** ✅ Done (`a68f27c`). `deliverables/STD.md`: 47 cases, journey JRN-01, suites 11–19, smoke gate, SLA model.
 
 **Objective:** Deliverable 1 — STD with scope, assumptions, risks, approach, ≥ 25 prioritized cases and an automation note.
 
@@ -362,7 +365,7 @@ sequenceDiagram
     end
 ```
 
-Every individual API call, its read-backs and its verification are listed in **`STD.md` §5.6** (call table J01–J17 and a coverage matrix of all 21 intended operations).
+Every individual API call, its read-backs and its verification are listed in **`deliverables/STD.md` §5.6** (call table J01–J17 and a coverage matrix of all 21 intended operations).
 
 **Expected-state ledger** (collection variables; each money step updates the expected value, then reads the actual one):
 
@@ -552,7 +555,7 @@ flowchart TD
 
 ## Stage 3 — Postman: build and execute
 
-**Status:** ✅ Done (`457d6db`, `fc94862`). Official run `results/kept/2026-11-23T16-04-00Z-api` (repeat: `2026-11-23T17-20-52Z-api`, same verdicts); UI cross-check `results/kept/2026-11-23T16-30-07Z-ui`; manual cases `results/kept/2026-11-23T16-35-57Z-manual`.
+**Status:** ✅ Done (`457d6db`, `fc94862`). Official run (fresh cycle, 2026-11-24) `results/kept/2026-11-24T11-16-14Z-api`; UI cross-check `results/kept/2026-11-24T11-21-47Z-ui`; manual cases `results/kept/2026-11-24T11-22-15Z-manual`. Same verdicts as the first runs of 2026-11-23, which were cleared.
 
 **Objective:** Deliverable 2 — collection with environment variables, authentication handling, assertions on status, schema and business values; ≥ 12 cases.
 
@@ -601,7 +604,7 @@ Each suite folder can be run alone (`postman collection run … -i "10 Suite fix
 1. Run `00 Smoke` with the Postman CLI (`./run.sh smoke`). **Fail → stop**, record BLOCKED.
 2. Run `10` + all suites (`./run.sh suites`).
 3. Run `01 Customer Journey` (`./run.sh journey`). A failing step is compared with its mapped suite (§2.5). `./run.sh all` runs steps 1–3 in order and stops after a failed smoke.
-4. Cross-check J09, J10, J13 and TRF-01 in the web UI (`./run.sh ui`). It uses local Chrome via Playwright, compares every page with the API, and reads the account IDs from the latest API run. Reference run: `results/kept/2026-11-23T16-30-07Z-ui/`.
+4. Cross-check J09, J10, J13 and TRF-01 in the web UI (`./run.sh ui`). It uses local Chrome via Playwright, compares every page with the API, and reads the account IDs from the latest API run. Reference run: `results/kept/2026-11-24T11-21-47Z-ui/`.
 5. Record results per case: PASS / FAIL / BLOCKED / NEEDS-CLARIFICATION. Written automatically to `summary.md` in the run folder.
 
 ```mermaid
@@ -627,7 +630,7 @@ flowchart TD
 
 ## Stage 4 — Failure isolation, log collection and bug reports (overlaps Stage 3)
 
-**Status:** ✅ Done (`1828de4`). 15 defects in `Bug_Reports.md` (3 Critical, 5 High, 7 Medium), each with a bundle in `evidence/bugs/BUG-0NN/`; failure classification table covers every non-passing result. Re-check at any time with `./run.sh repro` (writes a run folder; `--publish` refreshes `evidence/bugs/`).
+**Status:** ✅ Done (`1828de4`). 17 defects in `deliverables/Bug_Reports.md` (5 Critical, 5 High, 7 Medium; BUG-016 from Stage 5, BUG-017 from the Stage 1 rerun), each with a bundle in `evidence/bugs/BUG-0NN/`; failure classification table covers every non-passing result. Re-check at any time with `./run.sh repro` (writes a run folder; `--publish` refreshes `evidence/bugs/`).
 
 1. For each journey failure, follow the isolation workflow (§2.5) and record the outcome: *endpoint defect* / *sequence defect* / *intermittent* / *test issue* / *needs clarification*.
 2. For each endpoint-suite failure: reproduce once more in isolation; confirm inputs that fail vs. pass.
@@ -673,11 +676,11 @@ flowchart TD
 
 ## Stage 5 — Load and performance
 
-**Status:** ✅ Done. Test plan `tests/load/load_test_plan.md` (L1–L6; it replaces the load model below, because Cloudflare limits the rate, so contention comes from simultaneous requests instead). Run with `./run.sh load`. Results: `results/kept/2026-11-24T07-44-12Z-load/summary.md`. Every SLA met with 0 errors and 0 × 429, but the reconciliation found money created by concurrent transfers. Isolated on a fresh customer (`tests/load/isolate-concurrency.mjs`, `results/kept/2026-11-24T08-03-30Z-load`) and filed as BUG-016 (Critical). Re-run `results/kept/2026-11-24T08-22-10Z-load` (balances after each test) places every lost debit in L4.
+**Status:** ✅ Done. Test plan `deliverables/load_test_plan.md` (L1–L6; it replaces the load model below, because Cloudflare limits the rate, so contention comes from simultaneous requests instead). Run with `./run.sh load`. Results (fresh cycle): `results/kept/2026-11-24T11-41-04Z-load/summary.md`. Every SLA met with 0 errors and 0 × 429, but the reconciliation found 15.00 created by concurrent transfers, all in L4. Isolated on a fresh customer (`./run.sh isolate`, `results/kept/2026-11-24T11-55-56Z-load`) and filed as BUG-016 (Critical).
 
 **Objective:** Deliverable 4 — basic load test of `POST /transfer` and `GET /accounts/{accountId}`.
 
-**SLAs (self-defined)** — the same endpoint-class model as `STD.md` §4, based on the measured baseline in `evidence/exploration/latency-baseline.md` (reads p95 670 ms, money writes p95 295 ms):
+**SLAs (self-defined)** — the same endpoint-class model as `deliverables/STD.md` §4, based on the measured baseline in `evidence/exploration/latency-baseline.md` (reads p95 670 ms, money writes p95 295 ms):
 
 | Class (load target) | p95 response time | Error rate (HTTP + body checks) | Timeout |
 |---|---|---|---|
@@ -731,7 +734,7 @@ flowchart TD
 
 ## Stage 6 — Test Summary Report
 
-**Status:** ✅ Done. `STR.md` and `STR.pdf` (template `docs/exercise/06_STR_Template.md`) are generated by `tests/scripts/build-str.mjs` from the latest complete API, UI, manual and load runs, `Bug_Reports.md` and the evidence bundles. Mermaid diagrams, p95 charts, screenshots and the reproduction commands are included. Every cycle gets a report in `results/runs/<UTC>-report/`. `./run.sh cycle --keep` keeps all runs and republishes the root report.
+**Status:** ✅ Done. `deliverables/STR.md` and `deliverables/STR.pdf` (template `docs/exercise/06_STR_Template.md`) are generated by `tests/scripts/build-str.mjs` from the latest complete API, UI, manual and load runs, `deliverables/Bug_Reports.md` and the evidence bundles. Mermaid diagrams, p95 charts, screenshots and the reproduction commands are included. Every cycle gets a report in `results/runs/<UTC>-report/`. `./run.sh cycle --keep` keeps all runs and republishes the root report.
 
 Deliverable 5 — 1–2 pages for R&D and management:
 1. Executive summary — recommendation in one sentence.
@@ -784,7 +787,7 @@ Credentials from environment variables; on failure, write the request/response l
 **Checks done (2026-11-24):**
 - Password and SSN (raw, URL-, form- and JSON-encoded): 0 hits in every tracked file and in all commits; `.env` never committed.
 - Forbidden endpoints: only guards and documentation mention them; no request to them in any log.
-- Requirements: STD 47 cases (≥ 25); collection 152 requests (≥ 12), environment secrets blank; 16 bug reports with every Jira field + 15 spec questions; load ≤ 10 VUs (≤ 20); STR 2 pages; automation README.
+- Requirements: STD 47 cases (≥ 25); collection 184 requests (≥ 12), environment secrets blank; 17 bug reports with every Jira field + 16 spec questions; load ≤ 10 VUs (≤ 20); STR 2 pages; automation README.
 - Personal data: the test users' profile replaced by placeholders in all text files; screenshots retaken masked (the site reset three times during the retakes, so runs hit by a reset were discarded).
 
 1. Remove credentials from exports, reports, logs and evidence; search all files for the password and SSN.
@@ -793,12 +796,14 @@ Credentials from environment variables; on failure, write the request/response l
    ```
    SUBMISSION.md                     reviewer start page: deliverables, re-run, review path
    README.md  run.sh                 project start page · one command per test layer
-   STD.md  Bug_Reports.md  Business_Rules.md  plan.md
-   STR.md/.pdf  STR_Detailed.md/.pdf two-page STR + detailed annex
+   plan.md                           test plan and execution status
+   deliverables/                     every exercise deliverable (index: deliverables/README.md)
+     STD.md  Business_Rules.md  Bug_Reports.md  load_test_plan.md
+     STR.md/.pdf  STR_Detailed.md/.pdf  two-page STR + detailed annex
+     postman/                        ParaBank_QA collection + environment (secrets blank)
    docs/walkthrough.md               demo: journey failure → suite → bug report
-   tests/postman/                    ParaBank_QA collection + environment (secrets blank)
    tests/scripts/                    collection builder, runners, summarizer, UI / manual / repro scripts
-   tests/load/                       load_test_plan.md + k6 scripts (Stage 5)
+   tests/load/                       k6 scripts and load runner (Stage 5)
    tests/automation/                 pytest + requests (Stage 7)
    tests/web/                        local test-runner web page (./run.sh web)
    results/kept/                     official runs: logs, reports, summaries, screenshots (redacted)

@@ -1,35 +1,35 @@
 {
   "users": {
-    "R": "qa_s4_mwti1l42",
-    "L": "qa_s4_mwti5prg"
+    "R": "qa_s4_mwungyju",
+    "L": "qa_s4_mwunlevw"
   },
   "steps": [
     {
       "label": "Open a new CHECKING account from A",
       "kind": "fail",
-      "at": "2026-11-23T16:50:12.829Z",
+      "at": "2026-11-24T12:09:52.741Z",
       "method": "POST",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=60497&newAccountType=0&fromAccountId=99147",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=16541&newAccountType=0&fromAccountId=22446",
       "status": 200,
-      "ms": 295,
-      "response": "{\"id\":102588,\"customerId\":60497,\"type\":\"CHECKING\",\"balance\":0}",
+      "ms": 233,
+      "response": "{\"id\":22779,\"customerId\":16541,\"type\":\"CHECKING\",\"balance\":0}",
       "before": {
-        "99147": 315.5
+        "22446": 315.5
       },
       "after": {
-        "99147": 215.5
+        "22446": 215.5
       },
       "expect": "response balance = real balance"
     },
     {
       "label": "Read the new account",
       "kind": "state",
-      "at": "2026-11-23T16:50:14.563Z",
+      "at": "2026-11-24T12:09:54.471Z",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/102588",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/22779",
       "status": 200,
-      "ms": 232,
-      "response": "{\"id\":102588,\"customerId\":60497,\"type\":\"CHECKING\",\"balance\":100.00}",
+      "ms": 227,
+      "response": "{\"id\":22779,\"customerId\":16541,\"type\":\"CHECKING\",\"balance\":100.00}",
       "expect": "same balance as the create response"
     }
   ]

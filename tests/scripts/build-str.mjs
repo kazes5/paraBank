@@ -2,7 +2,7 @@
 // test cycle: the latest complete API, UI, manual and load runs, Bug_Reports.md and the defect evidence.
 //
 // Output: results/runs/<UTC>-report/ (STR.md, STR.html, STR.pdf, run.json)
-//         --publish also writes STR.md and STR.pdf to the repo root (the deliverable)
+//         --publish also writes STR.md and STR.pdf to deliverables/ (the deliverable)
 //         --kept    uses kept (committed) runs only, so every link in the report works for readers
 // Usage:  ./run.sh report [--kept] [--publish]      (./run.sh cycle --keep builds it with --kept --publish)
 
@@ -12,12 +12,21 @@ import { execSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { marked } from 'marked';
 import { chromium } from 'playwright';
-import { ROOT, allRuns, newRun, rebuildIndex } from './lib/common.mjs';
+import { ROOT, allRuns, newRun, rebuildIndex, RUN_TYPES, MANUAL_CASES } from './lib/common.mjs';
 
 // Options (--publish implies --kept, so the root deliverable only links to committed runs) and helpers.
 const args = process.argv.slice(2);
 const publish = args.includes('--publish');
 const keptOnly = args.includes('--kept') || publish;
+// --since <ISO time>: use only runs started at or after this time (./run.sh cycle and the web page pass
+// their start time), so a layer that failed to produce a run is reported as not run, never replaced
+// by an older run of the same kind.
+const sinceIdx = args.indexOf('--since');
+const since = sinceIdx >= 0 ? args[sinceIdx + 1] : null;
+if (sinceIdx >= 0 && !(since && !Number.isNaN(Date.parse(since)))) {
+  console.error('--since needs an ISO date-time, e.g. 2026-11-24T10:00:00Z');
+  process.exit(2);
+}
 const today = new Date().toISOString().slice(0, 10);
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8'));
 const esc = (s) => String(s ?? '').replace(/\|/g, '\\|');
@@ -27,20 +36,16 @@ const money = (c) => (c / 100).toFixed(2);
 
 // Source runs: the latest complete run of each kind (an API run with results, a manual run with all
 // four cases, a load session that is not the isolation run, ...). The API run is required.
-const runs = allRuns().filter((r) => !keptOnly || r.kept);
+const runs = allRuns().filter(
+  (r) => (!keptOnly || r.kept) && (!since || Date.parse(r.started || 0) >= Date.parse(since)),
+);
 const latest = (pred) => runs.filter(pred).at(-1);
-const MANUAL_ALL = ['AUTH-03', 'AUTH-05', 'TRF-08', 'TRF-09'];
-const src = {
-  api: latest((r) => r.kind === 'api' && (r.phases || []).length === 3 && existsSync(join(r.dir, 'results.json'))),
-  ui: latest((r) => r.kind === 'ui' && existsSync(join(r.dir, 'results.json'))),
-  manual: latest((r) => r.kind === 'manual' && MANUAL_ALL.every((id) => (r.scope || '').includes(id))),
-  load: latest((r) => r.kind === 'load' && !r.dry && r.scope === 'L1–L6' && existsSync(join(r.dir, 'results.json'))),
-  isolation: latest((r) => r.kind === 'load' && r.scope === 'concurrency isolation'),
-  repro: latest((r) => r.kind === 'repro'),
-  auto: latest((r) => r.kind === 'auto' && existsSync(join(r.dir, 'results.json'))),
-};
+const MANUAL_ALL = MANUAL_CASES;
+const src = Object.fromEntries(RUN_TYPES.filter((t) => t.key !== 'report').map((t) => [t.key, latest(t.test)]));
 if (!src.api) {
-  console.error(`No complete API run${keptOnly ? ' among kept runs' : ''}: run ./run.sh all first.`);
+  console.error(
+    `No complete API run${keptOnly ? ' among kept runs' : ''}${since ? ` since ${since}` : ''}: run ./run.sh all first.`,
+  );
   process.exit(2);
 }
 
@@ -54,6 +59,11 @@ const out = newRun('report', {
 // Every link is written relative to where the document lives (run folder or repo root)
 // Builds the report's Markdown. Called twice: once for the run folder and once for the repo root,
 // because every link is relative to where the document is written.
+// The deliverables live in deliverables/: the documents the report reads and links, and where --publish
+// writes STR*.md / STR*.pdf.
+const DELIV = 'deliverables';
+const D = (f) => join(DELIV, f);
+
 function build(docDir) {
   const L = (p) => relative(docDir, p).split('\\').join('/') || '.';
   const link = (text, p, anchor = '') => `[${text}](${L(p)}${anchor})`;
@@ -61,7 +71,7 @@ function build(docDir) {
   // ---------------------------------------------------------------- data
   // Case list from the STD, verdicts from the API run, overridden by the manual run for manual cases,
   // plus the load and UI results.
-  const std = readFileSync('STD.md', 'utf8');
+  const std = readFileSync(D('STD.md'), 'utf8');
   const stdCases = [...std.matchAll(/^\| ([A-Z]+-\d+) \| ([^|]+) \| [^|]+ \| [^|]+ \| (P\d) \|/gm)].map((m) => ({
     id: m[1],
     title: m[2].replace(/\*\*\(smoke\)\*\*/, '').trim(),
@@ -107,7 +117,7 @@ function build(docDir) {
   ];
 
   // Defects from Bug_Reports.md: id, title, severity, priority and status of every bug
-  const bugsMd = readFileSync('Bug_Reports.md', 'utf8');
+  const bugsMd = readFileSync(D('Bug_Reports.md'), 'utf8');
   const candidate = (bugsMd.match(/\*\*Candidate:\*\* ([^·\n]+)/) || [])[1]?.trim() || '';
   const bugs = [
     ...bugsMd.matchAll(
@@ -130,7 +140,7 @@ function build(docDir) {
     );
   const sev = (s) => bugs.filter((b) => b.severity === s);
   const specQuestions = [...bugsMd.matchAll(/^\| (S\d+) \|/gm)].length;
-  const bugLink = (b) => link(b.id, 'Bug_Reports.md', `#${b.id.toLowerCase()}`);
+  const bugLink = (b) => link(b.id, D('Bug_Reports.md'), `#${b.id.toLowerCase()}`);
 
   // how to reproduce each defect
   // Appendix A data: the first failing request of each defect (from evidence/bugs/<id>/repro.json)
@@ -154,7 +164,9 @@ function build(docDir) {
   };
   const reproAt = src.repro
     ? `${src.repro.id} (${link('summary', join(src.repro.dir, 'summary.md'))})`
-    : `Stage 4, ${readJson('evidence/bugs/repro-run.json').at.slice(0, 16).replace('T', ' ')} UTC`;
+    : existsSync('evidence/bugs/repro-run.json')
+      ? `Stage 4, ${readJson('evidence/bugs/repro-run.json').at.slice(0, 16).replace('T', ' ')} UTC`
+      : '*(no reproduction run: ./run.sh repro)*';
 
   // screenshots from the selected runs (names are stable across runs)
   // Appendix B: screenshots picked by file name from the selected UI and manual runs.
@@ -221,6 +233,35 @@ function build(docDir) {
   const gapTests = perTest.filter((p) => p.gap);
   const totalReq = loadRows.filter((r) => !/step/.test(r.label)).reduce((a, r) => a + r.n, 0);
   const limited = load ? load.tests.reduce((a, t) => a + (t.rateLimited || 0), 0) : 0;
+  // Load verdict facts, all taken from the run (no wording assumes a result):
+  const slaRows = [L1, L2, L3, L4, L5r, L5w].filter(Boolean);
+  const slaFail = slaRows.filter((r) => r.verdict === 'FAIL');
+  const slaJudged = slaRows.filter((r) => r.verdict === 'PASS' || r.verdict === 'FAIL');
+  const maxErr = slaRows.reduce((a, r) => Math.max(a, r.errorRate || 0), 0);
+  const recon = load?.reconciliation;
+  const reconRow = (prefix) => recon?.rows.find((r) => r.check.startsWith(prefix));
+  const loadSession = src.load?.verdict || (recon && (recon.verdict === 'PASS' && !slaFail.length ? 'PASS' : 'FAIL'));
+  const skippedTests = load ? load.tests.filter((t) => t.skipped || !t.rows?.length).map((t) => t.test) : [];
+  const bug016 = bugs.find((b) => b.id === 'BUG-016');
+  const speedText = !load
+    ? ''
+    : slaFail.length
+      ? `${slaFail.map((r) => `${r.label} \`${r.name}\` p95 ${r.p95} ms (target ${r.target})`).join('; ')} missed the SLA`
+      : slaJudged.length
+        ? `every judged test met its SLA (${slaJudged.length} with n ≥ 20)`
+        : 'no test had enough requests for an SLA verdict';
+  const moneyText = !recon
+    ? ''
+    : recon.verdict === 'PASS'
+      ? `all ${recon.transfers.ok} confirmed transfers reconcile to the cent`
+      : created > 0
+        ? `balances do not reconcile: ${money(created)} was created${bug016 ? ' (BUG-016)' : ''}`
+        : created < 0
+          ? `balances do not reconcile: ${money(-created)} was lost`
+          : `balances do not reconcile (${recon.rows
+              .filter((r) => r.result === 'MISMATCH')
+              .map((r) => r.check)
+              .join('; ')})`;
 
   // ---------------------------------------------------------------- document
   const runLine = (k, label) =>
@@ -239,7 +280,7 @@ function build(docDir) {
     '**System under test:** ParaBank REST API — `https://parabank.parasoft.com/parabank/services/bank` (public sandbox)  ',
     '**Audience:** R&D and management  ',
     `**Test cycle:** ${[runLine('api', 'API'), runLine('ui', 'UI'), runLine('manual', 'manual'), runLine('load', 'load')].join(' · ')}  `,
-    `**Related documents:** ${link('Test design (STD)', 'STD.md')} · ${link('Bug reports', 'Bug_Reports.md')} · ${link('Business rules', 'Business_Rules.md')} · ${link('Load test plan', 'tests/load/load_test_plan.md')} · ${link('All runs', 'results/index.md')} · ${link('Verdict history', 'results/history.md')}`,
+    `**Related documents:** ${link('Test design (STD)', D('STD.md'))} · ${link('Bug reports', D('Bug_Reports.md'))} · ${link('Business rules', D('Business_Rules.md'))} · ${link('Load test plan', D('load_test_plan.md'))} · ${link('All runs', 'results/index.md')} · ${link('Verdict history', 'results/history.md')}`,
     '',
   );
 
@@ -283,12 +324,12 @@ function build(docDir) {
     '',
     '| Area | Tested? | Notes |',
     '|---|---|---|',
-    `| In-scope endpoints: login, customer, accounts, account, transfer, deposit, withdraw, bill pay, request loan, transactions and filters | **Yes** | Positive, negative, boundary, security and data-integrity cases, each suite on fresh accounts (${link('STD §5', 'STD.md')}) |`,
+    `| In-scope endpoints: login, customer, accounts, account, transfer, deposit, withdraw, bill pay, request loan, transactions and filters | **Yes** | Positive, negative, boundary, security and data-integrity cases, each suite on fresh accounts (${link('STD §5', D('STD.md'))}) |`,
     '| Extended endpoints: open account, buy/sell positions, update profile | Partly | Checked by journey steps J06, J14–J16, with no dedicated suite |',
-    `| End-to-end customer journey (JRN-01) | **Yes** | J02–J17 in one run; failing steps isolated to endpoints (${link('Bug reports: failure classification', 'Bug_Reports.md', '#failure-classification-stage-4-exit-gate')}) |`,
+    `| End-to-end customer journey (JRN-01) | **Yes** | J02–J17 in one run; failing steps isolated to endpoints (${link('Bug reports: failure classification', D('Bug_Reports.md'), '#failure-classification-stage-4-exit-gate')}) |`,
     `| Web UI | Cross-check only | Overview and activity pages compared with the API (${src.ui ? link('UI run', join(src.ui.dir, 'summary.md')) : '—'}); no UI functional testing |`,
     `| Security | Basic | Missing authentication, password in the URL, injection (blocked by the site firewall, so not tested) |`,
-    `| Performance | **Yes** (small) | \`GET /accounts/{id}\` and \`POST /transfer\` only, ≤ 10 VUs (${link('load test plan', 'tests/load/load_test_plan.md')}) |`,
+    `| Performance | **Yes** (small) | \`GET /accounts/{id}\` and \`POST /transfer\` only, ≤ 10 VUs (${link('load test plan', D('load_test_plan.md'))}) |`,
     '| Concurrency of other writes (deposit, withdraw, bill pay) | No | Only transfer was load-tested |',
     '| Admin endpoints (`/cleanDB`, `/initializeDB`, `/setParameter`, JMS) | No | Excluded: they affect every user of the shared site; a guard blocks them |',
     "| Other customers' data | No | Only our own and throwaway users; the access gap (BUG-002) was shown on our own customer |",
@@ -381,7 +422,7 @@ function build(docDir) {
         `| ${bugLink(b)} | ${b.severity} | ${b.priority} | ${esc(b.title)} | ${esc(b.cases)} | ${link('bundle', join('evidence/bugs', b.id, 'repro.md'))} | ${reproCmd(b)} |`,
     ),
     '',
-    `Open spec questions: ${specQuestions} (${link('Bug_Reports.md, spec ambiguities', 'Bug_Reports.md', '#spec-ambiguities-and-contradictions')}). The failing request of each defect is listed in Appendix A.`,
+    `Open spec questions: ${specQuestions} (${link('Bug_Reports.md, spec ambiguities', D('Bug_Reports.md'), '#spec-ambiguities-and-contradictions')}). The failing request of each defect is listed in Appendix A.`,
     '',
   );
 
@@ -389,7 +430,7 @@ function build(docDir) {
   P('## 5. Non-functional results', '');
   if (load) {
     P(
-      `**Load model:** see the ${link('load test plan', 'tests/load/load_test_plan.md')} and the ${link('run summary', join(src.load.dir, 'summary.md'))}.`,
+      `**Load model:** see the ${link('load test plan', D('load_test_plan.md'))} and the ${link('run summary', join(src.load.dir, 'summary.md'))}.`,
       `- **Single client:** k6 from one machine, at most 10 VUs and ${totalReq} requests over about 15 minutes.`,
       '- **Low rate:** at most 2 requests per second, because Cloudflare blocks one client after about 60 rapid requests.',
       '- **Contention:** created by sending requests at the same moment rather than by a higher rate (L4: 5 transfers at once, 16 rounds).',
@@ -418,7 +459,9 @@ function build(docDir) {
             `| ${r.label} \`${r.name}\` | ${d} | ${r.n} | ${r.rate} req/s | ${r.p50} ms | **${r.p95} ms** | ${r.max} ms | ${r.errorRate} % | ${r.growth ? `${r.growth}×` : '—'} | ${r.verdict} |`,
         ),
       '',
-      `**Speed:** every test met its SLA, with 0 errors, ${limited} × HTTP 429 and ${verdict['NFR-01'] === 'PASS' ? 'no timeouts in the functional runs either (NFR-01 PASS)' : 'timeouts in the functional runs (NFR-01 FAIL)'}.`,
+      `**Load session verdict: ${loadSession}.** ${skippedTests.length ? `Not run: ${skippedTests.join(', ')} (see the run's notes). ` : ''}`,
+      '',
+      `**Speed:** ${speedText}; highest error rate ${maxErr} %, ${limited} × HTTP 429; functional runs: NFR-01 ${verdict['NFR-01']}.`,
       `- Read p95 stayed flat from 0.7 to 2 req/s (${steps.map((s) => s.p95).join(' → ')} ms).`,
       ...(L4 && L3
         ? [
@@ -426,11 +469,15 @@ function build(docDir) {
           ]
         : []),
       '',
-      `**Correctness under load: ${load.reconciliation.verdict}.**`,
-      `- ${load.reconciliation.transfers.ok} transfers of 1.00 were confirmed, and T received all of them.`,
-      `- S went down by ${money(-load.reconciliation.rows[0].actual)} instead of ${money(-load.reconciliation.rows[0].expected)}, so **${money(created)} was created**.`,
-      `- Balances read after every test place the gap in ${gapTests.map((g) => `${g.test} (+${money(g.gap)})`).join(', ') || 'no test'}; the sequential tests reconcile exactly.`,
-      `- Isolated on a fresh customer: ${src.isolation ? link('isolation run', join(src.isolation.dir, 'summary.md')) : '—'}. Filed as ${bugs.find((b) => b.id === 'BUG-016') ? bugLink(bugs.find((b) => b.id === 'BUG-016')) : 'BUG-016'} (Critical).`,
+      `**Correctness under load: ${recon.verdict}** (${moneyText}).`,
+      `- ${recon.transfers.ok} transfers of 1.00 were confirmed${recon.transfers.unsure ? ` and ${recon.transfers.unsure} were unsure (timeout or 5xx)` : ''}.`,
+      `- S changed by ${money(reconRow('S decreased').actual)} (expected ${money(reconRow('S decreased').expected)}); T changed by ${money(reconRow('T increased').actual)} (expected ${money(reconRow('T increased').expected)}).`,
+      `- Balances read after every test place ${gapTests.length ? `the gap in ${gapTests.map((g) => `${g.test} (${g.gap > 0 ? '+' : ''}${money(g.gap)})`).join(', ')}` : 'no gap in any test'}.`,
+      ...(recon.verdict !== 'PASS'
+        ? [
+            `- Isolated on a fresh customer: ${src.isolation ? link('isolation run', join(src.isolation.dir, 'summary.md')) : '*(no isolation run in this cycle)*'}.${bug016 ? ` Filed as ${bugLink(bug016)} (${bug016.severity || 'Critical'}).` : ''}`,
+          ]
+        : []),
       '',
     );
     const readBars = [L1, ...steps, L5r].filter(Boolean);
@@ -502,7 +549,7 @@ function build(docDir) {
       'Customer locked out in API and UI; needs a data fix',
       'Reject > 2 decimals; repair affected accounts',
     ]),
-    `| ${specQuestions} open spec questions (overdraft, loan approval, errors, dates, SLAs) | Some "defects" may be intended behavior; expected results are proposals | R&D answers (${link('spec questions', 'Bug_Reports.md', '#spec-ambiguities-and-contradictions')}); re-classify affected cases |`,
+    `| ${specQuestions} open spec questions (overdraft, loan approval, errors, dates, SLAs) | Some "defects" may be intended behavior; expected results are proposals | R&D answers (${link('spec questions', D('Bug_Reports.md'), '#spec-ambiguities-and-contradictions')}); re-classify affected cases |`,
     '| Shared public test site (resets, rate limits, other users) | False failures, blocked runs, noisy timings | Fresh data per run, smoke gate, BLOCKED verdicts; repeat on a dedicated instance |',
     `| Not covered: injection (AUTH-05 blocked by the firewall), concurrency of other write endpoints, extended endpoints in depth | Unknown defects remain | Test on a local ParaBank instance (Docker) |`,
     '',
@@ -585,7 +632,7 @@ function build(docDir) {
   );
   if (shots.length) {
     P('<div class="page-break"></div>', '', '## Appendix B — Evidence screenshots', '');
-    for (const [p, cap] of shots) P(`**${cap}**`, '', `![${cap}](${L(p)})`, '', `<sub>${L(p)}</sub>`, '');
+    for (const [p, cap] of shots) P(`**${cap}**`, '', `![${cap}](${L(p)})`, '', `<sub>${p}</sub>`, '');
   }
   P(
     '## Appendix C — Sources of this report',
@@ -596,8 +643,8 @@ function build(docDir) {
       ([k, r]) =>
         `| ${k} | ${r ? link(`\`${r.id}\``, join(r.dir, existsSync(join(r.dir, 'summary.md')) ? 'summary.md' : 'run.json')) : '—'} |`,
     ),
-    `| Defects | ${link('Bug_Reports.md', 'Bug_Reports.md')}, ${link('evidence/bugs/', 'evidence/bugs')} |`,
-    `| Test design | ${link('STD.md', 'STD.md')} |`,
+    `| Defects | ${link('Bug_Reports.md', D('Bug_Reports.md'))}, ${link('evidence/bugs/', 'evidence/bugs')} |`,
+    `| Test design | ${link('STD.md', D('STD.md'))} |`,
     '',
     `<sub>Generated by \`tests/scripts/build-str.mjs\` on ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC${src.api.commit ? ` · API run at commit ${src.api.commit}` : ''}.</sub>`,
     '',
@@ -614,7 +661,7 @@ function build(docDir) {
     '',
     `**Candidate:** ${candidate} · **Date:** ${today} · **Audience:** R&D and management  `,
     '**System under test:** ParaBank REST API (public sandbox) `https://parabank.parasoft.com/parabank/services/bank`  ',
-    `**Details:** ${annex('detailed annex (STR_Detailed)')} · ${link('bug reports', 'Bug_Reports.md')} · ${link('test design (STD)', 'STD.md')}`,
+    `**Details:** ${annex('detailed annex (STR_Detailed)')} · ${link('bug reports', D('Bug_Reports.md'))} · ${link('test design (STD)', D('STD.md'))}`,
     '',
     `## Recommendation: ${rec}`,
     '',
@@ -626,8 +673,27 @@ function build(docDir) {
     '',
     '## What was tested',
     '',
-    `- **Tested:** all 9 in-scope endpoint groups (login, customer, accounts, transactions and filters, transfer, deposit, withdraw, bill pay, loan) with ${stdCases.length} designed cases: positive, negative, boundary, security and data integrity; a 16-step customer journey; web UI cross-checks; 4 manual cases; 5 coded tests; a small k6 load test of \`GET /accounts/{id}\` and \`POST /transfer\`.`,
-    "- **Not tested:** load on deposit, withdraw and bill pay; injection (blocked by the site firewall); UI functionality beyond cross-checks; admin endpoints and other customers' data (excluded by the ground rules).",
+    `- **Tested:** all 9 in-scope endpoint groups (login, customer, accounts, transactions and filters, transfer, deposit, withdraw, bill pay, loan) with ${stdCases.length} designed cases: positive, negative, boundary, security and data integrity; a 16-step customer journey${[
+      src.ui && 'web UI cross-checks',
+      src.manual && '4 manual cases',
+      src.auto && 'coded tests (pytest)',
+      src.load && 'a small k6 load test of `GET /accounts/{id}` and `POST /transfer`',
+    ]
+      .filter(Boolean)
+      .map((x) => `; ${x}`)
+      .join('')}.`,
+    `- **Not tested:** ${[
+      !src.ui && 'web UI cross-check (no run in this cycle)',
+      !src.manual && 'manual cases (no run in this cycle)',
+      !src.auto && 'coded tests (no run in this cycle)',
+      !src.load && 'load test (no run in this cycle)',
+      'load on deposit, withdraw and bill pay',
+      'injection (blocked by the site firewall)',
+      'UI functionality beyond cross-checks',
+      "admin endpoints and other customers' data (excluded by the ground rules)",
+    ]
+      .filter(Boolean)
+      .join('; ')}.`,
     '',
     '## Results',
     '',
@@ -637,7 +703,7 @@ function build(docDir) {
     '',
     `- **Customer journey:** ${verdict['JRN-01'] || '—'}${journeySteps.length ? ` (failing steps ${journeySteps.join(', ')})` : ''}.`,
     load
-      ? `- **Performance:** every response-time target met (read p95 ${ms(L1)} → ${ms(L2)} at higher load; transfer p95 ${ms(L3)} → ${ms(L4)} with 5 at once), 0 errors. **Correctness under concurrency failed:** simultaneous transfers lost updates and created ${money(created || 0)} (BUG-016).`
+      ? `- **Performance (load session ${loadSession}):** ${speedText} (read p95 ${ms(L1)} → ${ms(L2)} at higher load; transfer p95 ${ms(L3)} → ${ms(L4)} with 5 at once), highest error rate ${maxErr} %. **Correctness under concurrency: ${recon.verdict}**: ${moneyText}.${skippedTests.length ? ` Not run: ${skippedTests.join(', ')}.` : ''}`
       : '- **Performance:** no load run in this cycle.',
     auto
       ? `- **Coded tests (pytest):** ${autoCount('PASSED')} passed; ${autoCount('XFAIL')} fail only on known defects${autoCount('FAILED') ? `; **${autoCount('FAILED')} new failures**` : ''}.`
@@ -761,7 +827,7 @@ async function pdf(mdText, docDir, htmlPath, pdfPath) {
 
 // ---------------------------------------------------------------- write
 
-// Write the report into its run folder; with --publish also STR.md / STR.pdf in the repo root.
+// Write the report into its run folder; with --publish also STR.md / STR.pdf in deliverables/.
 // Two documents each time: STR (two pages) and STR_Detailed (the full annex), as Markdown and PDF.
 const inRun = build(out.dir);
 writeFileSync(join(out.dir, 'STR.md'), inRun.short);
@@ -773,11 +839,11 @@ writeFileSync(
   `# Test Summary Report — run ${out.id}\n\nRecommendation: **${inRun.rec}** · ${inRun.bugs} open defects (${inRun.crit} Critical).\n\n- Two-page report: [STR.md](STR.md) · [STR.pdf](STR.pdf)\n- Detailed annex: [STR_Detailed.md](STR_Detailed.md) · [STR_Detailed.pdf](STR_Detailed.pdf)\n`,
 );
 if (publish) {
-  const root = build('.');
-  writeFileSync('STR.md', root.short);
-  writeFileSync('STR_Detailed.md', root.md);
-  await pdf(root.short, '.', join(out.dir, 'STR-root.html'), 'STR.pdf');
-  await pdf(root.md, '.', join(out.dir, 'STR_Detailed-root.html'), 'STR_Detailed.pdf');
+  const root = build(DELIV);
+  writeFileSync(D('STR.md'), root.short);
+  writeFileSync(D('STR_Detailed.md'), root.md);
+  await pdf(root.short, DELIV, join(out.dir, 'STR-root.html'), D('STR.pdf'));
+  await pdf(root.md, DELIV, join(out.dir, 'STR_Detailed-root.html'), D('STR_Detailed.pdf'));
 }
 out.update({
   finished: new Date().toISOString(),
@@ -791,5 +857,5 @@ out.update({
 });
 rebuildIndex();
 console.log(
-  `Recommendation: ${inRun.rec} · ${inRun.bugs} defects (${inRun.crit} Critical)\nReport: ${out.dir}/STR.md (+ STR_Detailed), PDF for both${publish ? '\nPublished: STR.md, STR.pdf, STR_Detailed.md, STR_Detailed.pdf' : ''}`,
+  `Recommendation: ${inRun.rec} · ${inRun.bugs} defects (${inRun.crit} Critical)\nReport: ${out.dir}/STR.md (+ STR_Detailed), PDF for both${publish ? '\nPublished: deliverables/STR.md, STR.pdf, STR_Detailed.md, STR_Detailed.pdf' : ''}`,
 );

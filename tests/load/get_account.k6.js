@@ -1,4 +1,4 @@
-// L1 read baseline and L2 read step load: GET /accounts/{S} (tests/load/load_test_plan.md §4)
+// L1 read baseline and L2 read step load: GET /accounts/{S} (deliverables/load_test_plan.md §4)
 //   k6 run -e TEST=L1|L2 -e S=<accountId> tests/load/get_account.k6.js
 // L2 uses an arrival-rate model: the server gets a fixed rate whatever its speed, and k6 adds
 // VUs (up to 10) when responses slow down.

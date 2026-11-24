@@ -1,0 +1,49 @@
+test_money.py::test_negative_transfer_rejected — XFAIL (BUG-003: a negative transfer is accepted and moves money from T to S)
+
+api = <conftest.ApiClient object at 0x106a08460>
+fresh_accounts = {'S': 29661, 'T': 29772}
+
+    @case("TRF-03")
+    @pytest.mark.known_defect("BUG-003")
+    @pytest.mark.xfail(strict=True, reason="BUG-003: a negative transfer is accepted and moves money from T to S")
+    def test_negative_transfer_rejected(api, fresh_accounts):
+        """Rule A3: amount −1.00 is rejected with a 4xx and no balance changes."""
+        s, t = fresh_accounts["S"], fresh_accounts["T"]
+        s0, t0 = api.balance_cents(s), api.balance_cents(t)
+    
+        # Act: a negative amount. Correct behavior: rejected, nothing moves.
+        # Today the site accepts it and moves 1.00 from T to S (BUG-003), so this test is an expected failure.
+        resp = api.post("/transfer", params={"fromAccountId": s, "toAccountId": t, "amount": "-1.00"})
+    
+        s1, t1 = api.balance_cents(s), api.balance_cents(t)
+>       assert (s1, t1) == (s0, t0), "balances changed: S %+.2f, T %+.2f" % ((s1 - s0) / 100, (t1 - t0) / 100)
+E       AssertionError: balances changed: S +1.00, T -1.00
+E       assert (10100, 9900) == (10000, 10000)
+E         
+E         At index 0 diff: 10100 != 10000
+E         
+E         Full diff:
+E           (
+E         -     10000,
+E         ?        --...
+E         
+E         ...Full output truncated (5 lines hidden), use '-vv' to show
+
+test_money.py:64: AssertionError
+
+Requests:
+
+2026-11-24T11:24:55.468+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29661  -> 200 (311 ms)
+  response: {"id":29661,"customerId":18317,"type":"CHECKING","balance":100.00}
+
+2026-11-24T11:24:57.286+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29772  -> 200 (308 ms)
+  response: {"id":29772,"customerId":18317,"type":"CHECKING","balance":100.00}
+
+2026-11-24T11:24:59.038+00:00  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=29661&toAccountId=29772&amount=-1.00  -> 200 (252 ms)
+  response: Successfully transferred $-1.00 from account #29661 to account #29772
+
+2026-11-24T11:25:00.790+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29661  -> 200 (250 ms)
+  response: {"id":29661,"customerId":18317,"type":"CHECKING","balance":101.00}
+
+2026-11-24T11:25:02.552+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29772  -> 200 (253 ms)
+  response: {"id":29772,"customerId":18317,"type":"CHECKING","balance":99.00}

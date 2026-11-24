@@ -1,4 +1,4 @@
-// Load-test session (plan.md Stage 5, tests/load/load_test_plan.md):
+// Load-test session (plan.md Stage 5, deliverables/load_test_plan.md):
 //   smoke gate → fixture → L1 → L2 → L3 → L4 → (L5) → L6 reconciliation + smoke
 // with a pause between scenarios so the CDN's rate-limit window resets, and the stop rules of §5.
 //
@@ -43,7 +43,17 @@ if (gate === 'FAIL') {
 // Run folder and fixture (throwaway customer with S and T), saved as fixture.json.
 const run = newRun('load', { scope: dry ? 'dry run' : 'L1–L6', dry });
 console.log(`Run: ${run.dir}\nFixture: throwaway customer, accounts S and T…`);
-const fixture = await setupFixture();
+// A site reset (the public sandbox wipes its data periodically) makes the fixture accounts disappear:
+// the run is then BLOCKED, not a result. It is recorded as such and exits 3, so --keep does not keep it.
+function blockedByReset(when, err) {
+  const why = `${when}: ${err.message} (the site most likely reset its data; run ./run.sh setup and retry)`;
+  writeFileSync(join(run.dir, 'summary.md'), `# Load test — run ${run.id}\n\n**BLOCKED.** ${why}\n`);
+  run.update({ verdict: 'BLOCKED', blocked: why, counts: { BLOCKED: 1 }, finished: new Date().toISOString() });
+  rebuildIndex();
+  console.error(`BLOCKED: ${why}`);
+  process.exit(3);
+}
+const fixture = await setupFixture().catch((e) => blockedByReset('fixture setup', e));
 writeFileSync(join(run.dir, 'fixture.json'), `${JSON.stringify(fixture, null, 2)}\n`);
 console.log(
   `  customer ${fixture.customerId}, S ${fixture.S} (${fixture.before.S.balance}), T ${fixture.T} (${fixture.before.T.balance})`,
@@ -56,14 +66,22 @@ const raw = run.sub('raw');
 const logs = run.sub('logs');
 const results = [];
 const notes = [];
+const toolErrors = []; // tests whose k6 process failed (exit code other than 0 or 99)
 const baseline = {};
 let limitedRuns = 0;
 let stopAll = false;
+let integrityStop = null; // set when a test leaves a balance gap: nothing else starts (plan §5)
+let prevSnap = fixture.before;
 
 for (const [i, t] of TESTS.entries()) {
   // Stop rules: after 429s in two tests nothing else runs; optional L5 is skipped after any 429.
   if (stopAll) {
     results.push({ test: t.test, rows: [], skipped: 'session stopped' });
+    continue;
+  }
+  if (integrityStop) {
+    notes.push(`${t.test} not started: ${integrityStop} (plan §5: nothing else starts after a wrong balance).`);
+    results.push({ test: t.test, rows: [], skipped: 'balance gap' });
     continue;
   }
   if (t.optional && results.some((r) => r.raw?.rateLimited)) {
@@ -106,7 +124,12 @@ for (const [i, t] of TESTS.entries()) {
   )
     .map(([c, n]) => `${c} ×${n}`)
     .join('; ');
-  const snapAfter = await snapshot(fixture); // per-test balances: a reconciliation gap can be traced to its test
+  const snapAfter = await snapshot(fixture).catch((e) => blockedByReset(`balances after ${t.test}`, e)); // per-test balances: a reconciliation gap can be traced to its test
+  // Stop rule (plan §5): if S + T changed, money was created or lost; this test ran to the end, but no
+  // further test starts. Reads (L1, L2) cannot cause a gap, so any gap points at the write tests.
+  const gap = snapAfter.S.cents - prevSnap.S.cents + (snapAfter.T.cents - prevSnap.T.cents);
+  if (gap) integrityStop = `${t.test} left a balance gap of ${(gap / 100).toFixed(2)} (S + T changed)`;
+  prevSnap = snapAfter;
   results.push({ test: t.test, exit: k.status, rows, raw: data, failed: failedChecks, after: snapAfter });
   // L1 and L3 are the baselines: their p95 per endpoint is what L2 and L4 are compared against.
   if (t.test === 'L1' || t.test === 'L3')
@@ -114,7 +137,12 @@ for (const [i, t] of TESTS.entries()) {
   for (const r of rows.filter((x) => x.label === t.test))
     console.log(`  ${r.name}: n ${r.n}, p95 ${r.p95} ms, errors ${r.errorRate} %, 429 ${r.limited} → ${r.verdict}`);
   // Notes for the summary: k6 errors, stop-rule aborts (exit 99), and where L2 hit the rate limit.
-  if (k.status !== 0 && k.status !== 99) notes.push(`${t.test}: k6 exited with ${k.status} (see logs/${t.test}.log).`);
+  // k6 exit 0 = ran to the end, 99 = stopped by a stop-rule threshold (reported above as such);
+  // anything else is a tool or script error: the test's numbers cannot be trusted and the session fails.
+  if (k.status !== 0 && k.status !== 99) {
+    notes.push(`${t.test}: k6 exited with ${k.status} (see logs/${t.test}.log): ERROR, the session fails.`);
+    toolErrors.push(t.test);
+  }
   if (k.status === 99)
     notes.push(
       `${t.test}: stopped by a stop rule (§5)${data.rateLimited ? ` — ${data.rateLimited} × HTTP 429 (Cloudflare)` : ''}.`,
@@ -139,20 +167,31 @@ for (const [i, t] of TESTS.entries()) {
 // with the transfers k6 confirmed; finish with a smoke check that the site is still healthy.
 console.log('L6 reconciliation…');
 await sleep(dry ? 2000 : 15000);
-const after = await snapshot(fixture);
+const after = await snapshot(fixture).catch((e) => blockedByReset('L6 reconciliation', e));
 const ok = results.reduce((a, r) => a + (r.raw?.transferOk || 0), 0);
 const unsure = results.reduce((a, r) => a + (r.raw?.transferUnsure || 0), 0);
 const recon = { ...reconcile(fixture.before, after, { ok, unsure }), after, transfers: { ok, unsure } };
 console.log('Smoke after load…');
 const smokeAfter = smoke();
 
-// Write summary.md / results.json and record verdict counts in run.json.
-// Exit 0 only if reconciliation passed and no test failed its criteria.
-const md = writeSummary(run.dir, { runId: run.id, fixture, results, recon, smokeAfter, notes });
+// Session verdict: FAIL when reconciliation failed, a test failed its SLA, k6 itself failed, or the site
+// is unhealthy after the load (smoke FAIL); otherwise PASS. Written to run.json and summary.md.
 const verdicts = results.flatMap((r) => r.rows.filter((x) => x.label === r.test).map((x) => x.verdict.split(' ')[0]));
 const counts = verdicts.reduce((a, v) => ({ ...a, [v]: (a[v] || 0) + 1 }), {});
 counts[`RECON ${recon.verdict}`] = 1;
+if (toolErrors.length) counts.ERROR = toolErrors.length;
+const reasons = [
+  recon.verdict !== 'PASS' && 'reconciliation FAIL',
+  verdicts.includes('FAIL') && 'a test failed its SLA',
+  toolErrors.length && `k6 failed in ${toolErrors.join(', ')}`,
+  smokeAfter === 'FAIL' && 'smoke after load FAIL',
+].filter(Boolean);
+const sessionVerdict = reasons.length ? 'FAIL' : 'PASS';
+notes.push(`Session verdict: ${sessionVerdict}${reasons.length ? ` (${reasons.join('; ')})` : ''}.`);
+const md = writeSummary(run.dir, { runId: run.id, fixture, results, recon, smokeAfter, notes });
 run.update({
+  verdict: sessionVerdict,
+  slaVerdicts: [...new Set(verdicts)],
   finished: new Date().toISOString(),
   fixture: { customerId: fixture.customerId, S: fixture.S, T: fixture.T },
   counts,
@@ -163,4 +202,4 @@ rebuildIndex();
 writeFileSync('results/.last-run', `${run.id}\n`); // the after-load smoke run must not become the run that --keep keeps
 console.log(md.slice(6).join('\n'));
 console.log(`Run: ${run.dir}`);
-process.exit(recon.verdict === 'PASS' && !verdicts.includes('FAIL') ? 0 : 1);
+process.exit(sessionVerdict === 'PASS' ? 0 : 1);

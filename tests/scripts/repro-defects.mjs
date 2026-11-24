@@ -322,6 +322,42 @@ await step(
   },
 );
 
+bug('BUG-017'); // selling more shares than the position holds
+// Account A still holds money; S may be overdrawn by now. Control first: a normal buy and a normal sell.
+const bought = await step(
+  'Control: buy 2 shares × 10.00 from A',
+  'control',
+  'POST',
+  `/customers/${R.customerId}/buyPosition`,
+  {
+    query: { accountId: R.A, name: 'QA Test Stock', symbol: 'QATS', shares: 2, pricePerShare: 10 },
+    accounts: [R.A],
+    expect: 'A − 20.00, position with 2 shares',
+  },
+);
+const pos = (Array.isArray(bought.json) ? bought.json : []).find((x) => x.symbol === 'QATS');
+if (pos) {
+  await step('Control: sell 1 share × 12.00 to A', 'control', 'POST', `/customers/${R.customerId}/sellPosition`, {
+    query: { accountId: R.A, positionId: pos.positionId, shares: 1, pricePerShare: 12 },
+    accounts: [R.A],
+    expect: 'A + 12.00, position with 1 share',
+  });
+  await step(
+    'Sell 100 shares × 10.00 (the position holds 1)',
+    'fail',
+    'POST',
+    `/customers/${R.customerId}/sellPosition`,
+    {
+      query: { accountId: R.A, positionId: pos.positionId, shares: 100, pricePerShare: 10 },
+      accounts: [R.A],
+      expect: '4xx, nothing changes (cannot sell shares not owned)',
+    },
+  );
+  await step('Position after the oversell', 'state', 'GET', `/positions/${pos.positionId}`, {
+    expect: 'still 1 share',
+  });
+}
+
 // ---------------------------------------------------------------- loan approval experiment (user L)
 
 const Lu = await register();
@@ -329,7 +365,7 @@ console.log(`User L: ${Lu.username} customer ${Lu.customerId}, account A ${Lu.A}
 const LS = await openAccount(Lu);
 bug('S-LOAN');
 await step(
-  'Customer total positive (A 415.50 + S 100.00): loan 100, down 50 from S',
+  'Customer total positive (A + S, each with its opening balance): loan 100, down 50 from S',
   'control',
   'POST',
   '/requestLoan',

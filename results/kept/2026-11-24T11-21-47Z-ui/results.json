@@ -1,0 +1,1083 @@
+{
+  "at": "2026-11-24T11:22:15.564Z",
+  "customerId": 18317,
+  "accounts": {
+    "S": 26886,
+    "T": 26997,
+    "A": 22557,
+    "B": 28218,
+    "L": 28329
+  },
+  "checks": [
+    {
+      "area": "Overview",
+      "label": "same accounts in UI and API",
+      "result": "MATCH",
+      "detail": "UI 15, API 15"
+    },
+    {
+      "area": "Overview",
+      "label": "every balance equal in UI and API",
+      "result": "MATCH",
+      "detail": "15 accounts compared"
+    },
+    {
+      "area": "Account S (26886)",
+      "label": "type and balance",
+      "result": "MATCH",
+      "detail": "UI CHECKING $0.00, API CHECKING 0"
+    },
+    {
+      "area": "Account S (26886)",
+      "label": "same transactions (id, type, amount)",
+      "result": "MATCH",
+      "detail": "UI 9 rows, API 9 rows"
+    },
+    {
+      "area": "Account S (26886)",
+      "label": "same descriptions",
+      "result": "MATCH",
+      "detail": "9 compared"
+    },
+    {
+      "area": "Account T (26997)",
+      "label": "type and balance",
+      "result": "MATCH",
+      "detail": "UI CHECKING $1199.00, API CHECKING 1199"
+    },
+    {
+      "area": "Account T (26997)",
+      "label": "same transactions (id, type, amount)",
+      "result": "MATCH",
+      "detail": "UI 6 rows, API 6 rows"
+    },
+    {
+      "area": "Account T (26997)",
+      "label": "same descriptions",
+      "result": "MATCH",
+      "detail": "6 compared"
+    },
+    {
+      "area": "Account A (22557)",
+      "label": "type and balance",
+      "result": "MATCH",
+      "detail": "UI CHECKING $1287.50, API CHECKING 1287.5"
+    },
+    {
+      "area": "Account A (22557)",
+      "label": "same transactions (id, type, amount)",
+      "result": "MATCH",
+      "detail": "UI 22 rows, API 22 rows"
+    },
+    {
+      "area": "Account A (22557)",
+      "label": "same descriptions",
+      "result": "MATCH",
+      "detail": "22 compared"
+    },
+    {
+      "area": "Account B (28218)",
+      "label": "type and balance",
+      "result": "MATCH",
+      "detail": "UI SAVINGS $230.00, API SAVINGS 230"
+    },
+    {
+      "area": "Account B (28218)",
+      "label": "same transactions (id, type, amount)",
+      "result": "MATCH",
+      "detail": "UI 4 rows, API 4 rows"
+    },
+    {
+      "area": "Account B (28218)",
+      "label": "same descriptions",
+      "result": "MATCH",
+      "detail": "4 compared"
+    },
+    {
+      "area": "Account L (28329)",
+      "label": "type and balance",
+      "result": "MATCH",
+      "detail": "UI LOAN $500.00, API LOAN 500"
+    },
+    {
+      "area": "Account L (28329)",
+      "label": "same transactions (id, type, amount)",
+      "result": "MATCH",
+      "detail": "UI 0 rows, API 0 rows"
+    },
+    {
+      "area": "Account L (28329)",
+      "label": "same descriptions",
+      "result": "MATCH",
+      "detail": "0 compared"
+    },
+    {
+      "area": "J09",
+      "label": "transfer 50.00 B → A: Debit 50.00 on B visible in UI",
+      "result": "MATCH",
+      "detail": "11-24-2026 \"Funds Transfer Sent\" #43780"
+    },
+    {
+      "area": "J09",
+      "label": "transfer 50.00 B → A: Credit 50.00 on A visible in UI",
+      "result": "MATCH",
+      "detail": "11-24-2026 \"Funds Transfer Received\" #43891"
+    },
+    {
+      "area": "J10",
+      "label": "bill payment 30.00 from A to City Utilities: Debit 30.00 on A visible in UI",
+      "result": "MATCH",
+      "detail": "11-24-2026 \"Bill Payment to City Utilities\" #44002"
+    },
+    {
+      "area": "J13",
+      "label": "loan down payment 50.00 from A: Debit 50.00 on A visible in UI",
+      "result": "MATCH",
+      "detail": "11-24-2026 \"Down Payment for Loan # 28329\" #44113"
+    },
+    {
+      "area": "TRF-01",
+      "label": "transfer 1.00 S → T: Debit 1.00 on S visible in UI",
+      "result": "MATCH",
+      "detail": "11-24-2026 \"Funds Transfer Sent\" #38008"
+    },
+    {
+      "area": "TRF-01",
+      "label": "transfer 1.00 S → T: Credit 1.00 on T visible in UI",
+      "result": "MATCH",
+      "detail": "11-24-2026 \"Funds Transfer Received\" #38119"
+    },
+    {
+      "area": "J13",
+      "label": "loan account shown as LOAN in UI",
+      "result": "MATCH",
+      "detail": "UI type LOAN, balance $500.00"
+    },
+    {
+      "area": "J13",
+      "label": "loan recorded in the loan account history (rule A12)",
+      "result": "RULE NOT MET (A12)",
+      "detail": "UI and API agree: 0 rows in UI, 0 in API. Same gap as LOAN-01 / J13e, not a UI-only problem"
+    }
+  ],
+  "overview": [
+    {
+      "id": 22557,
+      "balance": "$1287.50",
+      "available": "$1287.50"
+    },
+    {
+      "id": 22779,
+      "balance": "$100.00",
+      "available": "$100.00"
+    },
+    {
+      "id": 26886,
+      "balance": "$0.00",
+      "available": "$0.00"
+    },
+    {
+      "id": 26997,
+      "balance": "$1199.00",
+      "available": "$1199.00"
+    },
+    {
+      "id": 27108,
+      "balance": "$95.00",
+      "available": "$95.00"
+    },
+    {
+      "id": 27219,
+      "balance": "$0.00",
+      "available": "$0.00"
+    },
+    {
+      "id": 27330,
+      "balance": "$0.00",
+      "available": "$0.00"
+    },
+    {
+      "id": 27441,
+      "balance": "$100.00",
+      "available": "$100.00"
+    },
+    {
+      "id": 27552,
+      "balance": "$0.00",
+      "available": "$0.00"
+    },
+    {
+      "id": 27663,
+      "balance": "$500.00",
+      "available": "$500.00"
+    },
+    {
+      "id": 27774,
+      "balance": "$10.00",
+      "available": "$10.00"
+    },
+    {
+      "id": 27885,
+      "balance": "$140.00",
+      "available": "$140.00"
+    },
+    {
+      "id": 27996,
+      "balance": "$105.00",
+      "available": "$105.00"
+    },
+    {
+      "id": 28218,
+      "balance": "$230.00",
+      "available": "$230.00"
+    },
+    {
+      "id": 28329,
+      "balance": "$500.00",
+      "available": "$500.00"
+    }
+  ],
+  "ui": {
+    "S": {
+      "id": "26886",
+      "type": "CHECKING",
+      "balance": "$0.00",
+      "available": "$0.00",
+      "rows": [
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 37675,
+          "debit": "",
+          "credit": "$100.00",
+          "type": "Credit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 38008,
+          "debit": "$1.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 100
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 38230,
+          "debit": "$99.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 9900
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 38452,
+          "debit": "$1000.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 100000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 38674,
+          "debit": "-$1.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": -100
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 38896,
+          "debit": "$0.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 0
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 39118,
+          "debit": "$1.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 100
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 39229,
+          "debit": "",
+          "credit": "$1.00",
+          "type": "Credit",
+          "cents": 100
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 39340,
+          "debit": "",
+          "credit": "$999.00",
+          "type": "Credit",
+          "cents": 99900
+        }
+      ]
+    },
+    "T": {
+      "id": "26997",
+      "type": "CHECKING",
+      "balance": "$1199.00",
+      "available": "$1199.00",
+      "rows": [
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 37897,
+          "debit": "",
+          "credit": "$100.00",
+          "type": "Credit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 38119,
+          "debit": "",
+          "credit": "$1.00",
+          "type": "Credit",
+          "cents": 100
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 38341,
+          "debit": "",
+          "credit": "$99.00",
+          "type": "Credit",
+          "cents": 9900
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 38563,
+          "debit": "",
+          "credit": "$1000.00",
+          "type": "Credit",
+          "cents": 100000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 38785,
+          "debit": "",
+          "credit": "-$1.00",
+          "type": "Credit",
+          "cents": -100
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 39007,
+          "debit": "",
+          "credit": "$0.00",
+          "type": "Credit",
+          "cents": 0
+        }
+      ]
+    },
+    "A": {
+      "id": "22557",
+      "type": "CHECKING",
+      "balance": "$1287.50",
+      "available": "$1287.50",
+      "rows": [
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 28129,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 37342,
+          "debit": "",
+          "credit": "$10.00",
+          "type": "Credit",
+          "cents": 1000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 37453,
+          "debit": "",
+          "credit": "$300.00",
+          "type": "Credit",
+          "cents": 30000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 37564,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 37786,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 39451,
+          "debit": "",
+          "credit": "$300.00",
+          "type": "Credit",
+          "cents": 30000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 39562,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 40006,
+          "debit": "",
+          "credit": "$300.00",
+          "type": "Credit",
+          "cents": 30000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 40117,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 40894,
+          "debit": "",
+          "credit": "$300.00",
+          "type": "Credit",
+          "cents": 30000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 41005,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 41227,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 42004,
+          "debit": "",
+          "credit": "$300.00",
+          "type": "Credit",
+          "cents": 30000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 42115,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 42781,
+          "debit": "",
+          "credit": "$300.00",
+          "type": "Credit",
+          "cents": 30000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 42892,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 43336,
+          "debit": "$100.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 43891,
+          "debit": "",
+          "credit": "$50.00",
+          "type": "Credit",
+          "cents": 5000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Bill Payment to City Utilities",
+          "id": 44002,
+          "debit": "$30.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 3000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Down Payment for Loan # 28329",
+          "id": 44113,
+          "debit": "$50.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 5000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 44224,
+          "debit": "$20.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 2000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 44335,
+          "debit": "",
+          "credit": "$12.00",
+          "type": "Credit",
+          "cents": 1200
+        }
+      ]
+    },
+    "B": {
+      "id": "28218",
+      "type": "SAVINGS",
+      "balance": "$230.00",
+      "available": "$230.00",
+      "rows": [
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Received",
+          "id": 43447,
+          "debit": "",
+          "credit": "$100.00",
+          "type": "Credit",
+          "cents": 10000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Deposit via Web Service",
+          "id": 43558,
+          "debit": "",
+          "credit": "$200.00",
+          "type": "Credit",
+          "cents": 20000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Withdraw via Web Service",
+          "id": 43669,
+          "debit": "$20.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 2000
+        },
+        {
+          "date": "11-24-2026",
+          "description": "Funds Transfer Sent",
+          "id": 43780,
+          "debit": "$50.00",
+          "credit": "",
+          "type": "Debit",
+          "cents": 5000
+        }
+      ]
+    },
+    "L": {
+      "id": "28329",
+      "type": "LOAN",
+      "balance": "$500.00",
+      "available": "$500.00",
+      "rows": []
+    }
+  },
+  "api": {
+    "accounts": [
+      {
+        "id": 22557,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 1287.5
+      },
+      {
+        "id": 22779,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 100
+      },
+      {
+        "id": 26886,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 0
+      },
+      {
+        "id": 26997,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 1199
+      },
+      {
+        "id": 27108,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 95
+      },
+      {
+        "id": 27219,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 0
+      },
+      {
+        "id": 27330,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 0
+      },
+      {
+        "id": 27441,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 100
+      },
+      {
+        "id": 27552,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 0
+      },
+      {
+        "id": 27663,
+        "customerId": 18317,
+        "type": "LOAN",
+        "balance": 500
+      },
+      {
+        "id": 27774,
+        "customerId": 18317,
+        "type": "LOAN",
+        "balance": 10
+      },
+      {
+        "id": 27885,
+        "customerId": 18317,
+        "type": "LOAN",
+        "balance": 140
+      },
+      {
+        "id": 27996,
+        "customerId": 18317,
+        "type": "CHECKING",
+        "balance": 105
+      },
+      {
+        "id": 28218,
+        "customerId": 18317,
+        "type": "SAVINGS",
+        "balance": 230
+      },
+      {
+        "id": 28329,
+        "customerId": 18317,
+        "type": "LOAN",
+        "balance": 500
+      }
+    ],
+    "transactions": {
+      "S": [
+        {
+          "id": 37675,
+          "accountId": 26886,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 38008,
+          "accountId": 26886,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 1,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 38230,
+          "accountId": 26886,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 99,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 38452,
+          "accountId": 26886,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 1000,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 38674,
+          "accountId": 26886,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": -1,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 38896,
+          "accountId": 26886,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 0,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 39118,
+          "accountId": 26886,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 1,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 39229,
+          "accountId": 26886,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 1,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 39340,
+          "accountId": 26886,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 999,
+          "description": "Deposit via Web Service"
+        }
+      ],
+      "T": [
+        {
+          "id": 37897,
+          "accountId": 26997,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 38119,
+          "accountId": 26997,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 1,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 38341,
+          "accountId": 26997,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 99,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 38563,
+          "accountId": 26997,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 1000,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 38785,
+          "accountId": 26997,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": -1,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 39007,
+          "accountId": 26997,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 0,
+          "description": "Funds Transfer Received"
+        }
+      ],
+      "A": [
+        {
+          "id": 28129,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 37342,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 10,
+          "description": "Deposit via Web Service"
+        },
+        {
+          "id": 37453,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 300,
+          "description": "Deposit via Web Service"
+        },
+        {
+          "id": 37564,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 37786,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 39451,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 300,
+          "description": "Deposit via Web Service"
+        },
+        {
+          "id": 39562,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 40006,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 300,
+          "description": "Deposit via Web Service"
+        },
+        {
+          "id": 40117,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 40894,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 300,
+          "description": "Deposit via Web Service"
+        },
+        {
+          "id": 41005,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 41227,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 42004,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 300,
+          "description": "Deposit via Web Service"
+        },
+        {
+          "id": 42115,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 42781,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 300,
+          "description": "Deposit via Web Service"
+        },
+        {
+          "id": 42892,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 43336,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 43891,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 50,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 44002,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 30,
+          "description": "Bill Payment to City Utilities"
+        },
+        {
+          "id": 44113,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 50,
+          "description": "Down Payment for Loan # 28329"
+        },
+        {
+          "id": 44224,
+          "accountId": 22557,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 20,
+          "description": "Funds Transfer Sent"
+        },
+        {
+          "id": 44335,
+          "accountId": 22557,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 12,
+          "description": "Funds Transfer Received"
+        }
+      ],
+      "B": [
+        {
+          "id": 43447,
+          "accountId": 28218,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 100,
+          "description": "Funds Transfer Received"
+        },
+        {
+          "id": 43558,
+          "accountId": 28218,
+          "type": "Credit",
+          "date": 1795478400000,
+          "amount": 200,
+          "description": "Deposit via Web Service"
+        },
+        {
+          "id": 43669,
+          "accountId": 28218,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 20,
+          "description": "Withdraw via Web Service"
+        },
+        {
+          "id": 43780,
+          "accountId": 28218,
+          "type": "Debit",
+          "date": 1795478400000,
+          "amount": 50,
+          "description": "Funds Transfer Sent"
+        }
+      ],
+      "L": []
+    }
+  }
+}

@@ -16,14 +16,14 @@ The journey JRN-01 walks one customer through J02–J17: log in, open an account
 
 > `J13e [A12] the loan is recorded in the loan account history (found 0)`
 
-Evidence: [`results/kept/2026-11-23T16-04-00Z-api/summary.md`](../results/kept/2026-11-23T16-04-00Z-api/summary.md) (row JRN-01).
+Evidence: [`results/kept/2026-11-24T11-16-14Z-api/summary.md`](../results/kept/2026-11-24T11-16-14Z-api/summary.md) (row JRN-01).
 
 ## 2. Isolate it with the endpoint suite
 
 A journey failure can come from earlier steps or leftover data. The isolation workflow (plan.md §2.5) re-runs the endpoint on its own, in the suite that owns it, on fresh accounts:
 
 - Suite case **LOAN-01** (loan result matches the accounts) fails the same way: `[A12] the loan is recorded in the loan account history (found 0)`.
-- So the defect is in `POST /requestLoan` itself, not in the journey. It is classified in the failure-classification table of [`Bug_Reports.md`](../Bug_Reports.md#failure-classification-stage-4-exit-gate) (row "JRN-01 J13e").
+- So the defect is in `POST /requestLoan` itself, not in the journey. It is classified in the failure-classification table of [`deliverables/Bug_Reports.md`](../deliverables/Bug_Reports.md#failure-classification-stage-4-exit-gate) (row "JRN-01 J13e").
 
 ## 3. Reproduce on clean data, with a control
 
@@ -38,11 +38,11 @@ A journey failure can come from earlier steps or leftover data. The isolation wo
 
 ## 4. The bug report
 
-[`Bug_Reports.md` → BUG-006](../Bug_Reports.md#bug-006): *Approved loan is not recorded in the loan account's transaction history*. High, P2. It holds the steps to reproduce, expected vs. actual, the request and response, and links to the evidence bundle above.
+[`deliverables/Bug_Reports.md` → BUG-006](../deliverables/Bug_Reports.md#bug-006): *Approved loan is not recorded in the loan account's transaction history*. High, P2. It holds the steps to reproduce, expected vs. actual, the request and response, and links to the evidence bundle above.
 
 ## 5. Where it lands
 
-- **STR:** counted under the open High defects ([`STR.md`](../STR.md)); the detailed annex ([`STR_Detailed.md`](../STR_Detailed.md)) links the evidence.
+- **STR:** counted under the open High defects ([`deliverables/STR.md`](../deliverables/STR.md)); the detailed annex ([`deliverables/STR_Detailed.md`](../deliverables/STR_Detailed.md)) links the evidence.
 - **Coded tests:** the pytest journey (`tests/automation/test_journey.py`) marks J13e as known defect BUG-006. When R&D fixes it, that test turns red with "known defect no longer reproduces", which is the signal to retest and close the bug.
 
 ## Other good examples to show
@@ -52,3 +52,4 @@ A journey failure can come from earlier steps or leftover data. The isolation wo
 | Money created under load | `./run.sh load`: L6 reconciliation finds S + T grew; isolation run pins it to 5 simultaneous transfers | BUG-016 (Critical) |
 | A negative transfer moves money backwards | Suite case TRF-03 | BUG-003 (Critical) |
 | No login needed to read or move money | Suite cases CUST-03, ACCT-04 | BUG-002 (Critical) |
+| Selling shares you don't own creates money | Stage 1 exploration probe E-INV1, reproduced next to a normal buy and sell | BUG-017 (Critical) |

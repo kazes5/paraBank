@@ -1,0 +1,100 @@
+{
+  "sourceRun": "results/kept/2026-11-24T11-16-14Z-api",
+  "records": [
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:19:30.938Z",
+      "case": "LOAN-01",
+      "request": "LOAN-01 · request loan 500, down payment 50",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=500&downPayment=50&fromAccountId=27552",
+      "requestBody": "",
+      "status": 200,
+      "ms": 345,
+      "response": "{\"responseDate\":1795519170798,\"loanProviderName\":\"Wealth Securities Dynamic Loans (WSDL)\",\"approved\":true,\"accountId\":27663}",
+      "failures": [
+        "[C1] loanResponse schema (data.responseDate should be string): expected false to deeply equal true"
+      ],
+      "snapPrev": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": -99600,
+        "27441": 10000
+      },
+      "snapCur": {
+        "22557": 122550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 0,
+        "27441": 10000,
+        "27552": 10000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:19:36.221Z",
+      "case": "LOAN-01",
+      "request": "LOAN-01 · transactions of the loan account",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/27663/transactions",
+      "requestBody": "",
+      "status": 200,
+      "ms": 221,
+      "response": "[]",
+      "failures": [
+        "[A12] the loan is recorded in the loan account history (found 0): expected +0 to be above +0"
+      ],
+      "snapPrev": {
+        "22557": 122550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 0,
+        "27441": 10000,
+        "27552": 10000
+      },
+      "snapCur": {
+        "22557": 122550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 0,
+        "27441": 10000,
+        "27552": 5000,
+        "27663": 50000
+      }
+    },
+    {
+      "phase": "journey",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-20-28-719Z",
+      "at": "2026-11-24T11:21:23.200Z",
+      "case": "JRN-01 J13e",
+      "request": "JRN-01 J13e · transactions of the loan account",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/28329/transactions",
+      "requestBody": "",
+      "status": 200,
+      "ms": 232,
+      "response": "[]",
+      "failures": [
+        "[A12] the loan is recorded in the loan account history (found 0): expected +0 to be above +0"
+      ]
+    }
+  ]
+}

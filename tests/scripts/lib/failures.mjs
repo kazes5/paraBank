@@ -9,7 +9,7 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { findRun } from './common.mjs';
+import { findRun, redact } from './common.mjs';
 
 // Defect -> STD case IDs that detect it (Bug_Reports.md)
 export const CASES = {
@@ -73,7 +73,8 @@ export function writeAll(outRoot, apiDir = defaultApiRun()) {
     mkdirSync(join(outRoot, bug), { recursive: true });
     writeFileSync(
       join(outRoot, bug, 'stage3-failures.json'),
-      `${JSON.stringify({ sourceRun: apiDir, records: recs }, null, 2)}\n`,
+      // Records are rebuilt from joined log lines: redact again (older logs may hold split values).
+      redact(`${JSON.stringify({ sourceRun: apiDir, records: recs }, null, 2)}\n`),
     );
   }
   return summary;

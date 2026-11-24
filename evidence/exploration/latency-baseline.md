@@ -1,14 +1,12 @@
-# Stage 1 latency baseline
+# Latency baseline (unloaded) — 2026-11-24
 
-Source: every non-rate-limited request in `observations.json` and `observations-from-E-DEP1.json` (2026-11-23, 12:58–13:07 UTC).
-Single client, requests paced 0–1.5 s apart, public shared instance, measured from the client (includes network and CDN). Response time in ms.
+Source: the 72 probes of this exploration run (`observations.json`), sent one at a time from one client, 1500 ms apart. Times are client side and include the network and Cloudflare. HTTP 429 never occurred (the run stops on it).
 
-| Group | n | min | p50 | p95 | max |
-|---|---|---|---|---|---|
-| All requests | 74 | 80 | 242 | 378 | 812 |
-| Reads (all GET) | 38 | 80 | 241 | 670 | 812 |
-| Money writes (transfer, deposit, withdraw, billpay, requestLoan) | 29 | 218 | 244 | 295 | 296 |
-| `GET /accounts/{id}` (load-test target) | 3 | 237 | 242 | 271 | 271 |
-| `POST /transfer` (load-test target) | 9 | 224 | 246 | 295 | 295 |
+| Class | n | p50 ms | p95 ms | max ms |
+|---|---|---|---|---|
+| Reads (all GET) | 38 | 227 | 635 | 709 |
+| `GET /accounts/{id}` | 3 | 239 | 253 | 253 |
+| Money writes (transfer, deposit, withdraw, bill pay) | 21 | 225 | 266 | 270 |
+| All writes (POST) | 34 | 228 | 295 | 339 |
 
-Notes: samples are small (p95 of n < 20 is close to the max and only indicative). The two slowest reads (812 ms login, 657 ms customer) were the first calls of a run, likely connection setup.
+Used for the SLA model in deliverables/STD.md §4 (read p95 ≤ 1000 ms, write p95 ≤ 1500 ms) and as the "no load" reference in deliverables/load_test_plan.md.

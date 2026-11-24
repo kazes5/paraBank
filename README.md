@@ -7,13 +7,14 @@ Test design, automated tests and defect reports for the ParaBank REST API (`http
 | I want… | Go to |
 |---|---|
 | **The submission: every deliverable, how to re-run, review path** | [`SUBMISSION.md`](SUBMISSION.md) |
-| **The Test Summary Report (2 pages): go / no-go** | [`STR.pdf`](STR.pdf) · [`STR.md`](STR.md) |
-| The detailed STR annex: per-case results, charts, reproduction, screenshots | [`STR_Detailed.pdf`](STR_Detailed.pdf) · [`STR_Detailed.md`](STR_Detailed.md) |
+| **The Test Summary Report (2 pages): go / no-go** | [`deliverables/STR.pdf`](deliverables/STR.pdf) · [`deliverables/STR.md`](deliverables/STR.md) |
+| The detailed STR annex: per-case results, charts, reproduction, screenshots | [`deliverables/STR_Detailed.pdf`](deliverables/STR_Detailed.pdf) · [`deliverables/STR_Detailed.md`](deliverables/STR_Detailed.md) |
 | A demo script: one failure from the journey to the bug report | [`docs/walkthrough.md`](docs/walkthrough.md) |
 | The staged plan and how the work was done | [`plan.md`](plan.md) |
-| The test design: rules, risks, 47 test cases, SLA model | [`STD.md`](STD.md) |
-| What the API does and doesn't do: contract, observed behavior, business rules | [`Business_Rules.md`](Business_Rules.md) |
-| The defects (16 bug reports) and the questions for R&D | [`Bug_Reports.md`](Bug_Reports.md) |
+| The test design: rules, risks, 47 test cases, SLA model | [`deliverables/STD.md`](deliverables/STD.md) |
+| Step-by-step test scenarios and expected results | [`docs/test-case-catalog.md`](docs/test-case-catalog.md) · [`Word document`](docs/test-case-catalog.docx) |
+| What the API does and doesn't do: contract, observed behavior, business rules | [`deliverables/Business_Rules.md`](deliverables/Business_Rules.md) |
+| The defects (17 bug reports) and the questions for R&D | [`deliverables/Bug_Reports.md`](deliverables/Bug_Reports.md) |
 | The latest results, and every run | [`results/index.md`](results/index.md) |
 | How each case's verdict changed across runs | [`results/history.md`](results/history.md) |
 | The evidence cited by the documents | [`evidence/`](evidence/): `exploration/` (Stage 1) and `bugs/BUG-0NN/` (Stage 4) |
@@ -33,6 +34,7 @@ cp .env.example .env        # fill in the test users (never committed)
 
 | Command | What it runs | Time |
 |---|---|---|
+| `./run.sh explore` | Stage 1 exploration on a throwaway customer (destructive probes included, the 0.005 transfer last); writes `evidence/exploration/` | ~5 min |
 | `./run.sh smoke` | Smoke gate (6 cases) | ~15 s |
 | `./run.sh suites` | Endpoint suites 11–19, each with fresh accounts | ~3 min |
 | `./run.sh journey` | Customer journey JRN-01 (J02–J17) | ~80 s |
@@ -42,9 +44,10 @@ cp .env.example .env        # fill in the test users (never committed)
 | `./run.sh repro [--publish]` | Reproduce every known defect on fresh throwaway users | ~5 min |
 | `./run.sh web` | Test runner web page at http://127.0.0.1:4321 (see [below](#test-runner-web-page)) | — |
 | `./run.sh auto` | Coded tests, pytest + requests: JRN-01, TRF-01, TRF-03, DEP-01, ACCT-03 ([`tests/automation/README.md`](tests/automation/README.md)) | ~2 min |
-| `./run.sh cycle [--keep]` | One full test cycle: all → ui → manual (headless) → auto → load → report | ~45 min |
-| `./run.sh report [--kept] [--publish]` | Test Summary Report (2 pages) and its detailed annex, Markdown + PDF, from the latest runs; `--publish` updates `STR*.md` / `STR*.pdf` in the root | ~20 s |
-| `./run.sh load [--dry]` | k6 load session L1–L6 ([`tests/load/load_test_plan.md`](tests/load/load_test_plan.md)) | ~18 min |
+| `./run.sh cycle [--keep]` | One full test cycle: all → ui → manual (headless) → auto → load (→ isolate if reconciliation fails) → repro → report. The report uses only this cycle's runs; steps that found failures are listed at the end | ~50 min |
+| `./run.sh report [--kept] [--publish] [--since T]` | Test Summary Report (2 pages) and its detailed annex, Markdown + PDF, from the latest runs (with `--since`: only runs started after T); `--publish` updates `STR*.md` / `STR*.pdf` in the root | ~20 s |
+| `./run.sh isolate` | Concurrency isolation of a load reconciliation failure (5 sequential, then 3 × 5 simultaneous transfers) | ~1 min |
+| `./run.sh load [--dry]` | k6 load session L1–L6 ([`deliverables/load_test_plan.md`](deliverables/load_test_plan.md)) | ~18 min |
 | `./run.sh package` | Submission zip of the committed repository in `dist/` (refuses while changes are uncommitted) | ~2 s |
 
 **Options:**
@@ -72,15 +75,15 @@ Stop the page with Ctrl+C in the terminal. It needs the same `.env` and tools as
    | Preset | Steps | Time |
    |---|---|---|
    | Quick check | Set up users → API smoke → coded tests | ~4 min |
-   | Full cycle | Set up users → API tests → UI cross-check → manual cases → coded tests → defect reproduction → load test → report | ~45 min |
+   | Full cycle | Set up users → API tests → UI cross-check → manual cases → coded tests → defect reproduction → load test → concurrency isolation (only if the load test's balances don't reconcile) → report | ~45 min |
    | Defects + report | Set up users → defect reproduction → report | ~8 min |
-   | Report only | Report from the latest runs (no traffic to the site) | ~1 min |
+   | Report only | Report from the latest complete run of each type (no traffic to the site) | ~1 min |
 
-   Steps always run in that order, whatever order you tick them in. "API tests" already includes smoke.
+   Steps always run in that order, whatever order you tick them in. "API tests" already includes smoke. **Stage 1 exploration** is in no preset: it rewrites `evidence/exploration/`, which the documents cite, so tick it only when you mean to refresh that evidence. With test steps in the job, the report uses only this job's runs.
 2. Choose the options:
    - **Run as:** the `.env` user (`PARABANK` or `PARABANK2`).
    - **Keep the runs:** move each run to `results/kept/`, ready to commit.
-   - **Publish the deliverables:** also replace `STR*.md` / `STR*.pdf` and `evidence/bugs/` in the repo root. Turns on Keep, and builds the report from kept runs only.
+   - **Publish the deliverables:** also replace `deliverables/STR*.md` / `STR*.pdf` and `evidence/bugs/`. Turns on Keep, and builds the report from kept runs only.
    - **Show the browser for manual cases:** a visible Chrome window instead of headless.
 3. Press **Run**. **Stop** ends the running step at once and skips the rest.
 
@@ -137,14 +140,19 @@ screenshots/    browser runs only
 ```
 README.md  run.sh                      start here · single entry point
 SUBMISSION.md                          start page for reviewers
-STR.md  STR.pdf                        Test Summary Report, 2 pages (generated)
-STR_Detailed.md  STR_Detailed.pdf      detailed annex (generated)
-plan.md  STD.md  Business_Rules.md  Bug_Reports.md  parabank_test_approach.md
+plan.md  parabank_test_approach.md     test plan and execution status · original approach
+deliverables/                          every exercise deliverable (index: deliverables/README.md):
+  STD.md  Business_Rules.md              test design + business rules
+  postman/                               ParaBank_QA collection + environment (secrets blank)
+  Bug_Reports.md                         bug reports + spec questions
+  load_test_plan.md                      load and performance test plan
+  STR.md  STR.pdf                        Test Summary Report, 2 pages (generated)
+  STR_Detailed.md  STR_Detailed.pdf      detailed annex (generated)
 docs/exercise/                         provided exercise files and templates (00–06, OpenAPI)
-tests/load/                            load test plan + k6 scripts (Stage 5)
+tests/load/                            k6 scripts and load runner (Stage 5)
 tests/automation/                      coded tests, pytest + requests (Stage 7)
 tests/web/                             local test-runner web page (./run.sh web)
-tests/postman/                         ParaBank_QA collection + environment (legacy/ = original login-only files)
+tests/postman/legacy/                  original login-only collection and scripts (kept for reference)
 tests/scripts/                         build-collection, run-api, summarize, ui-crosscheck, manual-tests,
                                        repro-defects, setup-users, explore, results, check-links, lib/
 results/                               index.md, history.md, kept/ (committed), runs/ (local)
@@ -161,12 +169,12 @@ evidence/                              exploration/ (Stage 1), bugs/BUG-0NN/ (St
 | Stage (plan.md) | Output |
 |---|---|
 | 0 Setup | `tests/scripts/setup-users.mjs`, `.env` |
-| 1 Exploration | `Business_Rules.md`, `evidence/exploration/` |
-| 2 Test design | `STD.md` |
-| 3 Postman build and execution | `tests/postman/`, `results/kept/*-api`, `*-ui`, `*-manual` |
-| 4 Failure isolation and bug reports | `Bug_Reports.md`, `evidence/bugs/` |
+| 1 Exploration | `deliverables/Business_Rules.md`, `evidence/exploration/` |
+| 2 Test design | `deliverables/STD.md` |
+| 3 Postman build and execution | `deliverables/postman/`, `results/kept/*-api`, `*-ui`, `*-manual` |
+| 4 Failure isolation and bug reports | `deliverables/Bug_Reports.md`, `evidence/bugs/` |
 | 5 Load test | `tests/load/`, `results/kept/*-load` |
-| 6 Test summary report | `STR.md`/`.pdf` (2 pages) and `STR_Detailed.md`/`.pdf` (generated by `tests/scripts/build-str.mjs` for every cycle) |
+| 6 Test summary report | `deliverables/STR.md`/`.pdf` (2 pages) and `deliverables/STR_Detailed.md`/`.pdf` (generated by `tests/scripts/build-str.mjs` for every cycle) |
 | 8 Packaging | `SUBMISSION.md`, `docs/walkthrough.md` |
 | 7 Optional automation | `tests/automation/` (pytest), `results/kept/*-auto` |
 | Tooling | `tests/web/`: test runner web page (`./run.sh web`) |

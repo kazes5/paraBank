@@ -1,19 +1,19 @@
 {
-  "sourceRun": "results/kept/2026-11-23T16-04-00Z-api",
+  "sourceRun": "results/kept/2026-11-24T11-16-14Z-api",
   "records": [
     {
       "phase": "journey",
       "kind": "FAILED",
-      "runId": "2026-11-23T16-07-17-514Z",
-      "at": "2026-11-23T16:07:28.955Z",
+      "runId": "2026-11-24T11-20-28-719Z",
+      "at": "2026-11-24T11:20:40.267Z",
       "case": "JRN-01 J06b",
       "request": "JRN-01 J06b · read-back B",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/75504",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/28218",
       "requestBody": "",
       "status": 200,
-      "ms": 233,
-      "response": "{\"id\":75504,\"customerId\":37409,\"type\":\"SAVINGS\",\"balance\":100.00}",
+      "ms": 245,
+      "response": "{\"id\":28218,\"customerId\":18317,\"type\":\"SAVINGS\",\"balance\":100.00}",
       "failures": [
         "[A7] create response balance = account balance (0 vs 10000 cents): expected +0 to deeply equal 10000"
       ]

@@ -1,40 +1,40 @@
 {
   "users": {
-    "R": "qa_s4_mwti1l42",
-    "L": "qa_s4_mwti5prg"
+    "R": "qa_s4_mwungyju",
+    "L": "qa_s4_mwunlevw"
   },
   "steps": [
     {
       "label": "Control: month filter with type Credit",
       "kind": "control",
-      "at": "2026-11-23T16:49:58.855Z",
+      "at": "2026-11-24T12:09:38.836Z",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions/month/November/type/Credit",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/month/November/type/Credit",
       "status": 200,
-      "ms": 229,
-      "response": "[{\"id\":152560,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":153559,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":-5.00,\"description\":\"Deposit via Web Service\"},{\"id\":154114,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":0.00,\"description\":\"Deposit via Web Service\"},{\"id\":158221,\"accountId\":99258,\"type\":\"Credit\",\"date\":1795392000000,\"amount\":1.00,\"description\":\"Funds Transfer Received\"}]",
+      "ms": 221,
+      "response": "[{\"id\":64981,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":65980,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":-5.00,\"description\":\"Deposit via Web Service\"},{\"id\":66757,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":0.00,\"description\":\"Deposit via Web Service\"},{\"id\":67090,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Received\"}]",
       "expect": "200, list"
     },
     {
       "label": "Month filter with type CREDIT",
       "kind": "fail",
-      "at": "2026-11-23T16:50:00.610Z",
+      "at": "2026-11-24T12:09:40.569Z",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions/month/November/type/CREDIT",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/month/November/type/CREDIT",
       "status": 500,
-      "ms": 254,
-      "response": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=B4804CD80CF50B900F6003FD1A3FE4E6\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=B4804CD80CF50B900F6003FD1A3FE4E6\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=B4804CD80CF50B900F6003FD1A3FE4E6\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=B4804CD80CF50B900F6003FD1A3FE4E6\"><img src=\"images/clear.gif;jsessionid=B4804CD80CF50B900F6003FD1A3FE4E6\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=B4804CD80CF50B900F6003FD1A3FE4E6\"><img src=\"images/logo.gif;jsessionid=B4804CD80CF50B900F6003FD1A3FE4E6\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=B4804CD80CF50B900F6003FD1A3FE4E6) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"a",
+      "ms": 230,
+      "response": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=8496E2E61716A95291572F5ACD1F287C\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=8496E2E61716A95291572F5ACD1F287C\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=8496E2E61716A95291572F5ACD1F287C\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=8496E2E61716A95291572F5ACD1F287C\"><img src=\"images/clear.gif;jsessionid=8496E2E61716A95291572F5ACD1F287C\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=8496E2E61716A95291572F5ACD1F287C\"><img src=\"images/logo.gif;jsessionid=8496E2E61716A95291572F5ACD1F287C\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=8496E2E61716A95291572F5ACD1F287C) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"a",
       "expect": "400 with a message"
     },
     {
       "label": "Month filter with type foo",
       "kind": "fail",
-      "at": "2026-11-23T16:50:02.352Z",
+      "at": "2026-11-24T12:09:42.353Z",
       "method": "GET",
-      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/99258/transactions/month/November/type/foo",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/month/November/type/foo",
       "status": 500,
-      "ms": 240,
-      "response": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=942A5CCF6F550D710F34F345CC262C1C\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=942A5CCF6F550D710F34F345CC262C1C\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=942A5CCF6F550D710F34F345CC262C1C\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=942A5CCF6F550D710F34F345CC262C1C\"><img src=\"images/clear.gif;jsessionid=942A5CCF6F550D710F34F345CC262C1C\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=942A5CCF6F550D710F34F345CC262C1C\"><img src=\"images/logo.gif;jsessionid=942A5CCF6F550D710F34F345CC262C1C\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=942A5CCF6F550D710F34F345CC262C1C) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"a",
+      "ms": 281,
+      "response": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=135E626BCF11FCE5A4C82E0698652EE7\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=135E626BCF11FCE5A4C82E0698652EE7\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=135E626BCF11FCE5A4C82E0698652EE7\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=135E626BCF11FCE5A4C82E0698652EE7\"><img src=\"images/clear.gif;jsessionid=135E626BCF11FCE5A4C82E0698652EE7\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=135E626BCF11FCE5A4C82E0698652EE7\"><img src=\"images/logo.gif;jsessionid=135E626BCF11FCE5A4C82E0698652EE7\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=135E626BCF11FCE5A4C82E0698652EE7) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"a",
       "expect": "400 with a message"
     }
   ]

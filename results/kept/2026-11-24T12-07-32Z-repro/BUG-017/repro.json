@@ -1,0 +1,70 @@
+{
+  "users": {
+    "R": "qa_s4_mwungyju",
+    "L": "qa_s4_mwunlevw"
+  },
+  "steps": [
+    {
+      "label": "Control: buy 2 shares × 10.00 from A",
+      "kind": "control",
+      "at": "2026-11-24T12:10:48.285Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/16541/buyPosition?accountId=22446&name=QA+Test+Stock&symbol=QATS&shares=2&pricePerShare=10",
+      "status": 200,
+      "ms": 231,
+      "response": "[{\"positionId\":13128,\"customerId\":16541,\"name\":\"QA Test Stock\",\"symbol\":\"QATS\",\"shares\":2,\"purchasePrice\":10.0000}]",
+      "before": {
+        "22446": 215.5
+      },
+      "after": {
+        "22446": 195.5
+      },
+      "expect": "A − 20.00, position with 2 shares"
+    },
+    {
+      "label": "Control: sell 1 share × 12.00 to A",
+      "kind": "control",
+      "at": "2026-11-24T12:10:53.469Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/16541/sellPosition?accountId=22446&positionId=13128&shares=1&pricePerShare=12",
+      "status": 200,
+      "ms": 224,
+      "response": "[{\"positionId\":13128,\"customerId\":16541,\"name\":\"QA Test Stock\",\"symbol\":\"QATS\",\"shares\":1,\"purchasePrice\":10.0000}]",
+      "before": {
+        "22446": 195.5
+      },
+      "after": {
+        "22446": 207.5
+      },
+      "expect": "A + 12.00, position with 1 share"
+    },
+    {
+      "label": "Sell 100 shares × 10.00 (the position holds 1)",
+      "kind": "fail",
+      "at": "2026-11-24T12:10:58.655Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/16541/sellPosition?accountId=22446&positionId=13128&shares=100&pricePerShare=10",
+      "status": 200,
+      "ms": 229,
+      "response": "[{\"positionId\":13128,\"customerId\":16541,\"name\":\"QA Test Stock\",\"symbol\":\"QATS\",\"shares\":-99,\"purchasePrice\":10.0000}]",
+      "before": {
+        "22446": 207.5
+      },
+      "after": {
+        "22446": 1207.5
+      },
+      "expect": "4xx, nothing changes (cannot sell shares not owned)"
+    },
+    {
+      "label": "Position after the oversell",
+      "kind": "state",
+      "at": "2026-11-24T12:11:00.380Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/positions/13128",
+      "status": 200,
+      "ms": 223,
+      "response": "{\"positionId\":13128,\"customerId\":16541,\"name\":\"QA Test Stock\",\"symbol\":\"QATS\",\"shares\":-99,\"purchasePrice\":10.0000}",
+      "expect": "still 1 share"
+    }
+  ]
+}

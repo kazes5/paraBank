@@ -1,0 +1,47 @@
+
+
+  █ THRESHOLDS 
+
+    errors
+    ✓ 'rate<0.10' rate=0.00%
+
+    http_req_duration
+    ✓ 'p(95)<5000' p(95)=336.15ms
+
+    rate_limited
+    ✓ 'count<1' count=0
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 244     2.70384/s
+    checks_succeeded...: 100.00% 244 out of 244
+    checks_failed......: 0.00%   0 out of 244
+
+    ✓ GET status 200
+    ✓ GET id matches
+    ✓ GET balance is a number
+    ✓ GET type CHECKING
+
+    CUSTOM
+    errors.........................: 0.00%  0 out of 61
+    rate_limited...................: 0      0/s
+
+    HTTP
+    http_req_duration..............: min=234.22ms med=249.42ms p(90)=322.33ms p(95)=336.15ms max=713.42ms count=61
+      { expected_response:true }...: min=234.22ms med=249.42ms p(90)=322.33ms p(95)=336.15ms max=713.42ms count=61
+    http_req_failed................: 0.00%  0 out of 61
+    http_reqs......................: 61     0.67596/s
+
+    EXECUTION
+    iteration_duration.............: min=234.81ms med=250.24ms p(90)=322.97ms p(95)=336.73ms max=762.3ms  count=61
+    iterations.....................: 61     0.67596/s
+    vus............................: 0      min=0       max=0
+    vus_max........................: 1      min=1       max=1
+
+    NETWORK
+    data_received..................: 22 kB  240 B/s
+    data_sent......................: 4.1 kB 45 B/s
+
+
+

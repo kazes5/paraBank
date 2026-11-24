@@ -1,0 +1,332 @@
+{
+  "sourceRun": "results/kept/2026-11-24T11-16-14Z-api",
+  "records": [
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:17:13.960Z",
+      "case": "TRF-02",
+      "request": "TRF-02 · transfer more than the balance",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=1000.00",
+      "requestBody": "",
+      "status": 200,
+      "ms": 222,
+      "response": "Successfully transferred $1000.00 from account #26886 to account #26997",
+      "failures": [
+        "[A4] rejected with 4xx (got 200): expected 200 to be within 400..499"
+      ],
+      "snapPrev": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": 9900,
+        "26997": 10100
+      },
+      "snapCur": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 20000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:17:15.708Z",
+      "case": "TRF-02",
+      "request": "TRF-02 · balances after",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts",
+      "requestBody": "",
+      "status": 200,
+      "ms": 225,
+      "response": "[{\"id\":22557,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":525.50},{\"id\":22779,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00},{\"id\":26886,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":-1000.00},{\"id\":26997,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1200.00}]",
+      "failures": [
+        "[A4] account 26886 balance unchanged (0 -> -100000 cents): expected -100000 to deeply equal +0",
+        "[A4] account 26997 balance unchanged (20000 -> 120000 cents): expected 120000 to deeply equal 20000"
+      ],
+      "snapPrev": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 20000
+      },
+      "snapCur": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": -100000,
+        "26997": 120000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:17:17.455Z",
+      "case": "TRF-02",
+      "request": "TRF-02 · ledger after (S)",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions",
+      "requestBody": "",
+      "status": 200,
+      "ms": 224,
+      "response": "[{\"id\":37675,\"accountId\":26886,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":38008,\"accountId\":26886,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":38230,\"accountId\":26886,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":99.00,\"description\":\"Funds Transfer Sent\"},{\"id\":38452,\"accountId\":26886,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1000.00,\"description\":\"Funds Transfer Sent\"}]",
+      "failures": [
+        "[A4] no transaction added to S (new: [\"Debit 100000\"]): expected [ { id: 38452, …(5) } ] to deeply equal []"
+      ],
+      "snapPrev": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 20000
+      },
+      "snapCur": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": -100000,
+        "26997": 120000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:17:19.202Z",
+      "case": "TRF-02",
+      "request": "TRF-02 · ledger after (T)",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions",
+      "requestBody": "",
+      "status": 200,
+      "ms": 225,
+      "response": "[{\"id\":37897,\"accountId\":26997,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":38119,\"accountId\":26997,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Received\"},{\"id\":38341,\"accountId\":26997,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":99.00,\"description\":\"Funds Transfer Received\"},{\"id\":38563,\"accountId\":26997,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":1000.00,\"description\":\"Funds Transfer Received\"}]",
+      "failures": [
+        "[A4] no transaction added to T (new: [\"Credit 100000\"]): expected [ { id: 38563, …(5) } ] to deeply equal []"
+      ],
+      "snapPrev": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 20000
+      },
+      "snapCur": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": -100000,
+        "26997": 120000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:18:29.293Z",
+      "case": "WDR-02",
+      "request": "WDR-02 · withdraw more than the balance",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27219&amount=1095.00",
+      "requestBody": "",
+      "status": 200,
+      "ms": 221,
+      "response": "Successfully withdrew $1095.00 from account #27219",
+      "failures": [
+        "[A4] rejected with 4xx (got 200): expected 200 to be within 400..499"
+      ],
+      "snapPrev": {
+        "22557": 92550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 10000
+      },
+      "snapCur": {
+        "22557": 92550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 9500
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:18:31.036Z",
+      "case": "WDR-02",
+      "request": "WDR-02 · balances after",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts",
+      "requestBody": "",
+      "status": 200,
+      "ms": 220,
+      "response": "[{\"id\":22557,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":925.50},{\"id\":22779,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00},{\"id\":26886,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":26997,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1199.00},{\"id\":27108,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":95.00},{\"id\":27219,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":-1000.00}]",
+      "failures": [
+        "[A4] account 27219 balance unchanged (9500 -> -100000 cents): expected -100000 to deeply equal 9500"
+      ],
+      "snapPrev": {
+        "22557": 92550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 9500
+      },
+      "snapCur": {
+        "22557": 92550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": -100000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:18:32.784Z",
+      "case": "WDR-02",
+      "request": "WDR-02 · ledger after (S)",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions",
+      "requestBody": "",
+      "status": 200,
+      "ms": 227,
+      "response": "[{\"id\":40228,\"accountId\":27219,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":40339,\"accountId\":27219,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":5.00,\"description\":\"Withdraw via Web Service\"},{\"id\":40450,\"accountId\":27219,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1095.00,\"description\":\"Withdraw via Web Service\"}]",
+      "failures": [
+        "[A4] no transaction added to S (new: [\"Debit 109500\"]): expected [ { id: 40450, …(5) } ] to deeply equal []"
+      ],
+      "snapPrev": {
+        "22557": 92550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 9500
+      },
+      "snapCur": {
+        "22557": 92550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": -100000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:19:02.652Z",
+      "case": "BILL-02",
+      "request": "BILL-02 · pay more than the balance",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=1095.00",
+      "requestBody": "{\n  \"name\": \"City Utilities\",\n  \"address\": {\n    \"street\": \"1 Main St\",\n    \"city\": \"Springfield\",\n    \"state\": \"IL\",\n    \"zipCode\": \"62701\"\n  },\n  \"phoneNumber\": \"5550100\",\n  \"accountNumber\": \"27441\"\n}",
+      "status": 200,
+      "ms": 222,
+      "response": "{\"payeeName\":\"City Utilities\",\"amount\":1095.00,\"accountId\":27330}",
+      "failures": [
+        "[A4] rejected with 4xx (got 200): expected 200 to be within 400..499"
+      ],
+      "snapPrev": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 10000,
+        "27441": 10000
+      },
+      "snapCur": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 9500,
+        "27441": 10000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:19:04.422Z",
+      "case": "BILL-02",
+      "request": "BILL-02 · balances after",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts",
+      "requestBody": "",
+      "status": 200,
+      "ms": 246,
+      "response": "[{\"id\":22557,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1025.50},{\"id\":22779,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00},{\"id\":26886,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":26997,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1199.00},{\"id\":27108,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":95.00},{\"id\":27219,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":27330,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":-1000.00},{\"id\":27441,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00}]",
+      "failures": [
+        "[A4] account 27330 balance unchanged (9500 -> -100000 cents): expected -100000 to deeply equal 9500"
+      ],
+      "snapPrev": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 9500,
+        "27441": 10000
+      },
+      "snapCur": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": -100000,
+        "27441": 10000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:19:06.290Z",
+      "case": "BILL-02",
+      "request": "BILL-02 · ledger after (S)",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions",
+      "requestBody": "",
+      "status": 200,
+      "ms": 344,
+      "response": "[{\"id\":41116,\"accountId\":27330,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":100.00,\"description\":\"Funds Transfer Received\"},{\"id\":41449,\"accountId\":27330,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":5.00,\"description\":\"Bill Payment to City Utilities\"},{\"id\":41560,\"accountId\":27330,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1095.00,\"description\":\"Bill Payment to City Utilities\"}]",
+      "failures": [
+        "[A4] no transaction added to S (new: [\"Debit 109500\"]): expected [ { id: 41560, …(5) } ] to deeply equal []"
+      ],
+      "snapPrev": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 9500,
+        "27441": 10000
+      },
+      "snapCur": {
+        "22557": 102550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": -100000,
+        "27441": 10000
+      }
+    }
+  ]
+}

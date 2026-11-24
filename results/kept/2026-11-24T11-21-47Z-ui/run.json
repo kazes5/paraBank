@@ -1,0 +1,22 @@
+{
+  "id": "2026-11-24T11-21-47Z-ui",
+  "kind": "ui",
+  "started": "2026-11-24T11:21:47.207Z",
+  "commit": "44f050a",
+  "user": "<USERNAME>",
+  "scope": "cross-check of 2026-11-24T11-16-14Z-api",
+  "apiRun": "2026-11-24T11-16-14Z-api",
+  "accounts": {
+    "S": 26886,
+    "T": 26997,
+    "A": 22557,
+    "B": 28218,
+    "L": 28329
+  },
+  "finished": "2026-11-24T11:22:15.565Z",
+  "counts": {
+    "MATCH": 24,
+    "MISMATCH": 0,
+    "RULE NOT MET": 1
+  }
+}

@@ -248,7 +248,7 @@ def customer(api):
 
 @pytest.fixture
 def fresh_accounts(api, customer):
-    """Two new CHECKING accounts S and T opened from A (each starts with the 100.00 the site moves in)."""
+    """Two new CHECKING accounts S and T opened from A (each starts with the site's opening amount, moved in from A)."""
     ids = []
     for _ in range(2):
         resp = api.post(
@@ -303,7 +303,7 @@ def pytest_runtest_makereport(item, call):
             if e["body"]:
                 lines.append("  body: " + e["body"])
             lines.append("  response: " + e["response"].replace("\n", " ")[:1000])
-        (LOG_DIR / (item.name + ".log")).write_text("\n".join(lines) + "\n")
+        (LOG_DIR / (item.name + ".log")).write_text(redact("\n".join(lines) + "\n"))
 
 
 # pytest hook, runs once at the end: write summary.md (one row per test), results.json and the run.json counts.
@@ -324,7 +324,7 @@ def pytest_sessionfinish(session, exitstatus):
         "# Coded tests (pytest) — run " + RUN_ID,
         "",
         "pytest + requests against `%s` as `%s`. Known defects are marked `xfail(strict=True)`: the run stays green while they still reproduce, and fails when one is fixed."
-        % (API, USER["username"]),
+        % (API, redact(USER["username"])),
         "",
         "| Case | Test | Result | Meaning | Known defect | Time (s) | Log |",
         "|---|---|---|---|---|---|---|",
@@ -336,8 +336,9 @@ def pytest_sessionfinish(session, exitstatus):
             % (o["case"], o["test"], o["verdict"], meaning.get(o["verdict"], ""), o["known"] or "—", o["seconds"], log)
         )
     md += ["", "JUnit report: `junit.xml`. Re-run: `./run.sh auto`.", ""]
-    (RUN_DIR / "summary.md").write_text("\n".join(md))
-    (RUN_DIR / "results.json").write_text(json.dumps({"outcomes": OUTCOMES}, indent=2) + "\n")
+    # Every file written to the run folder goes through redact() (secrets, then the profile placeholders).
+    (RUN_DIR / "summary.md").write_text(redact("\n".join(md)))
+    (RUN_DIR / "results.json").write_text(redact(json.dumps({"outcomes": OUTCOMES}, indent=2) + "\n"))
     _write_run_json({"finished": datetime.now(timezone.utc).isoformat(), "counts": counts})
 
 

@@ -1,13 +1,13 @@
 {
-  "sourceRun": "results/kept/2026-11-24T07-44-12Z-load",
+  "run": "2026-11-24T11-41-04Z-load",
   "fixture": {
-    "username": "qa_load_mwue2bh3",
-    "customerId": 33746,
-    "A": 45534,
-    "S": 45756,
-    "T": 45867,
+    "username": "qa_load_mwumixkk",
+    "customerId": 12656,
+    "A": 13899,
+    "S": 14010,
+    "T": 14121,
     "before": {
-      "at": "2026-11-24T07:44:29.758Z",
+      "at": "2026-11-24T11:41:21.554Z",
       "S": {
         "balance": 600,
         "cents": 60000,
@@ -24,79 +24,130 @@
     "rows": [
       {
         "check": "S decreased by successful transfers × 1.00",
-        "expected": -15100,
-        "actual": -11900,
+        "expected": -11100,
+        "actual": -9600,
         "result": "MISMATCH"
       },
       {
         "check": "T increased by successful transfers × 1.00",
-        "expected": 15100,
-        "actual": 15100,
+        "expected": 11100,
+        "actual": 11100,
         "result": "MATCH"
       },
       {
         "check": "S + T unchanged",
         "expected": 0,
-        "actual": 3200,
+        "actual": 1500,
         "result": "MISMATCH"
       },
       {
         "check": "S transactions added",
-        "expected": 151,
-        "actual": 151,
+        "expected": 111,
+        "actual": 111,
         "result": "MATCH"
       },
       {
         "check": "T transactions added",
-        "expected": 151,
-        "actual": 151,
+        "expected": 111,
+        "actual": 111,
         "result": "MATCH"
       }
     ],
     "verdict": "FAIL",
     "after": {
-      "at": "2026-11-24T08:02:18.653Z",
+      "at": "2026-11-24T11:55:39.517Z",
       "S": {
-        "balance": 481,
-        "cents": 48100,
-        "transactions": 153
+        "balance": 504,
+        "cents": 50400,
+        "transactions": 113
       },
       "T": {
-        "balance": 251,
-        "cents": 25100,
-        "transactions": 152
+        "balance": 211,
+        "cents": 21100,
+        "transactions": 112
       }
     },
     "transfers": {
-      "ok": 151,
+      "ok": 111,
       "unsure": 0
     }
   },
-  "transfers": [
+  "perTest": [
     {
       "test": "L1",
-      "confirmed": 0,
-      "unsure": 0
+      "transferOk": 0,
+      "transferUnsure": 0,
+      "after": {
+        "at": "2026-11-24T11:42:59.649Z",
+        "S": {
+          "balance": 600,
+          "cents": 60000,
+          "transactions": 2
+        },
+        "T": {
+          "balance": 100,
+          "cents": 10000,
+          "transactions": 1
+        }
+      }
     },
     {
       "test": "L2",
-      "confirmed": 0,
-      "unsure": 0
+      "transferOk": 0,
+      "transferUnsure": 0,
+      "after": {
+        "at": "2026-11-24T11:48:07.372Z",
+        "S": {
+          "balance": 600,
+          "cents": 60000,
+          "transactions": 2
+        },
+        "T": {
+          "balance": 100,
+          "cents": 10000,
+          "transactions": 1
+        }
+      }
     },
     {
       "test": "L3",
-      "confirmed": 31,
-      "unsure": 0
+      "transferOk": 31,
+      "transferUnsure": 0,
+      "after": {
+        "at": "2026-11-24T11:51:15.387Z",
+        "S": {
+          "balance": 569,
+          "cents": 56900,
+          "transactions": 33
+        },
+        "T": {
+          "balance": 131,
+          "cents": 13100,
+          "transactions": 32
+        }
+      }
     },
     {
       "test": "L4",
-      "confirmed": 80,
-      "unsure": 0
-    },
-    {
-      "test": "L5",
-      "confirmed": 40,
-      "unsure": 0
+      "transferOk": 80,
+      "transferUnsure": 0,
+      "after": {
+        "at": "2026-11-24T11:55:16.985Z",
+        "S": {
+          "balance": 504,
+          "cents": 50400,
+          "transactions": 113
+        },
+        "T": {
+          "balance": 211,
+          "cents": 21100,
+          "transactions": 112
+        }
+      }
     }
+  ],
+  "notes": [
+    "L5 not started: L4 left a balance gap of 15.00 (S + T changed) (plan §5: nothing else starts after a wrong balance).",
+    "Session verdict: FAIL (reconciliation FAIL)."
   ]
 }

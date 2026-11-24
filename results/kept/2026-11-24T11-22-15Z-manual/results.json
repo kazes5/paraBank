@@ -1,0 +1,165 @@
+{
+  "runId": "2026-11-24T11-22-15Z-manual",
+  "results": [
+    {
+      "id": "AUTH-03",
+      "title": "Password sent in the URL",
+      "verdict": "FAIL",
+      "observation": "Rule A6 not met: the only API login is GET /login/{username}/{password}, so the password travels in the URL path (server answered 400 \"Invalid username and/or password\" to the wrong password, proving it reads it from the path). The Swagger page documents this path. Candidate defect (design).",
+      "screenshots": [
+        "01-AUTH-03-swagger.png",
+        "02-AUTH-03-wrong-password.png"
+      ],
+      "calls": [
+        {
+          "step": "wrong-password",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/NotMyRealPassword-123",
+          "status": 400,
+          "ms": 783,
+          "body": "Invalid username and/or password"
+        }
+      ]
+    },
+    {
+      "id": "AUTH-05",
+      "title": "Injection in username",
+      "verdict": "BLOCKED",
+      "observation": "The site firewall (Cloudflare) answered 403 before the request reached ParaBank, so the API itself could not be tested. Not a ParaBank result; re-test on a local instance.",
+      "screenshots": [
+        "03-AUTH-05-injection.png"
+      ],
+      "calls": [
+        {
+          "step": "injection",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/login/'%20OR%20'1'%3D'1/x",
+          "status": 403,
+          "ms": 109,
+          "body": "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta http-equiv=\"content-security-policy\" content=\"default-src &#39;none&#39;; script-src &#39;nonce-vHH8vbJ6tgkss3eV1ZLKbd&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;; style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com; connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39; https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;\"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",Arial,\"Noto Sans\",sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+\");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta http-equiv=\"refresh\" content=\"360\"></head><body><div class=\"main-wrapper\" role=\"main\"><div class=\"main-content\"><noscript><div class=\"h2\"><span id=\"challenge-error-text\">Enable JavaScript and cookies to continue</span></div></noscript></div></div><script nonce=\"vHH8vbJ6tgkss3eV1ZLKbd\">(function(){window._cf_chl_opt = {cFPWv: 'b',cH: '9zpd.dFqDv.FLnSvK_Jh9JJQn00whIK.xo3VDT6nO7k-1795519344-1.2.1.1-wek9mT8glaNNJh08DDwYI1a65G4qgwJy49TtIzN.Eb8DSHzlcw75femXmpFw3Cim',cITimeS: '1795519344',cN: 'vHH8vbJ6tgkss3eV1ZLKbd',cRay: 'a5f8091d1f5a63ef',cTplC:0,cTplO:0,cTplV:5,cType: 'managed',cUPMDTk:\"/parabank/services/bank/login/'%20OR%20'1'%3D'1/x?__cf_chl_tk=5A2lx2BUN57ToccbxaoHKKrDVZXl89zyaYppmMtqUok-1795519344-1.0.1.1-OGFvP49ACUskcz9_ZUki7Zybv1Y5M1XFsaBdTEuzqjo\",cvId: '3',cZone: 'parabank.parasoft.com',fa:\"/parabank/services/bank/login/'%20OR%20'1'%3D'1/x?__cf_chl_f_tk=5A2lx2BUN57ToccbxaoHKKrDVZXl89zy"
+        }
+      ]
+    },
+    {
+      "id": "TRF-08",
+      "title": "Same transfer sent twice",
+      "verdict": "NEEDS-CLARIFICATION",
+      "observation": "Open (Q13): the identical transfer was booked twice — 22557: 1287.5 → 1285.5, 22779: 100 → 102. No duplicate warning was shown. Whether duplicates should be blocked is a product decision.",
+      "screenshots": [
+        "04-TRF-08-login.png",
+        "05-TRF-08-customer.png",
+        "06-TRF-08-accounts-before.png",
+        "07-TRF-08-form-1.png",
+        "08-TRF-08-result-1.png",
+        "09-TRF-08-form-2.png",
+        "10-TRF-08-result-2.png",
+        "11-TRF-08-activity.png",
+        "12-TRF-08-accounts-after.png"
+      ],
+      "calls": [
+        {
+          "step": "customer",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>",
+          "status": 200,
+          "ms": 470,
+          "body": "{\"id\":18317,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"<STREET>\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"<PHONE>\",\"ssn\":\"<REDACTED>\"}"
+        },
+        {
+          "step": "accounts-before",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts",
+          "status": 200,
+          "ms": 274,
+          "body": "[{\"id\":22557,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1287.50},{\"id\":22779,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00},{\"id\":26886,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":26997,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1199.00},{\"id\":27108,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":95.00},{\"id\":27219,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":27330,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":27441,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00},{\"id\":27552,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":27663,\"customerId\":18317,\"type\":\"LOAN\",\"balance\":500.00},{\"id\":27774,\"customerId\":18317,\"type\":\"LOAN\",\"balance\":10.00},{\"id\":27885,\"customerId\":18317,\"type\":\"LOAN\",\"balance\":140.00},{\"id\":27996,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":105.00},{\"id\":28218,\"customerId\":18317,\"type\":\"SAVINGS\",\"balance\":230.00},{\"id\":28329,\"customerId\":18317,\"type\":\"LOAN\",\"balance\":500.00}]"
+        },
+        {
+          "step": "accounts-after",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts",
+          "status": 200,
+          "ms": 276,
+          "body": "[{\"id\":22557,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1285.50},{\"id\":22779,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":102.00},{\"id\":26886,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":26997,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":1199.00},{\"id\":27108,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":95.00},{\"id\":27219,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":27330,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":27441,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":100.00},{\"id\":27552,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":0.00},{\"id\":27663,\"customerId\":18317,\"type\":\"LOAN\",\"balance\":500.00},{\"id\":27774,\"customerId\":18317,\"type\":\"LOAN\",\"balance\":10.00},{\"id\":27885,\"customerId\":18317,\"type\":\"LOAN\",\"balance\":140.00},{\"id\":27996,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":105.00},{\"id\":28218,\"customerId\":18317,\"type\":\"SAVINGS\",\"balance\":230.00},{\"id\":28329,\"customerId\":18317,\"type\":\"LOAN\",\"balance\":500.00}]"
+        }
+      ]
+    },
+    {
+      "id": "TRF-09",
+      "title": "Amount below one cent (throwaway user)",
+      "verdict": "FAIL",
+      "observation": "Rule A5/A8: transfer of 0.005 answered 200 \"Successfully transferred $0.005 from account #2877\"; afterwards account 28773 → 500, account 28884 → 500, account list → 500. The accounts can no longer be read (reproduces Stage 1 E1). Throwaway user qa_t09_mwulv7ob (customer 21092) is left broken; the .env users were not touched.",
+      "screenshots": [
+        "13-TRF-09-register.png",
+        "14-TRF-09-open-form.png",
+        "15-TRF-09-opened.png",
+        "16-TRF-09-customer.png",
+        "17-TRF-09-accounts-before.png",
+        "18-TRF-09-transfer-0.01.png",
+        "19-TRF-09-transfer-0.005.png",
+        "20-TRF-09-read-x.png",
+        "21-TRF-09-read-y.png",
+        "22-TRF-09-read-list.png",
+        "23-TRF-09-ui-overview.png",
+        "24-TRF-09-ui-activity.png"
+      ],
+      "calls": [
+        {
+          "step": "customer",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/login/qa_t09_mwulv7ob/<REDACTED>",
+          "status": 200,
+          "ms": 253,
+          "body": "{\"id\":21092,\"firstName\":\"QA\",\"lastName\":\"Throwaway\",\"address\":{\"street\":\"1 Test St\",\"city\":\"Testville\",\"state\":\"TS\",\"zipCode\":\"00000\"},\"phoneNumber\":\"5550000\",\"ssn\":\"<REDACTED>\"}"
+        },
+        {
+          "step": "accounts-before",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/customers/21092/accounts",
+          "status": 200,
+          "ms": 248,
+          "body": "[{\"id\":28773,\"customerId\":21092,\"type\":\"CHECKING\",\"balance\":415.50},{\"id\":28884,\"customerId\":21092,\"type\":\"CHECKING\",\"balance\":100.00}]"
+        },
+        {
+          "step": "transfer-0.01",
+          "method": "POST",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=28773&toAccountId=28884&amount=0.01",
+          "status": 200,
+          "ms": 251,
+          "body": "Successfully transferred $0.01 from account #28773 to account #28884"
+        },
+        {
+          "step": "transfer-0.005",
+          "method": "POST",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=28773&toAccountId=28884&amount=0.005",
+          "status": 200,
+          "ms": 284,
+          "body": "Successfully transferred $0.005 from account #28773 to account #28884"
+        },
+        {
+          "step": "read-x",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/28773",
+          "status": 500,
+          "ms": 279,
+          "body": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js\"></script>\n\t</head>\n\n\t<body\n\t\t>\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm\"><img src=\"images/clear.gif\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm\"><img src=\"images/logo.gif\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-customer.jpg) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm\">About Us</a></li>\r\n  <li><a href=\"services.htm\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"index.htm\">home</a></li>\r\n  <li class=\"aboutus\"><a href=\"about.htm\">about</a></li>\r\n  <li class=\"contact\"><a href=\"contact.htm\">contact</a></li>\r\n</ul>\r\n</div>\n\t\t\t\t\n\t\t\t\n\t\t\t<div id=\"bodyPanel\">\n\t\t\t\t<div id=\"leftPanel\">\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\r\n\r\n\r\n<p class=\"smallText\"><b>Welcome</b> QA Throwaway</p>\r\n\r\n<h2>Account Services</h2>\r\n\r\n\r\n\r\n<ul>\r\n  <li><a href=\"openaccount.htm\">Open New Account</a></li>\r\n  <li><a href=\"overview.htm\">Accounts Overview</a></li>\r\n  <li><a href=\"transfer.htm\">Transfer Funds</a></li>\r\n  <li><a href=\"billpay.htm\">Bill Pay</a></li>\r\n  <li><a href=\"findtrans.htm\">Find Transactions</a></li>\r\n  <li><a href=\"updateprofile.htm\">Update Contact Info</a></li>\r\n  <li><a href=\"requestloan.htm\">Request Loan</a></li>\r\n  <li><a href=\"logout.htm\">Log Out</a></li>\r\n</ul>\n\t\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div id=\"rightPanel\">\n\t\t\t\t\t\r\n\r\n\r\n<h1 class=\"title\">Error!</h1>\r\n\r\n\r\n\r\n<p class=\"error\">An internal error has occurred and has been logged.</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t\t\r\n\r\n\r\n<div id=\"footermainPanel\">\r\n  <div id=\"footerPanel\">\r\n    <ul>\r\n      <li><a href=\"index.htm\">Home</a>| </li>\r\n      <li><a href=\"about.htm\">About Us</a>| </li>\r\n      <li><a href=\"services.htm\">Services</a>| </li>\r\n      <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a>| </li>\r\n      <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a>| </li>\r\n      <li><a href=\"sitemap.htm\">Site Map</a>| </li>\r\n      <li><a href=\"contact.htm\">Contact Us</a></li>\r\n    </ul>\r\n    <p class=\"copyright\">&copy; Parasoft. All"
+        },
+        {
+          "step": "read-y",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/28884",
+          "status": 500,
+          "ms": 262,
+          "body": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js\"></script>\n\t</head>\n\n\t<body\n\t\t>\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm\"><img src=\"images/clear.gif\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm\"><img src=\"images/logo.gif\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-customer.jpg) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm\">About Us</a></li>\r\n  <li><a href=\"services.htm\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"index.htm\">home</a></li>\r\n  <li class=\"aboutus\"><a href=\"about.htm\">about</a></li>\r\n  <li class=\"contact\"><a href=\"contact.htm\">contact</a></li>\r\n</ul>\r\n</div>\n\t\t\t\t\n\t\t\t\n\t\t\t<div id=\"bodyPanel\">\n\t\t\t\t<div id=\"leftPanel\">\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\r\n\r\n\r\n<p class=\"smallText\"><b>Welcome</b> QA Throwaway</p>\r\n\r\n<h2>Account Services</h2>\r\n\r\n\r\n\r\n<ul>\r\n  <li><a href=\"openaccount.htm\">Open New Account</a></li>\r\n  <li><a href=\"overview.htm\">Accounts Overview</a></li>\r\n  <li><a href=\"transfer.htm\">Transfer Funds</a></li>\r\n  <li><a href=\"billpay.htm\">Bill Pay</a></li>\r\n  <li><a href=\"findtrans.htm\">Find Transactions</a></li>\r\n  <li><a href=\"updateprofile.htm\">Update Contact Info</a></li>\r\n  <li><a href=\"requestloan.htm\">Request Loan</a></li>\r\n  <li><a href=\"logout.htm\">Log Out</a></li>\r\n</ul>\n\t\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div id=\"rightPanel\">\n\t\t\t\t\t\r\n\r\n\r\n<h1 class=\"title\">Error!</h1>\r\n\r\n\r\n\r\n<p class=\"error\">An internal error has occurred and has been logged.</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t\t\r\n\r\n\r\n<div id=\"footermainPanel\">\r\n  <div id=\"footerPanel\">\r\n    <ul>\r\n      <li><a href=\"index.htm\">Home</a>| </li>\r\n      <li><a href=\"about.htm\">About Us</a>| </li>\r\n      <li><a href=\"services.htm\">Services</a>| </li>\r\n      <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a>| </li>\r\n      <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a>| </li>\r\n      <li><a href=\"sitemap.htm\">Site Map</a>| </li>\r\n      <li><a href=\"contact.htm\">Contact Us</a></li>\r\n    </ul>\r\n    <p class=\"copyright\">&copy; Parasoft. All"
+        },
+        {
+          "step": "read-list",
+          "method": "GET",
+          "url": "https://parabank.parasoft.com/parabank/services/bank/customers/21092/accounts",
+          "status": 500,
+          "ms": 299,
+          "body": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js\"></script>\n\t</head>\n\n\t<body\n\t\t>\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm\"><img src=\"images/clear.gif\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm\"><img src=\"images/logo.gif\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-customer.jpg) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm\">About Us</a></li>\r\n  <li><a href=\"services.htm\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"index.htm\">home</a></li>\r\n  <li class=\"aboutus\"><a href=\"about.htm\">about</a></li>\r\n  <li class=\"contact\"><a href=\"contact.htm\">contact</a></li>\r\n</ul>\r\n</div>\n\t\t\t\t\n\t\t\t\n\t\t\t<div id=\"bodyPanel\">\n\t\t\t\t<div id=\"leftPanel\">\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\r\n\r\n\r\n<p class=\"smallText\"><b>Welcome</b> QA Throwaway</p>\r\n\r\n<h2>Account Services</h2>\r\n\r\n\r\n\r\n<ul>\r\n  <li><a href=\"openaccount.htm\">Open New Account</a></li>\r\n  <li><a href=\"overview.htm\">Accounts Overview</a></li>\r\n  <li><a href=\"transfer.htm\">Transfer Funds</a></li>\r\n  <li><a href=\"billpay.htm\">Bill Pay</a></li>\r\n  <li><a href=\"findtrans.htm\">Find Transactions</a></li>\r\n  <li><a href=\"updateprofile.htm\">Update Contact Info</a></li>\r\n  <li><a href=\"requestloan.htm\">Request Loan</a></li>\r\n  <li><a href=\"logout.htm\">Log Out</a></li>\r\n</ul>\n\t\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t<div id=\"rightPanel\">\n\t\t\t\t\t\r\n\r\n\r\n<h1 class=\"title\">Error!</h1>\r\n\r\n\r\n\r\n<p class=\"error\">An internal error has occurred and has been logged.</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t\t\r\n\r\n\r\n<div id=\"footermainPanel\">\r\n  <div id=\"footerPanel\">\r\n    <ul>\r\n      <li><a href=\"index.htm\">Home</a>| </li>\r\n      <li><a href=\"about.htm\">About Us</a>| </li>\r\n      <li><a href=\"services.htm\">Services</a>| </li>\r\n      <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a>| </li>\r\n      <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a>| </li>\r\n      <li><a href=\"sitemap.htm\">Site Map</a>| </li>\r\n      <li><a href=\"contact.htm\">Contact Us</a></li>\r\n    </ul>\r\n    <p class=\"copyright\">&copy; Parasoft. All"
+        }
+      ]
+    }
+  ]
+}

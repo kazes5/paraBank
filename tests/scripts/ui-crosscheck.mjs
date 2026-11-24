@@ -12,12 +12,30 @@
 import { chromium } from 'playwright';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { BASE, readUser, redact, http, newRun, findRun, rebuildIndex, maskedScreenshot } from './lib/common.mjs';
+import {
+  BASE,
+  readUser,
+  redact,
+  http,
+  newRun,
+  findRun,
+  allRuns,
+  rebuildIndex,
+  maskedScreenshot,
+} from './lib/common.mjs';
 
 // Arguments: an API run ID (default: the latest API run) and a .env user prefix (default PARABANK).
 const args = process.argv.slice(2);
 const prefix = args.find((a) => /^[A-Z0-9_]+$/.test(a) && a.startsWith('PARABANK')) || 'PARABANK';
-const apiRun = findRun(args.find((a) => !a.startsWith('PARABANK')) || 'latest', { kind: 'api' });
+const ref = args.find((a) => !a.startsWith('PARABANK')) || 'latest';
+// "latest" = the latest API run with a journey and the TRF suite: a load session's smoke gate is an API
+// run too, but has no accounts to compare.
+const apiRun =
+  ref === 'latest'
+    ? allRuns()
+        .filter((r) => r.kind === 'api' && r.accounts?.A && r.accounts?.S)
+        .at(-1) || findRun('latest', { kind: 'api' })
+    : findRun(ref, { kind: 'api' });
 const user = readUser(prefix);
 const e = (k) => ({ USERNAME: user.username, PASSWORD: user.password })[k];
 const web = BASE;

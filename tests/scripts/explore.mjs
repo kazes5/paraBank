@@ -1,36 +1,42 @@
 // Stage 1 exploration (plan.md): walk the customer journey once and probe edge cases,
 // recording status, body and balances before/after for every request.
-// Only the .env user's own accounts are used; invalid IDs are limited to -1 / 0 / non-numeric.
+//
+// Runs on a fresh THROWAWAY customer by default: some probes are destructive (overdrafts, negative
+// amounts, and the 0.005 transfer that makes the accounts unreadable, BUG-001), so they must never
+// touch the shared .env test users. Account F is a second account opened from A for the probes.
+// Invalid IDs are limited to -1 / 0 / non-numeric; no other customer's data is used.
 //
 // Output (credentials and SSN redacted):
 //   evidence/exploration/observations.json   - every probe, full detail
 //   evidence/exploration/observations.md     - one table row per probe
+//   evidence/exploration/latency-baseline.md - unloaded response times per endpoint class (O7)
 //
-// Usage: node --env-file=.env tests/scripts/explore.mjs [PREFIX]   (default PREFIX = PARABANK)
+// Usage: ./run.sh explore     (node --env-file=.env tests/scripts/explore.mjs)
 
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { registerThrowaway, http } from './lib/common.mjs';
 
-// The .env user (profile + IDs written by ./run.sh setup); exits if setup has not run.
-const P = process.argv[2] || 'PARABANK';
-const env = (k) => process.env[`${P}_${k}`];
+// Throwaway customer (profile set by registerThrowaway) with account A, plus a second account F.
+const tw = await registerThrowaway('qa_s1');
 const user = {
-  username: env('USERNAME'),
-  password: env('PASSWORD'),
-  ssn: env('SSN'),
-  firstName: env('FIRST_NAME'),
-  lastName: env('LAST_NAME'),
-  street: env('STREET'),
-  city: env('CITY'),
-  state: env('STATE'),
-  zipCode: env('ZIP'),
-  phoneNumber: env('PHONE'),
+  username: tw.username,
+  password: tw.password,
+  ssn: tw.ssn,
+  firstName: 'QA',
+  lastName: 'Throwaway',
+  street: '1 Test St',
+  city: 'Testville',
+  state: 'TS',
+  zipCode: '00000',
+  phoneNumber: '5550000',
 };
-const customerId = Number(env('CUSTOMER_ID'));
-const A = Number(env('DEFAULT_ACCOUNT_ID'));
-const F = Number(env('FALLBACK_ACCOUNT_ID'));
-if (!user.username || !customerId || !A || !F) {
-  console.error(`Missing ${P}_* values in .env; run ./run.sh setup first`);
-  process.exit(2);
+const customerId = tw.customerId;
+const A = tw.A;
+const opened = await http('POST', '/createAccount', { query: { customerId, newAccountType: 0, fromAccountId: A } });
+const F = opened.json?.id;
+if (!F) {
+  console.error(`Could not open account F for the throwaway customer (HTTP ${opened.status})`);
+  process.exit(3);
 }
 
 // Target API, forbidden admin endpoints, and the secrets to redact from all output.
@@ -274,10 +280,6 @@ await probe('E-TRF6', 'transfer missing amount', 'POST', '/transfer', {
   query: { fromAccountId: F, toAccountId: A },
   accounts: [F, A],
 });
-await probe('E-TRF7', 'transfer 3-decimal amount 0.005', 'POST', '/transfer', {
-  query: { fromAccountId: F, toAccountId: A, amount: 0.005 },
-  accounts: [F, A],
-});
 await probe('E-TRF8', 'transfer non-numeric amount', 'POST', '/transfer', {
   query: { fromAccountId: F, toAccountId: A, amount: 'abc' },
   accounts: [F, A],
@@ -338,6 +340,14 @@ await probe('E-PRF1', 'update profile missing lastName', 'POST', `/customers/upd
 });
 await probe('E-PRF2', 'customer after failed update', 'GET', `/customers/${customerId}`);
 
+// ---------------- Destructive probe, last ----------------
+// The 0.005 transfer makes both accounts and the customer's account list unreadable (HTTP 500, BUG-001),
+// so it runs after every other probe: anything after it would only measure the broken accounts.
+await probe('E-TRF7', 'transfer 3-decimal amount 0.005 (last: breaks the accounts)', 'POST', '/transfer', {
+  query: { fromAccountId: F, toAccountId: A, amount: 0.005 },
+  accounts: [F, A],
+});
+
 // ---------------- Write evidence ----------------
 const dir = new URL('../../evidence/exploration/', import.meta.url);
 const suffix = process.env.START_AT ? `-from-${process.env.START_AT}` : '';
@@ -380,4 +390,36 @@ const md = [
   ),
 ];
 writeFileSync(new URL(`observations${suffix}.md`, dir), md.join('\n') + '\n');
+
+// Latency baseline (STD O7, load plan §1): unloaded response times of this run's probes per endpoint
+// class. Paced requests from one client, so this is the "no load" reference for the SLA model.
+const pct = (a, q) => {
+  const v = [...a].sort((x, y) => x - y);
+  return v.length ? v[Math.min(v.length - 1, Math.ceil(q * v.length) - 1)] : null;
+};
+const MONEY = /^\/(transfer|deposit|withdraw|billpay)/;
+const classes = [
+  ['Reads (all GET)', (o) => o.method === 'GET'],
+  ['`GET /accounts/{id}`', (o) => o.method === 'GET' && /^\/accounts\/\d+$/.test(o.url.replace(api, '').split('?')[0])],
+  [
+    'Money writes (transfer, deposit, withdraw, bill pay)',
+    (o) => o.method === 'POST' && MONEY.test(o.url.replace(api, '')),
+  ],
+  ['All writes (POST)', (o) => o.method === 'POST'],
+];
+const lat = [
+  `# Latency baseline (unloaded) — ${observations[0]?.at?.slice(0, 10)}`,
+  '',
+  `Source: the ${observations.length} probes of this exploration run (\`observations.json\`), sent one at a time from one client, ${PACE_MS} ms apart. Times are client side and include the network and Cloudflare. HTTP 429 never occurred (the run stops on it).`,
+  '',
+  '| Class | n | p50 ms | p95 ms | max ms |',
+  '|---|---|---|---|---|',
+  ...classes.map(([label, f]) => {
+    const ms = observations.filter(f).map((o) => o.ms);
+    return `| ${label} | ${ms.length} | ${pct(ms, 0.5) ?? '—'} | ${pct(ms, 0.95) ?? '—'} | ${ms.length ? Math.max(...ms) : '—'} |`;
+  }),
+  '',
+  'Used for the SLA model in deliverables/STD.md §4 (read p95 ≤ 1000 ms, write p95 ≤ 1500 ms) and as the "no load" reference in deliverables/load_test_plan.md.',
+];
+if (!suffix) writeFileSync(new URL('latency-baseline.md', dir), lat.join('\n') + '\n');
 console.log(`\nWrote ${observations.length} observations to evidence/exploration/`);

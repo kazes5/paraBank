@@ -1,0 +1,345 @@
+Running your collection...
+Generating run output...
+  ↳ results/runs/2026-11-24T11-16-14Z-api/reports/journey
+postman
+
+ParaBank QA
+
+Folder 01 Customer Journey / Onboarding
+Sub-folder JRN-01 J02 · login
+
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/**** [200 OK, 407 B, 819 ms]
+  Pass  JRN-01 J02 [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J02 [C1] customer schema
+  Pass  JRN-01 J02 [A7] profile = registration data
+  -
+  | '{"kind":"RECORD","case":"JRN-01 J02","label":"session","detail":{"setCookie":false}}'
+  -
+
+Sub-folder JRN-01 J03 · get customer
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317 [200 OK, 407 B, 236 ms]
+  Pass  JRN-01 J03 [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J03 [A7] every field = J02
+
+Sub-folder JRN-01 J04 · list accounts
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 433 B, 238 ms]
+  Pass  JRN-01 J04 [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J04 [C1] list of account
+  Pass  JRN-01 J04 [A6] every account belongs to the customer
+
+Sub-folder JRN-01 J05a · account A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557 [200 OK, 332 B, 245 ms]
+  Pass  JRN-01 J05a [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J05a [A7] id, type, balance, customerId = J04 entry
+
+Sub-folder JRN-01 J05b · baseline transactions of A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions [200 OK, 489 B, 263 ms]
+  Pass  JRN-01 J05b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J05b [C1] list of transaction
+
+Folder 01 Customer Journey / Open account
+Sub-folder JRN-01 J06a · open savings account B
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=1&fromAccountId=22557 [200 OK, 329 B, 249 ms]
+  Pass  JRN-01 J06a [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J06a [C1] account schema
+  Pass  JRN-01 J06a [C1] owned by the customer, type SAVINGS
+
+Sub-folder JRN-01 J06b · read-back B
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/28218 [200 OK, 333 B, 245 ms]
+  Pass  JRN-01 J06b [C1] HTTP 200 (got 200)
+  1. JRN-01 J06b [A7] create response balance = account balance (0 vs 10000 cents)
+  -
+  | '{"kind":"RECORD","case":"JRN-01 J06b","label":"[O1] opening amount moved into the new account (cents)","detail":10000}''{"kind":"FAILED","runId":"2026-11-24T11-20-28-719Z","at":"2026-11-24T11:20:40.267Z","case":"JRN-01 J06b","request":"JRN-01 J06b · read-back B","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/28218","requestBody":"","status":200,"ms":245,"response":"{\\"id\\":28218,\\"customerId\\":18317,\\"type\\":\\"SAVINGS\\",\\"balance\\":100.00}","failures":["[A7] create response balance = account balance (0 vs 10000 cents): expected +0 to deeply equal 10000"]}'
+  -
+
+Sub-folder JRN-01 J06c · read-back A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557 [200 OK, 332 B, 232 ms]
+  Pass  JRN-01 J06c [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J06c [A1] A = expected 132550 cents (got 132550)
+
+Sub-folder JRN-01 J06d · account list includes B
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 446 B, 258 ms]
+  Pass  JRN-01 J06d [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J06d [C1] list = start accounts + B
+
+Folder 01 Customer Journey / Manage money
+Sub-folder JRN-01 J07a · deposit 200.00 into B
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=28218&amount=200 [200 OK, 286 B, 281 ms]
+  Pass  JRN-01 J07a [C1] HTTP 200 (got 200)
+
+Sub-folder JRN-01 J07b · read-back B
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/28218 [200 OK, 333 B, 232 ms]
+  Pass  JRN-01 J07b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J07b [A2] B = expected 30000 cents (got 30000)
+
+Sub-folder JRN-01 J08a · withdraw 20.00 from B
+
+  POST https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=28218&amount=20 [200 OK, 286 B, 244 ms]
+  Pass  JRN-01 J08a [C1] HTTP 200 (got 200)
+
+Sub-folder JRN-01 J08b · read-back B
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/28218 [200 OK, 333 B, 230 ms]
+  Pass  JRN-01 J08b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J08b [A2] B = expected 28000 cents (got 28000)
+
+Sub-folder JRN-01 J09a · transfer 50.00 B to A
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=28218&toAccountId=22557&amount=50 [200 OK, 330 B, 275 ms]
+  Pass  JRN-01 J09a [C1] HTTP 200 (got 200)
+
+Sub-folder JRN-01 J09b · read-back A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557 [200 OK, 332 B, 268 ms]
+  Pass  JRN-01 J09b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J09b [A1] A = expected 137550 cents (got 137550)
+
+Sub-folder JRN-01 J09b · read-back B
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/28218 [200 OK, 333 B, 244 ms]
+  Pass  JRN-01 J09b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J09b [A1] B = expected 23000 cents (got 23000)
+
+Folder 01 Customer Journey / Pay bills
+Sub-folder JRN-01 J10a · pay 30.00 bill from A
+
+  POST https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=22557&amount=30 [200 OK, 332 B, 232 ms]
+  Pass  JRN-01 J10a [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J10a [C1] billPayResult schema
+  Pass  JRN-01 J10a [A7] payeeName, amount, accountId echoed
+
+Sub-folder JRN-01 J10b · read-back A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557 [200 OK, 332 B, 247 ms]
+  Pass  JRN-01 J10b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J10b [A2] A = expected 134550 cents (got 134550)
+
+Folder 01 Customer Journey / Statement
+Sub-folder JRN-01 J11a · transactions of A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions [200 OK, 540 B, 279 ms]
+  Pass  JRN-01 J11a [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J11a [A2] new rows on A = ["Credit 5000","Debit 10000","Debit 3000"] (got ["Credit 5000","Debit 10000","Debit 3000"])
+
+Sub-folder JRN-01 J11b · transactions of B
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/28218/transactions [200 OK, 443 B, 270 ms]
+  Pass  JRN-01 J11b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J11b [A2] rows on B = ["Credit 10000","Credit 20000","Debit 2000","Debit 5000"] (got ["Credit 10000","Credit 20000","Debit 2000","Debit 5000"])
+
+Sub-folder JRN-01 J11c · transaction by id
+
+  GET https://parabank.parasoft.com/parabank/services/bank/transactions/43891 [200 OK, 376 B, 235 ms]
+  Pass  JRN-01 J11c [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J11c [A7] every field = the J11a row
+
+Sub-folder JRN-01 J12a · filter amount 50
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/amount/50 [200 OK, 380 B, 235 ms]
+  Pass  JRN-01 J12a [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J12a [C2] result = rows of the unfiltered list with amount 50.00 (want [43891], got [43891])
+  Pass  JRN-01 J12a [C2] includes the J09 credit
+
+Sub-folder JRN-01 J12b · filter onDate today
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/onDate/11-24-2026 [200 OK, 540 B, 253 ms]
+  Pass  JRN-01 J12b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J12b [C2] result = rows of the unfiltered list dated today (want [28129,37342,37453,37564,37786,39451,39562,40006,40117,40894,41005,41227,42004,42115,42781,42892,43336,43891,44002], got [28129,37342,37453,37564,37786,39451,39562,40006,40117,40894,41005,41227,42004,42115,42781,42892,43336,43891,44002])
+
+Sub-folder JRN-01 J12c · filter fromDate today toDate today
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/fromDate/11-24-2026/toDate/11-24-2026 [200 OK, 540 B, 279 ms]
+  Pass  JRN-01 J12c [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J12c [C2] result = rows of the unfiltered list dated today (want [28129,37342,37453,37564,37786,39451,39562,40006,40117,40894,41005,41227,42004,42115,42781,42892,43336,43891,44002], got [28129,37342,37453,37564,37786,39451,39562,40006,40117,40894,41005,41227,42004,42115,42781,42892,43336,43891,44002])
+  Pass  JRN-01 J12c [C2] same rows as J12b
+
+Sub-folder JRN-01 J12d · filter month and type Debit
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/month/November/type/Debit [200 OK, 460 B, 272 ms]
+  Pass  JRN-01 J12d [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J12d [C2] result = rows of the unfiltered list in this month with type Debit (want [28129,37564,37786,39562,40117,41005,41227,42115,42892,43336,44002], got [28129,37564,37786,39562,40117,41005,41227,42115,42892,43336,44002])
+  Pass  JRN-01 J12d [C2] includes the J06 and J10 debits
+
+Folder 01 Customer Journey / Loan
+Sub-folder JRN-01 J13a · request loan 500, down payment 50 from A
+
+  POST https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=500&downPayment=50&fromAccountId=22557 [200 OK, 381 B, 343 ms]
+  Pass  JRN-01 J13a [C1] HTTP 200 (got 200)
+  2. JRN-01 J13a [C1] loanResponse schema (data.responseDate should be string)
+  Pass  JRN-01 J13a [C1] approved is a boolean
+  -
+  | '{"kind":"RECORD","case":"JRN-01 J13a","label":"[Open] approval decision","detail":{"approved":true}}''{"kind":"FAILED","runId":"2026-11-24T11-20-28-719Z","at":"2026-11-24T11:21:14.221Z","case":"JRN-01 J13a","request":"JRN-01 J13a · request loan 500, down payment 50 from A","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=500&downPayment=50&fromAccountId=22557","requestBody":"","status":200,"ms":343,"response":"{\\"responseDate\\":1795519274072,\\"loanProviderName\\":\\"Wealth Securities Dynamic Loans (WSDL)\\",\\"approved\\":true,\\"accountId\\":28329}","failures":["[C1] loanResponse schema (data.responseDate should be string): expected false to deeply equal true"]}'
+  -
+
+Sub-folder JRN-01 J13b · account list after loan
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 452 B, 290 ms]
+  Pass  JRN-01 J13b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J13b [A12] list = J06d list + loan account (got [22557,22779,26886,26997,27108,27219,27330,27441,27552,27663,27774,27885,27996,28218,28329])
+
+Sub-folder JRN-01 J13c · read-back A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557 [200 OK, 332 B, 326 ms]
+  Pass  JRN-01 J13c [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J13c [A12] A = expected 129550 cents (got 129550)
+
+Sub-folder JRN-01 J13d · loan account (report only)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/28329 [200 OK, 330 B, 272 ms]
+  -
+  | '{"kind":"OBSERVED-SAME","case":"JRN-01 J13d","label":"[O4] loan account is LOAN with 500.00","detail":{"type":"LOAN","balance":500}}'
+  -
+
+Sub-folder JRN-01 J13e · transactions of A after loan
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions [200 OK, 566 B, 233 ms]
+  Pass  JRN-01 J13e [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J13e [A12] down payment 50.00 recorded as a Debit on A (got ["Debit 5000"])
+
+Sub-folder JRN-01 J13e · transactions of the loan account
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/28329/transactions [200 OK, 277 B, 232 ms]
+  Pass  JRN-01 J13e [C1] HTTP 200 (got 200)
+  3. JRN-01 J13e [A12] the loan is recorded in the loan account history (found 0)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-20-28-719Z","at":"2026-11-24T11:21:23.200Z","case":"JRN-01 J13e","request":"JRN-01 J13e · transactions of the loan account","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/28329/transactions","requestBody":"","status":200,"ms":232,"response":"[]","failures":["[A12] the loan is recorded in the loan account history (found 0): expected +0 to be above +0"]}'
+  -
+
+Folder 01 Customer Journey / Invest
+Sub-folder JRN-01 J14a · buy 2 QATS at 10.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/customers/18317/buyPosition?accountId=22557&name=QA Test Stock&symbol=QATS&shares=2&pricePerShare=10 [200 OK, 371 B, 234 ms]
+  Pass  JRN-01 J14a [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J14a [C1] list of position
+  Pass  JRN-01 J14a [C1] position list contains QATS with 2 shares
+
+Sub-folder JRN-01 J14b · positions of the customer
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/positions [200 OK, 371 B, 317 ms]
+  Pass  JRN-01 J14b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J14b [A7] contains the position with 2 shares
+
+Sub-folder JRN-01 J14c · position by id
+
+  GET https://parabank.parasoft.com/parabank/services/bank/positions/13128 [200 OK, 368 B, 266 ms]
+  Pass  JRN-01 J14c [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J14c [C1] position schema
+  Pass  JRN-01 J14c [A7] shares 2, purchasePrice 10.00, owned by the customer
+
+Sub-folder JRN-01 J14d · read-back A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557 [200 OK, 332 B, 232 ms]
+  Pass  JRN-01 J14d [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J14d [A1] A = expected 127550 cents (got 127550)
+
+Sub-folder JRN-01 J15a · sell 1 QATS at 12.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/customers/18317/sellPosition?accountId=22557&positionId=13128&shares=1&pricePerShare=12 [200 OK, 371 B, 235 ms]
+  Pass  JRN-01 J15a [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J15a [C1] position now shows 1 share
+
+Sub-folder JRN-01 J15b · position by id
+
+  GET https://parabank.parasoft.com/parabank/services/bank/positions/13128 [200 OK, 368 B, 229 ms]
+  Pass  JRN-01 J15b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J15b [A7] shares 1
+
+Sub-folder JRN-01 J15c · read-back A
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557 [200 OK, 332 B, 301 ms]
+  Pass  JRN-01 J15c [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J15c [A1] A = expected 128750 cents (got 128750)
+
+Folder 01 Customer Journey / Update profile
+Sub-folder JRN-01 J16a · update street and phone
+
+  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/18317?firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=QA Street 1&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=5550199&ssn=****&username=<USERNAME>&password=**** [200 OK, 278 B, 283 ms]
+  Pass  JRN-01 J16a [C1] HTTP 200 (got 200)
+
+Sub-folder JRN-01 J16b · customer after update
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317 [200 OK, 411 B, 230 ms]
+  Pass  JRN-01 J16b [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J16b [A7] new street and phone
+  Pass  JRN-01 J16b [A7] every other field unchanged
+
+Sub-folder JRN-01 J16c · login after update
+
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/**** [200 OK, 411 B, 231 ms]
+  Pass  JRN-01 J16c [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J16c [A7] login returns the updated profile
+
+Sub-folder JRN-01 J16d · restore original profile
+
+  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/18317?firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=<STREET>&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=<PHONE>&ssn=****&username=<USERNAME>&password=**** [200 OK, 278 B, 232 ms]
+  Pass  JRN-01 J16d [C1] HTTP 200 (got 200)
+
+Sub-folder JRN-01 J16d · customer after restore
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317 [200 OK, 407 B, 311 ms]
+  Pass  JRN-01 J16d [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J16d [A7] profile = registration again
+
+Folder 01 Customer Journey / Reconciliation
+Sub-folder JRN-01 J17 · final accounts
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 452 B, 289 ms]
+  Pass  JRN-01 J17 [C1] HTTP 200 (got 200)
+  Pass  JRN-01 J17 [A1] accounts = start + B + L, nothing else
+  Pass  JRN-01 J17 [A1] A = ledger 128750 cents (got 128750)
+  Pass  JRN-01 J17 [A2] B = ledger 23000 cents (got 23000)
+  -
+  | '{"kind":"RECORD","case":"JRN-01 J17","label":"loan account balance (reported, not judged; Q9)","detail":50000}''{"kind":"RECORD","case":"JRN-01 J17","label":"ids","detail":{"A":22557,"B":28218,"L":28329}}'
+  -
+
+-------------------------------------------------------------------------
+|                         |             executed |               failed |
+--------------------------+----------------------+-----------------------
+|              iterations |                    1 |                    0 |
+--------------------------+----------------------+-----------------------
+|                requests |                   44 |                    0 |
+--------------------------+----------------------+-----------------------
+|            test-scripts |                   44 |                    0 |
+--------------------------+----------------------+-----------------------
+|      prerequest-scripts |                   44 |                    0 |
+--------------------------+----------------------+-----------------------
+|              assertions |                   94 |                    3 |
+-------------------------------------------------------------------------
+| total run duration: 1 m 19.2s                                         |
+-------------------------------------------------------------------------
+| total data received: 4.85 KB (approx)                                 |
+-------------------------------------------------------------------------
+| average response time: 271 ms [min: 229 ms, max: 819 ms, s.d.: 88 ms] |
+-------------------------------------------------------------------------
+
+  #  failure         detail                                                                                       
+                                                                                                                  
+ 1.  AssertionError  JRN-01 J06b [A7] create response balance = account balance (0 vs 10000 cents)                
+                     expected +0 to deeply equal 10000                                                            
+                     at assertion:1 in test-script                                                                
+                     inside "01 Customer Journey / Open account / JRN-01 J06b · read-back B"                      
+                                                                                                                  
+ 2.  AssertionError  JRN-01 J13a [C1] loanResponse schema (data.responseDate should be string)                    
+                     expected false to deeply equal true                                                          
+                     at assertion:1 in test-script                                                                
+                     inside "01 Customer Journey / Loan / JRN-01 J13a · request loan 500, down payment 50 from A" 
+                                                                                                                  
+ 3.  AssertionError  JRN-01 J13e [A12] the loan is recorded in the loan account history (found 0)                 
+                     expected +0 to be above +0                                                                   
+                     at assertion:1 in test-script                                                                
+                     inside "01 Customer Journey / Loan / JRN-01 J13e · transactions of the loan account"         
+
+✓ Output generated
+  Folder: results/runs/2026-11-24T11-16-14Z-api/reports/journey
+    ↳ parabank-qa-2026-11-24-13-20-27.collection-run-summary.yaml
+    ↳ parabank-qa-2026-11-24-13-20-27.collection-run-executions.yaml

@@ -1,4 +1,4 @@
-// Builds tests/postman/ParaBank_QA.postman_collection.json (Postman v2.1) from the STD (STD.md §5).
+// Builds deliverables/postman/ParaBank_QA.postman_collection.json (Postman v2.1) from the STD (deliverables/STD.md §5).
 //
 // Design:
 // - One request per API call; test names start with the STD case ID and the basis tag
@@ -14,7 +14,7 @@
 import { writeFileSync } from 'node:fs';
 
 // Output file (regenerated before every API run, so the JSON never drifts from this builder).
-const OUT = new URL('../postman/ParaBank_QA.postman_collection.json', import.meta.url);
+const OUT = new URL('../../deliverables/postman/ParaBank_QA.postman_collection.json', import.meta.url);
 
 // ---------------------------------------------------------------- shared script code
 
@@ -156,6 +156,16 @@ function subset(tag, fullKey, label, pred) {
   return got;
 }
 function newRows(rows, baseIds) { return (rows || []).filter(function (r) { return baseIds.indexOf(r.id) < 0; }); }
+// Ledger guard for rejected money requests: the transaction IDs of an account are stored before the
+// request, and afterwards no new row may appear (a rejected request must leave no ledger entry).
+function ledgerStore(acc) { set('ledger_' + acc, ids(json())); }
+function ledgerSame(tag, acc) {
+  const before = getJ('ledger_' + acc);
+  if (!before) { blocked('ledger ' + acc, 'no ledger baseline'); return; }
+  const added = newRows(json(), before);
+  check('[' + tag + '] no transaction added to ' + acc + ' (new: ' + JSON.stringify(sig(added)) + ')', function () { pm.expect(added).to.eql([]); });
+  ledgerStore(acc);
+}
 function sig(rows) { return rows.map(function (r) { return r.type + ' ' + cents(r.amount); }).sort(); }
 `;
 
@@ -240,6 +250,25 @@ const s = rollSnap();
 check('[C1] account list readable (got ' + code() + ')', function () { pm.expect(code()).to.eql(200); });
 ${tests}`,
   });
+
+// Transaction list of account variable acc (S, T): stores the baseline, or (with tag) checks that no
+// row was added since the last read and stores the new baseline.
+const ledger = (caseId, acc, tag) =>
+  req(`${caseId} · ${tag ? 'ledger after' : 'ledger before'} (${acc})`, 'GET', `/accounts/{{${acc}}}/transactions`, {
+    tests: tag ? `if (is200()) ledgerSame('${tag}', '${acc}');` : `if (is200()) ledgerStore('${acc}');`,
+  });
+
+// A rejected money request with its full oracle: optional ledger baseline (skip it when the previous
+// case already stored one for the same accounts), the request, balances unchanged, ledger unchanged.
+const rejected = (caseId, tag, request, accs, { base = true, snapTests = '' } = {}) => [
+  ...(base ? accs.map((a) => ledger(caseId, a)) : []),
+  request,
+  snapshot(
+    `${caseId} · balances after`,
+    `unchanged('${tag}', s, [${accs.map((a) => `v('${a}')`).join(', ')}]);${snapTests}`,
+  ),
+  ...accs.map((a) => ledger(caseId, a, tag)),
+];
 
 // Pre-request that removes any cookie, so the call is made as an anonymous client
 const ANON = `pm.request.headers.remove('Cookie'); pm.request.headers.remove('Authorization');`;
@@ -470,57 +499,90 @@ if (is200()) { const r = json().filter(function (x) { return cents(x.amount) ===
 check('[A1] S is 0.00 (got ' + s.cur[v('S')] + ' cents)', function () { pm.expect(s.cur[v('S')]).to.eql(0); });
 check('[A1] total of S + T unchanged', function () { pm.expect(s.cur[v('S')] + s.cur[v('T')]).to.eql(s.prev[v('S')] + s.prev[v('T')]); });`,
   ),
-  req('TRF-02 · transfer more than the balance', 'POST', '/transfer', {
-    query: { fromAccountId: '{{S}}', toAccountId: '{{T}}', amount: '{{amt}}' },
-    pre: amtFromS(100000),
-    tests: `is4xx('A4'); record('amount', v('amt'));`,
-  }),
-  snapshot('TRF-02 · balances after', `unchanged('A4', s, [v('S'), v('T')]);`),
-  req('TRF-03 · transfer -1.00', 'POST', '/transfer', {
-    query: { fromAccountId: '{{S}}', toAccountId: '{{T}}', amount: -1 },
-    tests: `is4xx('A3');`,
-  }),
-  snapshot('TRF-03 · balances after', `unchanged('A3', s, [v('S'), v('T')]);`),
-  req('TRF-04 · transfer 0.00', 'POST', '/transfer', {
-    query: { fromAccountId: '{{S}}', toAccountId: '{{T}}', amount: 0 },
-    tests: `is4xx('A3');`,
-  }),
-  req('TRF-04 · transactions of S', 'GET', '/accounts/{{S}}/transactions', {
-    tests: `
-if (is200()) { const z = json().filter(function (x) { return cents(x.amount) === 0; });
-  check('[A3] no 0.00 transaction created (found ' + z.length + ')', function () { pm.expect(z.length).to.eql(0); }); }`,
-  }),
-  req('TRF-05 · transfer to the same account', 'POST', '/transfer', {
-    query: { fromAccountId: '{{S}}', toAccountId: '{{S}}', amount: 1 },
-    tests: `is4xx('A10');`,
-  }),
-  snapshot('TRF-05 · balances after', `unchanged('A10', s, [v('S')]);`),
-  req('TRF-06 · transfer to account -1', 'POST', '/transfer', {
-    query: { fromAccountId: '{{S}}', toAccountId: -1, amount: 1 },
-    tests: `no5xx(); is4xx('A8'); record('[Open] status code', code());`,
-  }),
-  snapshot('TRF-06 · balances after', `unchanged('A8', s, [v('S')]);`),
-  req('TRF-07 · transfer without amount', 'POST', '/transfer', {
-    query: { fromAccountId: '{{S}}', toAccountId: '{{T}}' },
-    tests: `is4xx('C1'); no5xx();`,
-  }),
-  snapshot('TRF-07 · balances after', `unchanged('A8', s, [v('S'), v('T')]);`),
+  ...rejected(
+    'TRF-02',
+    'A4',
+    req('TRF-02 · transfer more than the balance', 'POST', '/transfer', {
+      query: { fromAccountId: '{{S}}', toAccountId: '{{T}}', amount: '{{amt}}' },
+      pre: amtFromS(100000),
+      tests: `is4xx('A4'); record('amount', v('amt'));`,
+    }),
+    ['S', 'T'],
+  ),
+  ...rejected(
+    'TRF-03',
+    'A3',
+    req('TRF-03 · transfer -1.00', 'POST', '/transfer', {
+      query: { fromAccountId: '{{S}}', toAccountId: '{{T}}', amount: -1 },
+      tests: `is4xx('A3');`,
+    }),
+    ['S', 'T'],
+    { base: false },
+  ),
+  ...rejected(
+    'TRF-04',
+    'A3',
+    req('TRF-04 · transfer 0.00', 'POST', '/transfer', {
+      query: { fromAccountId: '{{S}}', toAccountId: '{{T}}', amount: 0 },
+      tests: `is4xx('A3');`,
+    }),
+    ['S', 'T'],
+    { base: false },
+  ),
+  ...rejected(
+    'TRF-05',
+    'A10',
+    req('TRF-05 · transfer to the same account', 'POST', '/transfer', {
+      query: { fromAccountId: '{{S}}', toAccountId: '{{S}}', amount: 1 },
+      tests: `is4xx('A10');`,
+    }),
+    ['S', 'T'],
+    { base: false },
+  ),
+  ...rejected(
+    'TRF-06',
+    'A8',
+    req('TRF-06 · transfer to account -1', 'POST', '/transfer', {
+      query: { fromAccountId: '{{S}}', toAccountId: -1, amount: 1 },
+      tests: `no5xx(); is4xx('A8'); record('[Open] status code', code());`,
+    }),
+    ['S', 'T'],
+    { base: false },
+  ),
+  ...rejected(
+    'TRF-07',
+    'A8',
+    req('TRF-07 · transfer without amount', 'POST', '/transfer', {
+      query: { fromAccountId: '{{S}}', toAccountId: '{{T}}' },
+      tests: `is4xx('C1'); no5xx();`,
+    }),
+    ['S', 'T'],
+    { base: false },
+  ),
   cleanup('TRF'),
 ]);
 
 const depSuite = folder('15 DEP Deposit', [
   ...fixtures('DEP', false),
-  req('DEP-02 · deposit 0.00', 'POST', '/deposit', { query: { accountId: '{{S}}', amount: 0 }, tests: `is4xx('A3');` }),
-  req('DEP-02 · transactions of S', 'GET', '/accounts/{{S}}/transactions', {
-    tests: `
-if (is200()) { const z = json().filter(function (x) { return cents(x.amount) === 0; });
-  check('[A3] no 0.00 transaction created (found ' + z.length + ')', function () { pm.expect(z.length).to.eql(0); }); }`,
-  }),
-  req('DEP-03 · deposit -5.00', 'POST', '/deposit', {
-    query: { accountId: '{{S}}', amount: -5 },
-    tests: `is4xx('A3');`,
-  }),
-  snapshot('DEP-03 · balances after', `unchanged('A3', s, [v('S')]);`),
+  ...rejected(
+    'DEP-02',
+    'A3',
+    req('DEP-02 · deposit 0.00', 'POST', '/deposit', {
+      query: { accountId: '{{S}}', amount: 0 },
+      tests: `is4xx('A3');`,
+    }),
+    ['S'],
+  ),
+  ...rejected(
+    'DEP-03',
+    'A3',
+    req('DEP-03 · deposit -5.00', 'POST', '/deposit', {
+      query: { accountId: '{{S}}', amount: -5 },
+      tests: `is4xx('A3');`,
+    }),
+    ['S'],
+    { base: false },
+  ),
   cleanup('DEP'),
 ]);
 
@@ -538,27 +600,36 @@ observe('[O5] success text', /^Successfully withdrew/.test(pm.response.text()), 
 if (is200()) { const r = json().filter(function (x) { return cents(x.amount) === 500; });
   check('[A2] exactly one 5.00 Debit on S (got ' + JSON.stringify(sig(r)) + ')', function () { pm.expect(sig(r)).to.eql(['Debit 500']); }); }`,
   }),
-  req('WDR-02 · withdraw more than the balance', 'POST', '/withdraw', {
-    query: { accountId: '{{S}}', amount: '{{amt}}' },
-    pre: amtFromS(100000),
-    tests: `is4xx('A4'); record('amount', v('amt'));`,
-  }),
-  snapshot('WDR-02 · balances after', `unchanged('A4', s, [v('S')]);`),
-  req('WDR-03 · withdraw -5.00', 'POST', '/withdraw', {
-    query: { accountId: '{{S}}', amount: -5 },
-    tests: `is4xx('A3');`,
-  }),
-  snapshot('WDR-03 · balances after', `unchanged('A3', s, [v('S')]);`),
-  req('WDR-04 · withdraw 0.00', 'POST', '/withdraw', {
-    query: { accountId: '{{S}}', amount: 0 },
-    tests: `is4xx('A3');`,
-  }),
-  req('WDR-04 · transactions of S', 'GET', '/accounts/{{S}}/transactions', {
-    tests: `
-if (is200()) { const z = json().filter(function (x) { return cents(x.amount) === 0; });
-  check('[A3] no 0.00 transaction created (found ' + z.length + ')', function () { pm.expect(z.length).to.eql(0); }); }`,
-  }),
-  snapshot('WDR-04 · balances after'),
+  ...rejected(
+    'WDR-02',
+    'A4',
+    req('WDR-02 · withdraw more than the balance', 'POST', '/withdraw', {
+      query: { accountId: '{{S}}', amount: '{{amt}}' },
+      pre: amtFromS(100000),
+      tests: `is4xx('A4'); record('amount', v('amt'));`,
+    }),
+    ['S'],
+  ),
+  ...rejected(
+    'WDR-03',
+    'A3',
+    req('WDR-03 · withdraw -5.00', 'POST', '/withdraw', {
+      query: { accountId: '{{S}}', amount: -5 },
+      tests: `is4xx('A3');`,
+    }),
+    ['S'],
+    { base: false },
+  ),
+  ...rejected(
+    'WDR-04',
+    'A3',
+    req('WDR-04 · withdraw 0.00', 'POST', '/withdraw', {
+      query: { accountId: '{{S}}', amount: 0 },
+      tests: `is4xx('A3');`,
+    }),
+    ['S'],
+    { base: false },
+  ),
   cleanup('WDR'),
 ]);
 
@@ -587,25 +658,39 @@ record('payee account T change (cents)', s.cur[v('T')] - s.prev[v('T')]);`,
 if (is200()) { const r = json().filter(function (x) { return cents(x.amount) === 500; });
   check('[A2] exactly one 5.00 Debit on S (got ' + JSON.stringify(sig(r)) + ')', function () { pm.expect(sig(r)).to.eql(['Debit 500']); }); }`,
   }),
-  req('BILL-02 · pay more than the balance', 'POST', '/billpay', {
-    query: { accountId: '{{S}}', amount: '{{amt}}' },
-    body: payee('{{T}}'),
-    pre: amtFromS(100000),
-    tests: `is4xx('A4'); record('amount', v('amt'));`,
-  }),
-  snapshot('BILL-02 · balances after', `unchanged('A4', s, [v('S')]);`),
-  req('BILL-03 · pay with an empty payee', 'POST', '/billpay', {
-    query: { accountId: '{{S}}', amount: 1 },
-    body: '{}',
-    tests: `is4xx('A11'); no5xx(); record('[Open] status code', code());`,
-  }),
-  snapshot('BILL-03 · balances after', `unchanged('A11', s, [v('S')]);`),
-  req('BILL-04 · pay -5.00', 'POST', '/billpay', {
-    query: { accountId: '{{S}}', amount: -5 },
-    body: payee('{{T}}'),
-    tests: `is4xx('A3');`,
-  }),
-  snapshot('BILL-04 · balances after', `unchanged('A3', s, [v('S')]);`),
+  ...rejected(
+    'BILL-02',
+    'A4',
+    req('BILL-02 · pay more than the balance', 'POST', '/billpay', {
+      query: { accountId: '{{S}}', amount: '{{amt}}' },
+      body: payee('{{T}}'),
+      pre: amtFromS(100000),
+      tests: `is4xx('A4'); record('amount', v('amt'));`,
+    }),
+    ['S', 'T'],
+  ),
+  ...rejected(
+    'BILL-03',
+    'A11',
+    req('BILL-03 · pay with an empty payee', 'POST', '/billpay', {
+      query: { accountId: '{{S}}', amount: 1 },
+      body: '{}',
+      tests: `is4xx('A11'); no5xx(); record('[Open] status code', code());`,
+    }),
+    ['S', 'T'],
+    { base: false },
+  ),
+  ...rejected(
+    'BILL-04',
+    'A3',
+    req('BILL-04 · pay -5.00', 'POST', '/billpay', {
+      query: { accountId: '{{S}}', amount: -5 },
+      body: payee('{{T}}'),
+      tests: `is4xx('A3');`,
+    }),
+    ['S', 'T'],
+    { base: false },
+  ),
   cleanup('BIL'),
 ]);
 
@@ -655,6 +740,7 @@ else if (is200()) {
   check('[A12] the loan is recorded in the loan account history (found ' + json().length + ')', function () { pm.expect(json().length).to.be.above(0); });
 }`,
   }),
+  ledger('LOAN-02', 'S'),
   req('LOAN-02 · request loan -100', 'POST', '/requestLoan', {
     query: { customerId: '{{custId}}', amount: -100, downPayment: 10, fromAccountId: '{{S}}' },
     tests: `
@@ -667,6 +753,7 @@ check('[A3] rejected (4xx) or denied (got ' + code() + ', approved ' + (r && r.a
 unchanged('A3', s, [v('S')]);
 check('[A3] no loan account opened', function () { pm.expect(added).to.eql([]); });`,
   ),
+  ledger('LOAN-02', 'S', 'A3'),
   req('LOAN-03 · down payment larger than the loan', 'POST', '/requestLoan', {
     query: { customerId: '{{custId}}', amount: 10, downPayment: 20, fromAccountId: '{{S}}' },
     tests: `
@@ -679,11 +766,16 @@ record('[Open] behavior', { status: code(), approved: r && r.approved, message: 
     `${loanAfter()}
 record('[Open] S change (cents)', s.cur[v('S')] - s.prev[v('S')]);`,
   ),
+  // LOAN-04 isolates rule A4: the down payment exceeds the balance of S by 10.00, while the loan
+  // amount stays above the down payment (so the LOAN-03 condition does not apply at the same time).
+  ledger('LOAN-04', 'S'),
   req('LOAN-04 · down payment larger than the balance', 'POST', '/requestLoan', {
-    query: { customerId: '{{custId}}', amount: 1000, downPayment: '{{amt}}', fromAccountId: '{{S}}' },
-    pre: amtFromS(100000),
+    query: { customerId: '{{custId}}', amount: '{{loanAmt}}', downPayment: '{{amt}}', fromAccountId: '{{S}}' },
+    pre: `${amtFromS(1000)}
+pm.collectionVariables.set('loanAmt', (Number(pm.collectionVariables.get('amt')) + 100).toFixed(2));`,
     tests: `
 const r = json();
+record('request', { downPayment: v('amt'), amount: v('loanAmt'), message: r && r.message });
 check('[A4] denied (got ' + code() + ', approved ' + (r && r.approved) + ')', function () { pm.expect(code() >= 400 && code() < 500 || (r && r.approved === false)).to.eql(true); });`,
   }),
   snapshot(
@@ -692,6 +784,7 @@ check('[A4] denied (got ' + code() + ', approved ' + (r && r.approved) + ')', fu
 unchanged('A4', s, [v('S')]);
 check('[A4] no loan account opened', function () { pm.expect(added).to.eql([]); });`,
   ),
+  ledger('LOAN-04', 'S', 'A4'),
   cleanup('LON'),
 ]);
 
@@ -831,7 +924,9 @@ if (is200()) {
   set('B0', String(b0)); set('expB', String(b0));
   if (v('jBCreated') === 'true') {
     check('[A7] create response balance = account balance (' + v('jB6Response') + ' vs ' + b0 + ' cents)', function () { pm.expect(Number(v('jB6Response'))).to.eql(b0); });
-    observe('[O1] new account funded with 100.00', b0 === 10000, { B0: b0 });
+    // The opening amount is a site setting (observed 100.00 and later 200.00): record it, don't assert it.
+    // Conservation (A goes down by exactly B0) is checked in J06c.
+    record('[O1] opening amount moved into the new account (cents)', b0);
   }
 }`,
       }),
@@ -1111,7 +1206,7 @@ const collection = {
     _postman_id: 'b6f1c0de-7a1e-4c55-9d1a-parabankqa01',
     name: 'ParaBank QA',
     description:
-      'Generated by tests/scripts/build-collection.mjs from STD.md. Run order: 00 Smoke (gate) -> 10 Suite fixtures + 11-19 suites -> 01 Customer Journey. Test names: <case ID> [basis] check. Basis: C# contract, A# proposed rule; observed (O#) and open items are logged as RECORD/OBSERVED lines, never asserted.',
+      'Generated by tests/scripts/build-collection.mjs from deliverables/STD.md. Run order: 00 Smoke (gate) -> 10 Suite fixtures + 11-19 suites -> 01 Customer Journey. Test names: <case ID> [basis] check. Basis: C# contract, A# proposed rule; observed (O#) and open items are logged as RECORD/OBSERVED lines, never asserted.',
     schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
   },
   event: [{ listen: 'prerequest', script: { type: 'text/javascript', exec: lines(COLLECTION_PRE) } }],

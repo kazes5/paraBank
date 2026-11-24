@@ -8,27 +8,16 @@ import { join, dirname, normalize } from 'node:path';
 import { ROOT } from './lib/common.mjs';
 
 // A path counts as a repo path when it starts with one of these top-level folders.
-const ROOTS = /^(evidence|results|tests|docs|scripts|postman)\//;
-// Documents to check: the root deliverables plus every Markdown file under evidence/ and results/.
-const docs = [
-  'README.md',
-  'STR.md',
-  'STR_Detailed.md',
-  'SUBMISSION.md',
-  'docs/walkthrough.md',
-  'plan.md',
-  'STD.md',
-  'Bug_Reports.md',
-  'Business_Rules.md',
-  'parabank_test_approach.md',
-];
+const ROOTS = /^(deliverables|evidence|results|tests|docs)\//;
+// Documents to check: the root documents plus every Markdown file under deliverables/, docs/, evidence/ and results/.
+const docs = ['README.md', 'SUBMISSION.md', 'docs/walkthrough.md', 'plan.md', 'parabank_test_approach.md'];
 const walk = (d) =>
   readdirSync(d).flatMap((f) => {
     const p = join(d, f);
     return statSync(p).isDirectory() ? walk(p) : [p];
   });
 // results/runs/ is local and git-ignored (never shared), so only committed documents are checked.
-for (const d of ['evidence', 'results'])
+for (const d of ['deliverables', 'docs', 'evidence', 'results'])
   docs.push(...walk(d).filter((f) => f.endsWith('.md') && !f.startsWith(join('results', 'runs'))));
 
 const missing = [];
@@ -44,7 +33,9 @@ for (const doc of docs.filter((d) => existsSync(d))) {
   for (const { path, rel } of refs) {
     // Skip URLs and placeholders, resolve the path, ignore trailing punctuation, record what is missing.
     if (/^https?:|[<>*{}]|BUG-0NN|NN-/.test(path)) continue;
-    const resolved = rel && !ROOTS.test(path) ? normalize(join(dirname(doc), path)) : path.replace(/^\.\//, '');
+    // Markdown links resolve against the document's folder, exactly as GitHub and the web page do;
+    // `backticked` paths are written from the repo root.
+    const resolved = rel ? normalize(join(dirname(doc), path)) : path.replace(/^\.\//, '');
     if (!rel && !ROOTS.test(resolved)) continue;
     checked++;
     if (!existsSync(join(ROOT, resolved.replace(/[.,:;]+$/, '')))) missing.push(`${doc}: ${path}`);

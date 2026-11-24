@@ -1,0 +1,36 @@
+{
+  "users": {
+    "R": "qa_s4_mwungyju",
+    "L": "qa_s4_mwunlevw"
+  },
+  "steps": [
+    {
+      "label": "Transfer 1.00 S → S",
+      "kind": "fail",
+      "at": "2026-11-24T12:08:57.260Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=22557&toAccountId=22557&amount=1",
+      "status": 200,
+      "ms": 230,
+      "response": "Successfully transferred $1 from account #22557 to account #22557",
+      "before": {
+        "22557": 104
+      },
+      "after": {
+        "22557": 104
+      },
+      "expect": "4xx"
+    },
+    {
+      "label": "Transactions of S with amount 1.00",
+      "kind": "state",
+      "at": "2026-11-24T12:08:58.986Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/amount/1",
+      "status": 200,
+      "ms": 224,
+      "response": "[{\"id\":65314,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":65536,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":66979,\"accountId\":22557,\"type\":\"Debit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Sent\"},{\"id\":67090,\"accountId\":22557,\"type\":\"Credit\",\"date\":1795478400000,\"amount\":1.00,\"description\":\"Funds Transfer Received\"}]",
+      "expect": "no rows from the S → S transfer"
+    }
+  ]
+}

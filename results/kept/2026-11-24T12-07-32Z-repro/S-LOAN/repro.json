@@ -1,0 +1,101 @@
+{
+  "users": {
+    "R": "qa_s4_mwungyju",
+    "L": "qa_s4_mwunlevw"
+  },
+  "steps": [
+    {
+      "label": "Customer total positive (A + S, each with its opening balance): loan 100, down 50 from S",
+      "kind": "control",
+      "at": "2026-11-24T12:11:15.379Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=16652&amount=100&downPayment=50&fromAccountId=24777",
+      "status": 200,
+      "ms": 283,
+      "response": "{\"responseDate\":1795522271850,\"loanProviderName\":\"Wealth Securities Dynamic Loans (WSDL)\",\"approved\":true,\"accountId\":24888}",
+      "before": {
+        "23112": 415.5,
+        "24777": 100
+      },
+      "after": {
+        "23112": 415.5,
+        "24777": 50
+      },
+      "expect": "approved"
+    },
+    {
+      "label": "Overdraw A by withdrawing 1000.00 (customer total becomes negative; S untouched)",
+      "kind": "state",
+      "at": "2026-11-24T12:11:24.004Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=23112&amount=1000",
+      "status": 200,
+      "ms": 223,
+      "response": "Successfully withdrew $1000 from account #23112",
+      "before": {
+        "23112": 415.5,
+        "24777": 50
+      },
+      "after": {
+        "23112": -584.5,
+        "24777": 50
+      }
+    },
+    {
+      "label": "Same loan again from S (S still holds 50.00 ≥ down payment 10)",
+      "kind": "fail",
+      "at": "2026-11-24T12:11:32.667Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=16652&amount=100&downPayment=10&fromAccountId=24777",
+      "status": 200,
+      "ms": 264,
+      "response": "{\"responseDate\":1795522289177,\"loanProviderName\":\"Wealth Securities Dynamic Loans (WSDL)\",\"approved\":false,\"message\":\"error.insufficient.funds.for.down.payment\",\"accountId\":null}",
+      "before": {
+        "23112": -584.5,
+        "24777": 50
+      },
+      "after": {
+        "23112": -584.5,
+        "24777": 50
+      },
+      "expect": "decision based on S, or a message naming the real reason"
+    },
+    {
+      "label": "Deposit 2000.00 into A (customer total positive again)",
+      "kind": "state",
+      "at": "2026-11-24T12:11:41.309Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=23112&amount=2000",
+      "status": 200,
+      "ms": 228,
+      "response": "Successfully deposited $2000 to account #23112",
+      "before": {
+        "23112": -584.5,
+        "24777": 50
+      },
+      "after": {
+        "23112": 1415.5,
+        "24777": 50
+      }
+    },
+    {
+      "label": "Same loan again from S",
+      "kind": "control",
+      "at": "2026-11-24T12:11:49.983Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=16652&amount=100&downPayment=10&fromAccountId=24777",
+      "status": 200,
+      "ms": 268,
+      "response": "{\"responseDate\":1795522306505,\"loanProviderName\":\"Wealth Securities Dynamic Loans (WSDL)\",\"approved\":true,\"accountId\":24999}",
+      "before": {
+        "23112": 1415.5,
+        "24777": 50
+      },
+      "after": {
+        "23112": 1415.5,
+        "24777": 40
+      },
+      "expect": "approved"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "2026-11-24T11-41-04Z-load",
+  "kind": "load",
+  "started": "2026-11-24T11:41:04.998Z",
+  "commit": "44f050a",
+  "scope": "L1–L6",
+  "dry": false,
+  "verdict": "FAIL",
+  "slaVerdicts": [
+    "PASS"
+  ],
+  "finished": "2026-11-24T11:55:55.918Z",
+  "fixture": {
+    "customerId": 12656,
+    "S": 14010,
+    "T": 14121
+  },
+  "counts": {
+    "PASS": 4,
+    "RECON FAIL": 1
+  },
+  "reconciliation": "FAIL",
+  "smokeAfter": "PASS"
+}

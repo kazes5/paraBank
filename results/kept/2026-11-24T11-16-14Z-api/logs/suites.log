@@ -1,0 +1,1284 @@
+Running your collection...
+Generating run output...
+  ↳ results/runs/2026-11-24T11-16-14Z-api/reports/suites
+postman
+
+ParaBank QA
+
+Folder 10 Suite fixtures
+Sub-folder FIX · login
+
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/**** [200 OK, 407 B, 764 ms]
+  Pass  FIX [C1] HTTP 200 (got 200)
+  Pass  FIX [C1] customer schema
+  Pass  FIX [A7] profile = registration data
+  -
+  | '{"kind":"RECORD","case":"FIX","label":"session","detail":{"setCookie":false}}'
+  -
+
+Sub-folder FIX · accounts
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 349 B, 240 ms]
+  Pass  FIX [C1] HTTP 200 (got 200)
+  Pass  FIX [C1] list of account
+  Pass  FIX [C1] at least one account
+  Pass  FIX [A6] every account belongs to the customer
+
+Folder 11 LOG Login
+Sub-folder AUTH-02 · wrong password
+
+  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/WrongPass-000 [400 Bad Request, 290 B, 267 ms]
+  Pass  AUTH-02 [A9] no id data returned
+  Pass  AUTH-02 [A8] no server error (got 400)
+  -
+  | '{"kind":"RECORD","case":"AUTH-02","label":"[Open] status code","detail":{"status":400,"body":"Invalid username and/or password"}}'
+  -
+
+Sub-folder AUTH-04 · unknown user
+
+  GET https://parabank.parasoft.com/parabank/services/bank/login/qa_nouser_1795519000/WrongPass-000 [400 Bad Request, 290 B, 277 ms]
+  Pass  AUTH-04 [A9] no id data returned
+  Pass  AUTH-04 [A9] same status and body as a wrong password
+
+Folder 12 CUS Customer
+Sub-folder CUST-02 · customer -1
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/-1 [400 Bad Request, 285 B, 238 ms]
+  Pass  CUST-02 [A8] no id data returned
+  Pass  CUST-02 [A8] no server error (got 400)
+  Pass  CUST-02 [A8] rejected with 4xx (got 400)
+  -
+  | '{"kind":"RECORD","case":"CUST-02","label":"[Open] status code","detail":400}'
+  -
+
+Sub-folder CUST-03 · profile without logging in
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317 [200 OK, 407 B, 223 ms]
+  1. CUST-03 [A6] rejected with 401 or 403 (got 200)
+  2. CUST-03 [A6] no SSN in the response
+  -
+  | `{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:16:43.754Z","case":"CUST-03","request":"CUST-03 · profile without logging in","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317","requestBody":"","status":200,"ms":223,"response":"{\\"id\\":18317,\\"firstName\\":\\"<FIRST_NAME>\\",\\"lastName\\":\\"<LAST_NAME>\\",\\"address\\":{\\"street\\":\\"<STREET>\\",\\"city\\":\\"<CITY>\\",\\"state\\":\\"<STATE>\\",\\"zipCode\\":\\"<ZIP>\\"},\\"phoneNumber\\":\\"<PHONE>\\",\\"ssn\\":\\"<REDACTED>\\"}","failures":["[A6] rejected with 401 or 403 (got 200): expected [ 401, 403 ] to include 200","[A6] no SSN in the response: expected '{\\"id\\":18317,\\"firstName\\":\\"<FIRST_NAME>\\",\\"lastNa…' to not include '<REDACTED>'"],"snapPrev":{},"snapCur":{"22557":42550,"22779":10000}}`
+  -
+
+Folder 13 ACC Accounts
+Sub-folder ACCT-03 · account -1
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/-1 [400 Bad Request, 284 B, 246 ms]
+  Pass  ACCT-03 [A8] no id data returned
+  Pass  ACCT-03 [A8] no server error (got 400)
+  Pass  ACCT-03 [A8] rejected with 4xx (got 400)
+  -
+  | '{"kind":"RECORD","case":"ACCT-03","label":"[Open] status code","detail":400}'
+  -
+
+Sub-folder ACCT-03 · account 0
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/0 [400 Bad Request, 283 B, 301 ms]
+  Pass  ACCT-03 [A8] no id data returned
+  Pass  ACCT-03 [A8] no server error (got 400)
+  Pass  ACCT-03 [A8] rejected with 4xx (got 400)
+  -
+  | '{"kind":"RECORD","case":"ACCT-03","label":"[Open] status code","detail":400}'
+  -
+
+Sub-folder ACCT-04 · account without logging in
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557 [200 OK, 331 B, 278 ms]
+  3. ACCT-04 [A6] rejected with 401 or 403 (got 200)
+  4. ACCT-04 [A6] no balance data returned
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:16:49.157Z","case":"ACCT-04","request":"ACCT-04 · account without logging in","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/22557","requestBody":"","status":200,"ms":278,"response":"{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":425.50}","failures":["[A6] rejected with 401 or 403 (got 200): expected [ 401, 403 ] to include 200","[A6] no balance data returned: expected true to deeply equal false"],"snapPrev":{},"snapCur":{"22557":42550,"22779":10000}}'
+  -
+
+Sub-folder ACCT-05 · account id abc
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/abc [404 Not Found, 215 B, 244 ms]
+  Pass  ACCT-05 [A8] no server error (got 404)
+  Pass  ACCT-05 [A8] rejected with 4xx (got 404)
+
+Folder 14 TRF Transfer
+Sub-folder FIX-TRF · fund A with 300.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=22557&amount=300 [200 OK, 286 B, 257 ms]
+
+Sub-folder FIX-TRF · open S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=0&fromAccountId=22557 [200 OK, 328 B, 228 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-TRF","label":"fixture","detail":{"S":26886}}'
+  -
+
+Sub-folder FIX-TRF · open T
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=0&fromAccountId=22557 [200 OK, 328 B, 269 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-TRF","label":"fixture","detail":{"T":26997}}'
+  -
+
+Sub-folder FIX-TRF · snapshot
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 357 B, 258 ms]
+  Pass  FIX-TRF [C1] account list readable (got 200)
+  Pass  FIX-TRF [C1] fixture accounts listed
+
+Sub-folder TRF-01 · transfer 1.00 S to T
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=1 [200 OK, 333 B, 239 ms]
+  Pass  TRF-01 [C1] HTTP 200 (got 200)
+  -
+  | '{"kind":"OBSERVED-SAME","case":"TRF-01","label":"[O5] success text","detail":"Successfully transferred $1 from account #26886 to account #26997"}'
+  -
+
+Sub-folder TRF-01 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 367 B, 225 ms]
+  Pass  TRF-01 [C1] account list readable (got 200)
+  Pass  TRF-01 [A1] account 26886 changed by -100 cents (10000 -> 9900)
+  Pass  TRF-01 [A1] account 26997 changed by 100 cents (10000 -> 10100)
+  Pass  TRF-01 [A1] total of S + T unchanged
+
+Sub-folder TRF-01 · transactions of S
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions [200 OK, 406 B, 256 ms]
+  Pass  TRF-01 [C1] HTTP 200 (got 200)
+  Pass  TRF-01 [A2] exactly one 1.00 transaction on S, a Debit (got ["Debit 100"])
+
+Sub-folder TRF-01 · transactions of T
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions [200 OK, 395 B, 302 ms]
+  Pass  TRF-01 [C1] HTTP 200 (got 200)
+  Pass  TRF-01 [A2] exactly one 1.00 transaction on T, a Credit (got ["Credit 100"])
+
+Sub-folder TRF-10 · transfer the exact balance of S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=99.00 [200 OK, 336 B, 265 ms]
+  Pass  TRF-10 [C1] HTTP 200 (got 200)
+  -
+  | '{"kind":"RECORD","case":"TRF-10","label":"amount","detail":"99.00"}'
+  -
+
+Sub-folder TRF-10 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 368 B, 230 ms]
+  Pass  TRF-10 [C1] account list readable (got 200)
+  Pass  TRF-10 [A1] S is 0.00 (got 0 cents)
+  Pass  TRF-10 [A1] total of S + T unchanged
+
+Sub-folder TRF-02 · ledger before (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions [200 OK, 413 B, 225 ms]
+  Pass  TRF-02 [C1] HTTP 200 (got 200)
+
+Sub-folder TRF-02 · ledger before (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions [200 OK, 404 B, 224 ms]
+  Pass  TRF-02 [C1] HTTP 200 (got 200)
+
+Sub-folder TRF-02 · transfer more than the balance
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=1000.00 [200 OK, 336 B, 222 ms]
+  5. TRF-02 [A4] rejected with 4xx (got 200)
+  -
+  | '{"kind":"RECORD","case":"TRF-02","label":"amount","detail":"1000.00"}''{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:13.960Z","case":"TRF-02","request":"TRF-02 · transfer more than the balance","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=1000.00","requestBody":"","status":200,"ms":222,"response":"Successfully transferred $1000.00 from account #26886 to account #26997","failures":["[A4] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":52550,"22779":10000,"26886":9900,"26997":10100},"snapCur":{"22557":52550,"22779":10000,"26886":0,"26997":20000}}'
+  -
+
+Sub-folder TRF-02 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 370 B, 225 ms]
+  Pass  TRF-02 [C1] account list readable (got 200)
+  6. TRF-02 [A4] account 26886 balance unchanged (0 -> -100000 cents)
+  7. TRF-02 [A4] account 26997 balance unchanged (20000 -> 120000 cents)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:15.708Z","case":"TRF-02","request":"TRF-02 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":225,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":525.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":-1000.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1200.00}]","failures":["[A4] account 26886 balance unchanged (0 -> -100000 cents): expected -100000 to deeply equal +0","[A4] account 26997 balance unchanged (20000 -> 120000 cents): expected 120000 to deeply equal 20000"],"snapPrev":{"22557":52550,"22779":10000,"26886":0,"26997":20000},"snapCur":{"22557":52550,"22779":10000,"26886":-100000,"26997":120000}}'
+  -
+
+Sub-folder TRF-02 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions [200 OK, 424 B, 224 ms]
+  Pass  TRF-02 [C1] HTTP 200 (got 200)
+  8. TRF-02 [A4] no transaction added to S (new: ["Debit 100000"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:17.455Z","case":"TRF-02","request":"TRF-02 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions","requestBody":"","status":200,"ms":224,"response":"[{\\"id\\":37675,\\"accountId\\":26886,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38008,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38230,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":99.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38452,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1000.00,\\"description\\":\\"Funds Transfer Sent\\"}]","failures":["[A4] no transaction added to S (new: [\\"Debit 100000\\"]): expected [ { id: 38452, …(5) } ] to deeply equal []"],"snapPrev":{"22557":52550,"22779":10000,"26886":0,"26997":20000},"snapCur":{"22557":52550,"22779":10000,"26886":-100000,"26997":120000}}'
+  -
+
+Sub-folder TRF-02 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions [200 OK, 408 B, 225 ms]
+  Pass  TRF-02 [C1] HTTP 200 (got 200)
+  9. TRF-02 [A4] no transaction added to T (new: ["Credit 100000"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:19.202Z","case":"TRF-02","request":"TRF-02 · ledger after (T)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions","requestBody":"","status":200,"ms":225,"response":"[{\\"id\\":37897,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38119,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38341,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":99.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38563,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":1000.00,\\"description\\":\\"Funds Transfer Received\\"}]","failures":["[A4] no transaction added to T (new: [\\"Credit 100000\\"]): expected [ { id: 38563, …(5) } ] to deeply equal []"],"snapPrev":{"22557":52550,"22779":10000,"26886":0,"26997":20000},"snapCur":{"22557":52550,"22779":10000,"26886":-100000,"26997":120000}}'
+  -
+
+Sub-folder TRF-03 · transfer -1.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=-1 [200 OK, 334 B, 226 ms]
+ 10. TRF-03 [A3] rejected with 4xx (got 200)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:20.957Z","case":"TRF-03","request":"TRF-03 · transfer -1.00","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=-1","requestBody":"","status":200,"ms":226,"response":"Successfully transferred $-1 from account #26886 to account #26997","failures":["[A3] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":52550,"22779":10000,"26886":0,"26997":20000},"snapCur":{"22557":52550,"22779":10000,"26886":-100000,"26997":120000}}'
+  -
+
+Sub-folder TRF-03 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 370 B, 288 ms]
+  Pass  TRF-03 [C1] account list readable (got 200)
+ 11. TRF-03 [A3] account 26886 balance unchanged (-100000 -> -99900 cents)
+ 12. TRF-03 [A3] account 26997 balance unchanged (120000 -> 119900 cents)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:22.768Z","case":"TRF-03","request":"TRF-03 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":288,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":525.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":-999.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1199.00}]","failures":["[A3] account 26886 balance unchanged (-100000 -> -99900 cents): expected -99900 to deeply equal -100000","[A3] account 26997 balance unchanged (120000 -> 119900 cents): expected 119900 to deeply equal 120000"],"snapPrev":{"22557":52550,"22779":10000,"26886":-100000,"26997":120000},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-03 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions [200 OK, 428 B, 283 ms]
+  Pass  TRF-03 [C1] HTTP 200 (got 200)
+ 13. TRF-03 [A3] no transaction added to S (new: ["Debit -100"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:24.577Z","case":"TRF-03","request":"TRF-03 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions","requestBody":"","status":200,"ms":283,"response":"[{\\"id\\":37675,\\"accountId\\":26886,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38008,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38230,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":99.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38452,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1000.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38674,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":-1.00,\\"description\\":\\"Funds Transfer Sent\\"}]","failures":["[A3] no transaction added to S (new: [\\"Debit -100\\"]): expected [ { id: 38674, …(5) } ] to deeply equal []"],"snapPrev":{"22557":52550,"22779":10000,"26886":-100000,"26997":120000},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-03 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions [200 OK, 414 B, 258 ms]
+  Pass  TRF-03 [C1] HTTP 200 (got 200)
+ 14. TRF-03 [A3] no transaction added to T (new: ["Credit -100"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:26.361Z","case":"TRF-03","request":"TRF-03 · ledger after (T)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions","requestBody":"","status":200,"ms":258,"response":"[{\\"id\\":37897,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38119,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38341,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":99.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38563,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":1000.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38785,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":-1.00,\\"description\\":\\"Funds Transfer Received\\"}]","failures":["[A3] no transaction added to T (new: [\\"Credit -100\\"]): expected [ { id: 38785, …(5) } ] to deeply equal []"],"snapPrev":{"22557":52550,"22779":10000,"26886":-100000,"26997":120000},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-04 · transfer 0.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=0 [200 OK, 333 B, 221 ms]
+ 15. TRF-04 [A3] rejected with 4xx (got 200)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:28.110Z","case":"TRF-04","request":"TRF-04 · transfer 0.00","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997&amount=0","requestBody":"","status":200,"ms":221,"response":"Successfully transferred $0 from account #26886 to account #26997","failures":["[A3] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":52550,"22779":10000,"26886":-100000,"26997":120000},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-04 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 370 B, 223 ms]
+  Pass  TRF-04 [C1] account list readable (got 200)
+  Pass  TRF-04 [A3] account 26886 balance unchanged (-99900 -> -99900 cents)
+  Pass  TRF-04 [A3] account 26997 balance unchanged (119900 -> 119900 cents)
+
+Sub-folder TRF-04 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions [200 OK, 434 B, 231 ms]
+  Pass  TRF-04 [C1] HTTP 200 (got 200)
+ 16. TRF-04 [A3] no transaction added to S (new: ["Debit 0"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:31.617Z","case":"TRF-04","request":"TRF-04 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions","requestBody":"","status":200,"ms":231,"response":"[{\\"id\\":37675,\\"accountId\\":26886,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38008,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38230,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":99.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38452,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1000.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38674,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":-1.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38896,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":0.00,\\"description\\":\\"Funds Transfer Sent\\"}]","failures":["[A3] no transaction added to S (new: [\\"Debit 0\\"]): expected [ { id: 38896, …(5) } ] to deeply equal []"],"snapPrev":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-04 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions [200 OK, 424 B, 229 ms]
+  Pass  TRF-04 [C1] HTTP 200 (got 200)
+ 17. TRF-04 [A3] no transaction added to T (new: ["Credit 0"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:33.373Z","case":"TRF-04","request":"TRF-04 · ledger after (T)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions","requestBody":"","status":200,"ms":229,"response":"[{\\"id\\":37897,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38119,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38341,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":99.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38563,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":1000.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38785,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":-1.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":39007,\\"accountId\\":26997,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":0.00,\\"description\\":\\"Funds Transfer Received\\"}]","failures":["[A3] no transaction added to T (new: [\\"Credit 0\\"]): expected [ { id: 39007, …(5) } ] to deeply equal []"],"snapPrev":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-05 · transfer to the same account
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26886&amount=1 [200 OK, 327 B, 225 ms]
+ 18. TRF-05 [A10] rejected with 4xx (got 200)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:35.124Z","case":"TRF-05","request":"TRF-05 · transfer to the same account","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26886&amount=1","requestBody":"","status":200,"ms":225,"response":"Successfully transferred $1 from account #26886 to account #26886","failures":["[A10] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-05 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 370 B, 221 ms]
+  Pass  TRF-05 [C1] account list readable (got 200)
+  Pass  TRF-05 [A10] account 26886 balance unchanged (-99900 -> -99900 cents)
+  Pass  TRF-05 [A10] account 26997 balance unchanged (119900 -> 119900 cents)
+
+Sub-folder TRF-05 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions [200 OK, 450 B, 222 ms]
+  Pass  TRF-05 [C1] HTTP 200 (got 200)
+ 19. TRF-05 [A10] no transaction added to S (new: ["Credit 100","Debit 100"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:38.616Z","case":"TRF-05","request":"TRF-05 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions","requestBody":"","status":200,"ms":222,"response":"[{\\"id\\":37675,\\"accountId\\":26886,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":38008,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38230,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":99.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38452,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1000.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38674,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":-1.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":38896,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":0.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":39118,\\"accountId\\":26886,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Sent\\"},{\\"id\\":39229,\\"accountId\\":26886,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Funds Transfer Received\\"}]","failures":["[A10] no transaction added to S (new: [\\"Credit 100\\",\\"Debit 100\\"]): expected [ { id: 39118, …(5) }, …(1) ] to deeply equal []"],"snapPrev":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-05 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions [200 OK, 424 B, 221 ms]
+  Pass  TRF-05 [C1] HTTP 200 (got 200)
+  Pass  TRF-05 [A10] no transaction added to T (new: [])
+
+Sub-folder TRF-06 · transfer to account -1
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=-1&amount=1 [400 Bad Request, 303 B, 224 ms]
+  Pass  TRF-06 [A8] no server error (got 400)
+  Pass  TRF-06 [A8] rejected with 4xx (got 400)
+  -
+  | '{"kind":"RECORD","case":"TRF-06","label":"[Open] status code","detail":400}'
+  -
+
+Sub-folder TRF-06 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 370 B, 228 ms]
+  Pass  TRF-06 [C1] account list readable (got 200)
+  Pass  TRF-06 [A8] account 26886 balance unchanged (-99900 -> -99900 cents)
+  Pass  TRF-06 [A8] account 26997 balance unchanged (119900 -> 119900 cents)
+
+Sub-folder TRF-06 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions [200 OK, 450 B, 222 ms]
+  Pass  TRF-06 [C1] HTTP 200 (got 200)
+  Pass  TRF-06 [A8] no transaction added to S (new: [])
+
+Sub-folder TRF-06 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions [200 OK, 424 B, 242 ms]
+  Pass  TRF-06 [C1] HTTP 200 (got 200)
+  Pass  TRF-06 [A8] no transaction added to T (new: [])
+
+Sub-folder TRF-07 · transfer without amount
+
+  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997 [500 Internal Server Error, 4.5 KB, 234 ms]
+ 20. TRF-07 [C1] rejected with 4xx (got 500)
+ 21. TRF-07 [A8] no server error (got 500)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:17:49.125Z","case":"TRF-07","request":"TRF-07 · transfer without amount","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997","requestBody":"","status":500,"ms":234,"response":"\\n\\r\\n\\n\\n<!-- <!DOCTYPE html PUBLIC \\"-//W3C//DTD XHTML 1.0 Transitional//EN\\" \\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\\">\\n<html xmlns=\\"http://www.w3.org/1999/xhtml\\">\\n -->\\n<!DOCTYPE html>\\n<html>\\n\\t<head>\\n\\t\\t<meta charset=\\"UTF-8\\">\\n\\t\\t<meta http-equiv=\\"Content-Type\\" content=\\"text/html; charset=UTF-8\\" />\\n\\t\\t<title>ParaBank | Error</title>\\n\\t\\t<link href=\\"template.css;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\\" rel=\\"stylesheet\\"\\n\\t\\t\\ttype=\\"text/css\\" />\\n\\t\\t<link href=\\"style.css;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\\" rel=\\"stylesheet\\"\\n\\t\\t\\ttype=\\"text/css\\" />\\n\\t\\t<script src=\\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\\"></script>\\n\\t</head>\\n\\n\\t<body\\n\\t\\t\\n\\t    onload=\\"document.login.username.focus();\\"\\n\\t  >\\n\\t\\t<div id=\\"mainPanel\\">\\n\\t\\t\\t\\n\\t\\t\\t\\t\\n\\t\\t\\t\\t\\t\\r\\n\\r\\n\\r\\n\\r\\n<div id=\\"topPanel\\">\\r\\n  <a href=\\"admin.htm;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\\"><img src=\\"images/clear.gif;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\\" width=\\"56\\" height=\\"42\\" border=\\"0\\" class=\\"admin\\"/></a>\\r\\n  <a href=\\"index.htm;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\\"><img src=\\"images/logo.gif;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\\" alt=\\"ParaBank\\" width=\\"136\\" height=\\"31\\" border=\\"0\\" class=\\"logo\\" title=\\"ParaBank\\"/></a>\\r\\n  <p class=\\"caption\\">Experience the difference</p>\\r\\n</div>\\r\\n<div id=\\"headerPanel\\" style=\\"background: url(images/header-main.jpg;jsessionid=29AEBEAD235E0E3245610C3EDF424C86) 0 0 no-repeat;\\">\\r\\n  \\r\\n\\r\\n\\r\\n<ul class=\\"leftmenu\\">\\r\\n  <li class=\\"Solutions\\">Solutions</li>\\r\\n  <li><a href=\\"a","failures":["[C1] rejected with 4xx (got 500): expected 500 to be within 400..499","[A8] no server error (got 500): expected 500 to be below 500"],"snapPrev":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900},"snapCur":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900}}'
+  -
+
+Sub-folder TRF-07 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 370 B, 218 ms]
+  Pass  TRF-07 [C1] account list readable (got 200)
+  Pass  TRF-07 [A8] account 26886 balance unchanged (-99900 -> -99900 cents)
+  Pass  TRF-07 [A8] account 26997 balance unchanged (119900 -> 119900 cents)
+
+Sub-folder TRF-07 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26886/transactions [200 OK, 450 B, 221 ms]
+  Pass  TRF-07 [C1] HTTP 200 (got 200)
+  Pass  TRF-07 [A8] no transaction added to S (new: [])
+
+Sub-folder TRF-07 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/26997/transactions [200 OK, 424 B, 229 ms]
+  Pass  TRF-07 [C1] HTTP 200 (got 200)
+  Pass  TRF-07 [A8] no transaction added to T (new: [])
+
+Sub-folder FIX-TRF · cleanup: restore S to 0.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=26886&amount=999.00 [200 OK, 289 B, 219 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-TRF","label":"cleanup","detail":{"deposited":"999.00","status":200}}'
+  -
+
+Folder 15 DEP Deposit
+Sub-folder FIX-DEP · fund A with 300.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=22557&amount=300 [200 OK, 286 B, 222 ms]
+
+Sub-folder FIX-DEP · open S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=0&fromAccountId=22557 [200 OK, 328 B, 226 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-DEP","label":"fixture","detail":{"S":27108}}'
+  -
+
+Sub-folder FIX-DEP · snapshot
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 1.57 KB, 224 ms]
+  Pass  FIX-DEP [C1] account list readable (got 200)
+  Pass  FIX-DEP [C1] fixture accounts listed
+
+Sub-folder DEP-02 · ledger before (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27108/transactions [200 OK, 381 B, 220 ms]
+  Pass  DEP-02 [C1] HTTP 200 (got 200)
+
+Sub-folder DEP-02 · deposit 0.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=27108&amount=0 [200 OK, 284 B, 225 ms]
+ 22. DEP-02 [A3] rejected with 4xx (got 200)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:04.846Z","case":"DEP-02","request":"DEP-02 · deposit 0.00","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=27108&amount=0","requestBody":"","status":200,"ms":225,"response":"Successfully deposited $0 to account #27108","failures":["[A3] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":52550,"22779":10000,"26886":-99900,"26997":119900},"snapCur":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":10000}}'
+  -
+
+Sub-folder DEP-02 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 374 B, 229 ms]
+  Pass  DEP-02 [C1] account list readable (got 200)
+  Pass  DEP-02 [A3] account 27108 balance unchanged (10000 -> 10000 cents)
+
+Sub-folder DEP-02 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27108/transactions [200 OK, 411 B, 225 ms]
+  Pass  DEP-02 [C1] HTTP 200 (got 200)
+ 23. DEP-02 [A3] no transaction added to S (new: ["Credit 0"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:08.354Z","case":"DEP-02","request":"DEP-02 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27108/transactions","requestBody":"","status":200,"ms":225,"response":"[{\\"id\\":39673,\\"accountId\\":27108,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":39784,\\"accountId\\":27108,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":0.00,\\"description\\":\\"Deposit via Web Service\\"}]","failures":["[A3] no transaction added to S (new: [\\"Credit 0\\"]): expected [ { id: 39784, …(5) } ] to deeply equal []"],"snapPrev":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":10000},"snapCur":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":10000}}'
+  -
+
+Sub-folder DEP-03 · deposit -5.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=27108&amount=-5 [200 OK, 1.49 KB, 305 ms]
+ 24. DEP-03 [A3] rejected with 4xx (got 200)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:10.185Z","case":"DEP-03","request":"DEP-03 · deposit -5.00","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=27108&amount=-5","requestBody":"","status":200,"ms":305,"response":"Successfully deposited $-5 to account #27108","failures":["[A3] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":10000},"snapCur":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":10000}}'
+  -
+
+Sub-folder DEP-03 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 376 B, 270 ms]
+  Pass  DEP-03 [C1] account list readable (got 200)
+ 25. DEP-03 [A3] account 27108 balance unchanged (10000 -> 9500 cents)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:11.980Z","case":"DEP-03","request":"DEP-03 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":270,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":725.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1199.00},{\\"id\\":27108,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":95.00}]","failures":["[A3] account 27108 balance unchanged (10000 -> 9500 cents): expected 9500 to deeply equal 10000"],"snapPrev":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":10000},"snapCur":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":9500}}'
+  -
+
+Sub-folder DEP-03 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27108/transactions [200 OK, 419 B, 225 ms]
+  Pass  DEP-03 [C1] HTTP 200 (got 200)
+ 26. DEP-03 [A3] no transaction added to S (new: ["Credit -500"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:13.725Z","case":"DEP-03","request":"DEP-03 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27108/transactions","requestBody":"","status":200,"ms":225,"response":"[{\\"id\\":39673,\\"accountId\\":27108,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":39784,\\"accountId\\":27108,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":0.00,\\"description\\":\\"Deposit via Web Service\\"},{\\"id\\":39895,\\"accountId\\":27108,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":-5.00,\\"description\\":\\"Deposit via Web Service\\"}]","failures":["[A3] no transaction added to S (new: [\\"Credit -500\\"]): expected [ { id: 39895, …(5) } ] to deeply equal []"],"snapPrev":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":10000},"snapCur":{"22557":72550,"22779":10000,"26886":0,"26997":119900,"27108":9500}}'
+  -
+
+Sub-folder FIX-DEP · cleanup: restore S to 0.00
+
+
+Folder 16 WDR Withdraw
+Sub-folder FIX-WDR · fund A with 300.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=22557&amount=300 [200 OK, 286 B, 249 ms]
+
+Sub-folder FIX-WDR · open S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=0&fromAccountId=22557 [200 OK, 328 B, 266 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-WDR","label":"fixture","detail":{"S":27219}}'
+  -
+
+Sub-folder FIX-WDR · snapshot
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 379 B, 255 ms]
+  Pass  FIX-WDR [C1] account list readable (got 200)
+  Pass  FIX-WDR [C1] fixture accounts listed
+
+Sub-folder WDR-01 · withdraw 5.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27219&amount=5 [200 OK, 285 B, 222 ms]
+  Pass  WDR-01 [C1] HTTP 200 (got 200)
+  -
+  | '{"kind":"OBSERVED-SAME","case":"WDR-01","label":"[O5] success text","detail":"Successfully withdrew $5 from account #27219"}'
+  -
+
+Sub-folder WDR-01 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 379 B, 221 ms]
+  Pass  WDR-01 [C1] account list readable (got 200)
+  Pass  WDR-01 [A2] account 27219 changed by -500 cents (10000 -> 9500)
+
+Sub-folder WDR-01 · transactions of S
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions [200 OK, 418 B, 226 ms]
+  Pass  WDR-01 [C1] HTTP 200 (got 200)
+  Pass  WDR-01 [A2] exactly one 5.00 Debit on S (got ["Debit 500"])
+
+Sub-folder WDR-02 · ledger before (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions [200 OK, 418 B, 223 ms]
+  Pass  WDR-02 [C1] HTTP 200 (got 200)
+
+Sub-folder WDR-02 · withdraw more than the balance
+
+  POST https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27219&amount=1095.00 [200 OK, 324 B, 221 ms]
+ 27. WDR-02 [A4] rejected with 4xx (got 200)
+  -
+  | '{"kind":"RECORD","case":"WDR-02","label":"amount","detail":"1095.00"}''{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:29.293Z","case":"WDR-02","request":"WDR-02 · withdraw more than the balance","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27219&amount=1095.00","requestBody":"","status":200,"ms":221,"response":"Successfully withdrew $1095.00 from account #27219","failures":["[A4] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":10000},"snapCur":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":9500}}'
+  -
+
+Sub-folder WDR-02 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 386 B, 220 ms]
+  Pass  WDR-02 [C1] account list readable (got 200)
+ 28. WDR-02 [A4] account 27219 balance unchanged (9500 -> -100000 cents)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:31.036Z","case":"WDR-02","request":"WDR-02 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":220,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":925.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1199.00},{\\"id\\":27108,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":95.00},{\\"id\\":27219,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":-1000.00}]","failures":["[A4] account 27219 balance unchanged (9500 -> -100000 cents): expected -100000 to deeply equal 9500"],"snapPrev":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":9500},"snapCur":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-100000}}'
+  -
+
+Sub-folder WDR-02 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions [200 OK, 427 B, 227 ms]
+  Pass  WDR-02 [C1] HTTP 200 (got 200)
+ 29. WDR-02 [A4] no transaction added to S (new: ["Debit 109500"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:32.784Z","case":"WDR-02","request":"WDR-02 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions","requestBody":"","status":200,"ms":227,"response":"[{\\"id\\":40228,\\"accountId\\":27219,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":40339,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":5.00,\\"description\\":\\"Withdraw via Web Service\\"},{\\"id\\":40450,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1095.00,\\"description\\":\\"Withdraw via Web Service\\"}]","failures":["[A4] no transaction added to S (new: [\\"Debit 109500\\"]): expected [ { id: 40450, …(5) } ] to deeply equal []"],"snapPrev":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":9500},"snapCur":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-100000}}'
+  -
+
+Sub-folder WDR-03 · withdraw -5.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27219&amount=-5 [200 OK, 286 B, 219 ms]
+ 30. WDR-03 [A3] rejected with 4xx (got 200)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:34.523Z","case":"WDR-03","request":"WDR-03 · withdraw -5.00","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27219&amount=-5","requestBody":"","status":200,"ms":219,"response":"Successfully withdrew $-5 from account #27219","failures":["[A3] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":9500},"snapCur":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-100000}}'
+  -
+
+Sub-folder WDR-03 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 385 B, 224 ms]
+  Pass  WDR-03 [C1] account list readable (got 200)
+ 31. WDR-03 [A3] account 27219 balance unchanged (-100000 -> -99500 cents)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:36.274Z","case":"WDR-03","request":"WDR-03 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":224,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":925.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1199.00},{\\"id\\":27108,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":95.00},{\\"id\\":27219,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":-995.00}]","failures":["[A3] account 27219 balance unchanged (-100000 -> -99500 cents): expected -99500 to deeply equal -100000"],"snapPrev":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-100000},"snapCur":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-99500}}'
+  -
+
+Sub-folder WDR-03 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions [200 OK, 434 B, 222 ms]
+  Pass  WDR-03 [C1] HTTP 200 (got 200)
+ 32. WDR-03 [A3] no transaction added to S (new: ["Debit -500"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:38.017Z","case":"WDR-03","request":"WDR-03 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions","requestBody":"","status":200,"ms":222,"response":"[{\\"id\\":40228,\\"accountId\\":27219,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":40339,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":5.00,\\"description\\":\\"Withdraw via Web Service\\"},{\\"id\\":40450,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1095.00,\\"description\\":\\"Withdraw via Web Service\\"},{\\"id\\":40561,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":-5.00,\\"description\\":\\"Withdraw via Web Service\\"}]","failures":["[A3] no transaction added to S (new: [\\"Debit -500\\"]): expected [ { id: 40561, …(5) } ] to deeply equal []"],"snapPrev":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-100000},"snapCur":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-99500}}'
+  -
+
+Sub-folder WDR-04 · withdraw 0.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27219&amount=0 [200 OK, 285 B, 227 ms]
+ 33. WDR-04 [A3] rejected with 4xx (got 200)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:39.764Z","case":"WDR-04","request":"WDR-04 · withdraw 0.00","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27219&amount=0","requestBody":"","status":200,"ms":227,"response":"Successfully withdrew $0 from account #27219","failures":["[A3] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-100000},"snapCur":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-99500}}'
+  -
+
+Sub-folder WDR-04 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 385 B, 219 ms]
+  Pass  WDR-04 [C1] account list readable (got 200)
+  Pass  WDR-04 [A3] account 27219 balance unchanged (-99500 -> -99500 cents)
+
+Sub-folder WDR-04 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions [200 OK, 437 B, 219 ms]
+  Pass  WDR-04 [C1] HTTP 200 (got 200)
+ 34. WDR-04 [A3] no transaction added to S (new: ["Debit 0"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:18:43.244Z","case":"WDR-04","request":"WDR-04 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27219/transactions","requestBody":"","status":200,"ms":219,"response":"[{\\"id\\":40228,\\"accountId\\":27219,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":40339,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":5.00,\\"description\\":\\"Withdraw via Web Service\\"},{\\"id\\":40450,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1095.00,\\"description\\":\\"Withdraw via Web Service\\"},{\\"id\\":40561,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":-5.00,\\"description\\":\\"Withdraw via Web Service\\"},{\\"id\\":40672,\\"accountId\\":27219,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":0.00,\\"description\\":\\"Withdraw via Web Service\\"}]","failures":["[A3] no transaction added to S (new: [\\"Debit 0\\"]): expected [ { id: 40672, …(5) } ] to deeply equal []"],"snapPrev":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-99500},"snapCur":{"22557":92550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":-99500}}'
+  -
+
+Sub-folder FIX-WDR · cleanup: restore S to 0.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=27219&amount=995.00 [200 OK, 289 B, 239 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-WDR","label":"cleanup","detail":{"deposited":"995.00","status":200}}'
+  -
+
+Folder 17 BIL Bill pay
+Sub-folder FIX-BIL · fund A with 300.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=22557&amount=300 [200 OK, 286 B, 223 ms]
+
+Sub-folder FIX-BIL · open S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=0&fromAccountId=22557 [200 OK, 328 B, 226 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-BIL","label":"fixture","detail":{"S":27330}}'
+  -
+
+Sub-folder FIX-BIL · open T
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=0&fromAccountId=22557 [200 OK, 328 B, 290 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-BIL","label":"fixture","detail":{"T":27441}}'
+  -
+
+Sub-folder FIX-BIL · snapshot
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 391 B, 290 ms]
+  Pass  FIX-BIL [C1] account list readable (got 200)
+  Pass  FIX-BIL [C1] fixture accounts listed
+
+Sub-folder BILL-01 · pay 5.00 to City Utilities
+
+  POST https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=5 [200 OK, 332 B, 266 ms]
+  Pass  BILL-01 [C1] HTTP 200 (got 200)
+  Pass  BILL-01 [C1] billPayResult schema
+  Pass  BILL-01 [A7] echoes payee, amount and account sent
+
+Sub-folder BILL-01 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 395 B, 221 ms]
+  Pass  BILL-01 [C1] account list readable (got 200)
+  Pass  BILL-01 [A2] account 27330 changed by -500 cents (10000 -> 9500)
+  -
+  | '{"kind":"RECORD","case":"BILL-01","label":"payee account T change (cents)","detail":0}'
+  -
+
+Sub-folder BILL-01 · transactions of S
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions [200 OK, 426 B, 223 ms]
+  Pass  BILL-01 [C1] HTTP 200 (got 200)
+  Pass  BILL-01 [A2] exactly one 5.00 Debit on S (got ["Debit 500"])
+
+Sub-folder BILL-02 · ledger before (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions [200 OK, 426 B, 230 ms]
+  Pass  BILL-02 [C1] HTTP 200 (got 200)
+
+Sub-folder BILL-02 · ledger before (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27441/transactions [200 OK, 381 B, 220 ms]
+  Pass  BILL-02 [C1] HTTP 200 (got 200)
+
+Sub-folder BILL-02 · pay more than the balance
+
+  POST https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=1095.00 [200 OK, 336 B, 222 ms]
+ 35. BILL-02 [A4] rejected with 4xx (got 200)
+  -
+  | '{"kind":"RECORD","case":"BILL-02","label":"amount","detail":"1095.00"}''{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:02.652Z","case":"BILL-02","request":"BILL-02 · pay more than the balance","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=1095.00","requestBody":"{\\n  \\"name\\": \\"City Utilities\\",\\n  \\"address\\": {\\n    \\"street\\": \\"1 Main St\\",\\n    \\"city\\": \\"Springfield\\",\\n    \\"state\\": \\"IL\\",\\n    \\"zipCode\\": \\"62701\\"\\n  },\\n  \\"phoneNumber\\": \\"5550100\\",\\n  \\"accountNumber\\": \\"27441\\"\\n}","status":200,"ms":222,"response":"{\\"payeeName\\":\\"City Utilities\\",\\"amount\\":1095.00,\\"accountId\\":27330}","failures":["[A4] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":10000,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":9500,"27441":10000}}'
+  -
+
+Sub-folder BILL-02 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 398 B, 246 ms]
+  Pass  BILL-02 [C1] account list readable (got 200)
+ 36. BILL-02 [A4] account 27330 balance unchanged (9500 -> -100000 cents)
+  Pass  BILL-02 [A4] account 27441 balance unchanged (10000 -> 10000 cents)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:04.422Z","case":"BILL-02","request":"BILL-02 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":246,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1025.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1199.00},{\\"id\\":27108,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":95.00},{\\"id\\":27219,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":27330,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":-1000.00},{\\"id\\":27441,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00}]","failures":["[A4] account 27330 balance unchanged (9500 -> -100000 cents): expected -100000 to deeply equal 9500"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":9500,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100000,"27441":10000}}'
+  -
+
+Sub-folder BILL-02 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions [200 OK, 437 B, 344 ms]
+  Pass  BILL-02 [C1] HTTP 200 (got 200)
+ 37. BILL-02 [A4] no transaction added to S (new: ["Debit 109500"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:06.290Z","case":"BILL-02","request":"BILL-02 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions","requestBody":"","status":200,"ms":344,"response":"[{\\"id\\":41116,\\"accountId\\":27330,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":41449,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":5.00,\\"description\\":\\"Bill Payment to City Utilities\\"},{\\"id\\":41560,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1095.00,\\"description\\":\\"Bill Payment to City Utilities\\"}]","failures":["[A4] no transaction added to S (new: [\\"Debit 109500\\"]): expected [ { id: 41560, …(5) } ] to deeply equal []"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":9500,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100000,"27441":10000}}'
+  -
+
+Sub-folder BILL-02 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27441/transactions [200 OK, 381 B, 262 ms]
+  Pass  BILL-02 [C1] HTTP 200 (got 200)
+  Pass  BILL-02 [A4] no transaction added to T (new: [])
+
+Sub-folder BILL-03 · pay with an empty payee
+
+  POST https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=1 [200 OK, 322 B, 223 ms]
+ 38. BILL-03 [A11] rejected with 4xx (got 200)
+  Pass  BILL-03 [A8] no server error (got 200)
+  -
+  | '{"kind":"RECORD","case":"BILL-03","label":"[Open] status code","detail":200}''{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:09.819Z","case":"BILL-03","request":"BILL-03 · pay with an empty payee","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=1","requestBody":"{}","status":200,"ms":223,"response":"{\\"payeeName\\":null,\\"amount\\":1,\\"accountId\\":27330}","failures":["[A11] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":9500,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100000,"27441":10000}}'
+  -
+
+Sub-folder BILL-03 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 398 B, 224 ms]
+  Pass  BILL-03 [C1] account list readable (got 200)
+ 39. BILL-03 [A11] account 27330 balance unchanged (-100000 -> -100100 cents)
+  Pass  BILL-03 [A11] account 27441 balance unchanged (10000 -> 10000 cents)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:11.571Z","case":"BILL-03","request":"BILL-03 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":224,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1025.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1199.00},{\\"id\\":27108,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":95.00},{\\"id\\":27219,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":27330,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":-1001.00},{\\"id\\":27441,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00}]","failures":["[A11] account 27330 balance unchanged (-100000 -> -100100 cents): expected -100100 to deeply equal -100000"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100000,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100100,"27441":10000}}'
+  -
+
+Sub-folder BILL-03 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions [200 OK, 448 B, 221 ms]
+  Pass  BILL-03 [C1] HTTP 200 (got 200)
+ 40. BILL-03 [A11] no transaction added to S (new: ["Debit 100"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:13.314Z","case":"BILL-03","request":"BILL-03 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions","requestBody":"","status":200,"ms":221,"response":"[{\\"id\\":41116,\\"accountId\\":27330,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":41449,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":5.00,\\"description\\":\\"Bill Payment to City Utilities\\"},{\\"id\\":41560,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1095.00,\\"description\\":\\"Bill Payment to City Utilities\\"},{\\"id\\":41671,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Bill Payment to null\\"}]","failures":["[A11] no transaction added to S (new: [\\"Debit 100\\"]): expected [ { id: 41671, …(5) } ] to deeply equal []"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100000,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100100,"27441":10000}}'
+  -
+
+Sub-folder BILL-03 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27441/transactions [200 OK, 381 B, 221 ms]
+  Pass  BILL-03 [C1] HTTP 200 (got 200)
+  Pass  BILL-03 [A11] no transaction added to T (new: [])
+
+Sub-folder BILL-04 · pay -5.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=-5 [200 OK, 334 B, 222 ms]
+ 41. BILL-04 [A3] rejected with 4xx (got 200)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:16.806Z","case":"BILL-04","request":"BILL-04 · pay -5.00","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=27330&amount=-5","requestBody":"{\\n  \\"name\\": \\"City Utilities\\",\\n  \\"address\\": {\\n    \\"street\\": \\"1 Main St\\",\\n    \\"city\\": \\"Springfield\\",\\n    \\"state\\": \\"IL\\",\\n    \\"zipCode\\": \\"62701\\"\\n  },\\n  \\"phoneNumber\\": \\"5550100\\",\\n  \\"accountNumber\\": \\"27441\\"\\n}","status":200,"ms":222,"response":"{\\"payeeName\\":\\"City Utilities\\",\\"amount\\":-5,\\"accountId\\":27330}","failures":["[A3] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100000,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100100,"27441":10000}}'
+  -
+
+Sub-folder BILL-04 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 397 B, 236 ms]
+  Pass  BILL-04 [C1] account list readable (got 200)
+ 42. BILL-04 [A3] account 27330 balance unchanged (-100100 -> -99600 cents)
+  Pass  BILL-04 [A3] account 27441 balance unchanged (10000 -> 10000 cents)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:18.562Z","case":"BILL-04","request":"BILL-04 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":236,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1025.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1199.00},{\\"id\\":27108,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":95.00},{\\"id\\":27219,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":27330,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":-996.00},{\\"id\\":27441,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00}]","failures":["[A3] account 27330 balance unchanged (-100100 -> -99600 cents): expected -99600 to deeply equal -100100"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100100,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-99600,"27441":10000}}'
+  -
+
+Sub-folder BILL-04 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions [200 OK, 455 B, 223 ms]
+  Pass  BILL-04 [C1] HTTP 200 (got 200)
+ 43. BILL-04 [A3] no transaction added to S (new: ["Debit -500"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:20.310Z","case":"BILL-04","request":"BILL-04 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27330/transactions","requestBody":"","status":200,"ms":223,"response":"[{\\"id\\":41116,\\"accountId\\":27330,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":41449,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":5.00,\\"description\\":\\"Bill Payment to City Utilities\\"},{\\"id\\":41560,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1095.00,\\"description\\":\\"Bill Payment to City Utilities\\"},{\\"id\\":41671,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":1.00,\\"description\\":\\"Bill Payment to null\\"},{\\"id\\":41782,\\"accountId\\":27330,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":-5.00,\\"description\\":\\"Bill Payment to City Utilities\\"}]","failures":["[A3] no transaction added to S (new: [\\"Debit -500\\"]): expected [ { id: 41782, …(5) } ] to deeply equal []"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-100100,"27441":10000},"snapCur":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-99600,"27441":10000}}'
+  -
+
+Sub-folder BILL-04 · ledger after (T)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27441/transactions [200 OK, 381 B, 217 ms]
+  Pass  BILL-04 [C1] HTTP 200 (got 200)
+  Pass  BILL-04 [A3] no transaction added to T (new: [])
+
+Sub-folder FIX-BIL · cleanup: restore S to 0.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=27330&amount=996.00 [200 OK, 289 B, 229 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-BIL","label":"cleanup","detail":{"deposited":"996.00","status":200}}'
+  -
+
+Folder 18 LON Loan
+Sub-folder FIX-LON · fund A with 300.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=22557&amount=300 [200 OK, 286 B, 222 ms]
+
+Sub-folder FIX-LON · open S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=0&fromAccountId=22557 [200 OK, 328 B, 224 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-LON","label":"fixture","detail":{"S":27552}}'
+  -
+
+Sub-folder FIX-LON · snapshot
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 396 B, 220 ms]
+  Pass  FIX-LON [C1] account list readable (got 200)
+  Pass  FIX-LON [C1] fixture accounts listed
+
+Sub-folder LOAN-01 · request loan 500, down payment 50
+
+  POST https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=500&downPayment=50&fromAccountId=27552 [200 OK, 1.6 KB, 345 ms]
+  Pass  LOAN-01 [C1] HTTP 200 (got 200)
+ 44. LOAN-01 [C1] loanResponse schema (data.responseDate should be string)
+  Pass  LOAN-01 [C1] approved is a boolean
+  Pass  LOAN-01 [C1] accountId present when approved
+  -
+  | '{"kind":"RECORD","case":"LOAN-01","label":"[Open] approval decision","detail":{"approved":true,"provider":"Wealth Securities Dynamic Loans (WSDL)"}}''{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:30.938Z","case":"LOAN-01","request":"LOAN-01 · request loan 500, down payment 50","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=500&downPayment=50&fromAccountId=27552","requestBody":"","status":200,"ms":345,"response":"{\\"responseDate\\":1795519170798,\\"loanProviderName\\":\\"Wealth Securities Dynamic Loans (WSDL)\\",\\"approved\\":true,\\"accountId\\":27663}","failures":["[C1] loanResponse schema (data.responseDate should be string): expected false to deeply equal true"],"snapPrev":{"22557":102550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":-99600,"27441":10000},"snapCur":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":10000}}'
+  -
+
+Sub-folder LOAN-01 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 413 B, 253 ms]
+  Pass  LOAN-01 [C1] account list readable (got 200)
+  -
+  | '{"kind":"RECORD","case":"LOAN-01","label":"accounts added","detail":["27663"]}'
+  -
+  Pass  LOAN-01 [A12] account 27552 changed by -5000 cents (10000 -> 5000)
+  Pass  LOAN-01 [A12] loan account listed for the customer
+  -
+  | '{"kind":"OBSERVED-SAME","case":"LOAN-01","label":"[O4] loan account holds 500.00","detail":{"loanAccountCents":50000}}'
+  -
+
+Sub-folder LOAN-01 · transactions of S
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27552/transactions [200 OK, 425 B, 221 ms]
+  Pass  LOAN-01 [C1] HTTP 200 (got 200)
+  Pass  LOAN-01 [A12] down payment 50.00 recorded as a Debit on S (found 1)
+
+Sub-folder LOAN-01 · transactions of the loan account
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27663/transactions [200 OK, 277 B, 221 ms]
+  Pass  LOAN-01 [C1] HTTP 200 (got 200)
+  -
+  | '{"kind":"RECORD","case":"LOAN-01","label":"loan account transactions","detail":[]}'
+  -
+ 45. LOAN-01 [A12] the loan is recorded in the loan account history (found 0)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:36.221Z","case":"LOAN-01","request":"LOAN-01 · transactions of the loan account","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27663/transactions","requestBody":"","status":200,"ms":221,"response":"[]","failures":["[A12] the loan is recorded in the loan account history (found 0): expected +0 to be above +0"],"snapPrev":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":10000},"snapCur":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":5000,"27663":50000}}'
+  -
+
+Sub-folder LOAN-02 · ledger before (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27552/transactions [200 OK, 425 B, 221 ms]
+  Pass  LOAN-02 [C1] HTTP 200 (got 200)
+
+Sub-folder LOAN-02 · request loan -100
+
+  POST https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=-100&downPayment=10&fromAccountId=27552 [200 OK, 1.62 KB, 352 ms]
+  Pass  LOAN-02 [A3] rejected (4xx) or denied (got 200, approved false)
+
+Sub-folder LOAN-02 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 413 B, 255 ms]
+  Pass  LOAN-02 [C1] account list readable (got 200)
+  -
+  | '{"kind":"RECORD","case":"LOAN-02","label":"accounts added","detail":[]}'
+  -
+  Pass  LOAN-02 [A3] account 27552 balance unchanged (5000 -> 5000 cents)
+  Pass  LOAN-02 [A3] no loan account opened
+
+Sub-folder LOAN-02 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27552/transactions [200 OK, 425 B, 224 ms]
+  Pass  LOAN-02 [C1] HTTP 200 (got 200)
+  Pass  LOAN-02 [A3] no transaction added to S (new: [])
+
+Sub-folder LOAN-03 · down payment larger than the loan
+
+  POST https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=10&downPayment=20&fromAccountId=27552 [200 OK, 382 B, 269 ms]
+  Pass  LOAN-03 [A8] no server error (got 200)
+  -
+  | '{"kind":"RECORD","case":"LOAN-03","label":"[Open] behavior","detail":{"status":200,"approved":true}}'
+  -
+
+Sub-folder LOAN-03 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 420 B, 270 ms]
+  Pass  LOAN-03 [C1] account list readable (got 200)
+  -
+  | '{"kind":"RECORD","case":"LOAN-03","label":"accounts added","detail":["27774"]}''{"kind":"RECORD","case":"LOAN-03","label":"[Open] S change (cents)","detail":-2000}'
+  -
+
+Sub-folder LOAN-04 · ledger before (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27552/transactions [200 OK, 437 B, 265 ms]
+  Pass  LOAN-04 [C1] HTTP 200 (got 200)
+
+Sub-folder LOAN-04 · down payment larger than the balance
+
+  POST https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=140.00&downPayment=40.00&fromAccountId=27552 [200 OK, 382 B, 269 ms]
+  -
+  | '{"kind":"RECORD","case":"LOAN-04","label":"request","detail":{"downPayment":"40.00","amount":"140.00"}}'
+  -
+ 46. LOAN-04 [A4] denied (got 200, approved true)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:50.555Z","case":"LOAN-04","request":"LOAN-04 · down payment larger than the balance","method":"POST","url":"https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=140.00&downPayment=40.00&fromAccountId=27552","requestBody":"","status":200,"ms":269,"response":"{\\"responseDate\\":1795519190478,\\"loanProviderName\\":\\"Wealth Securities Dynamic Loans (WSDL)\\",\\"approved\\":true,\\"accountId\\":27885}","failures":["[A4] denied (got 200, approved true): expected false to deeply equal true"],"snapPrev":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":5000,"27663":50000},"snapCur":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":3000,"27663":50000,"27774":1000}}'
+  -
+
+Sub-folder LOAN-04 · balances after
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 428 B, 221 ms]
+  Pass  LOAN-04 [C1] account list readable (got 200)
+  -
+  | '{"kind":"RECORD","case":"LOAN-04","label":"accounts added","detail":["27885"]}'
+  -
+ 47. LOAN-04 [A4] account 27552 balance unchanged (3000 -> -1000 cents)
+ 48. LOAN-04 [A4] no loan account opened
+  -
+  | `{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:52.299Z","case":"LOAN-04","request":"LOAN-04 · balances after","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts","requestBody":"","status":200,"ms":221,"response":"[{\\"id\\":22557,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1225.50},{\\"id\\":22779,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":26886,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":26997,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":1199.00},{\\"id\\":27108,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":95.00},{\\"id\\":27219,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":27330,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":0.00},{\\"id\\":27441,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":100.00},{\\"id\\":27552,\\"customerId\\":18317,\\"type\\":\\"CHECKING\\",\\"balance\\":-10.00},{\\"id\\":27663,\\"customerId\\":18317,\\"type\\":\\"LOAN\\",\\"balance\\":500.00},{\\"id\\":27774,\\"customerId\\":18317,\\"type\\":\\"LOAN\\",\\"balance\\":10.00},{\\"id\\":27885,\\"customerId\\":18317,\\"type\\":\\"LOAN\\",\\"balance\\":140.00}]","failures":["[A4] account 27552 balance unchanged (3000 -> -1000 cents): expected -1000 to deeply equal 3000","[A4] no loan account opened: expected [ '27885' ] to deeply equal []"],"snapPrev":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":3000,"27663":50000,"27774":1000},"snapCur":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":-1000,"27663":50000,"27774":1000,"27885":14000}}`
+  -
+
+Sub-folder LOAN-04 · ledger after (S)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27552/transactions [200 OK, 446 B, 220 ms]
+  Pass  LOAN-04 [C1] HTTP 200 (got 200)
+ 49. LOAN-04 [A4] no transaction added to S (new: ["Debit 4000"])
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:19:54.042Z","case":"LOAN-04","request":"LOAN-04 · ledger after (S)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27552/transactions","requestBody":"","status":200,"ms":220,"response":"[{\\"id\\":42226,\\"accountId\\":27552,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":42337,\\"accountId\\":27552,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":50.00,\\"description\\":\\"Down Payment for Loan # 27663\\"},{\\"id\\":42448,\\"accountId\\":27552,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":20.00,\\"description\\":\\"Down Payment for Loan # 27774\\"},{\\"id\\":42559,\\"accountId\\":27552,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":40.00,\\"description\\":\\"Down Payment for Loan # 27885\\"}]","failures":["[A4] no transaction added to S (new: [\\"Debit 4000\\"]): expected [ { id: 42559, …(5) } ] to deeply equal []"],"snapPrev":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":3000,"27663":50000,"27774":1000},"snapCur":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":-1000,"27663":50000,"27774":1000,"27885":14000}}'
+  -
+
+Sub-folder FIX-LON · cleanup: restore S to 0.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=27552&amount=10.00 [200 OK, 288 B, 226 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-LON","label":"cleanup","detail":{"deposited":"10.00","status":200}}'
+  -
+
+Folder 19 TRX Transactions
+Sub-folder FIX-TRX · fund A with 300.00
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=22557&amount=300 [200 OK, 286 B, 221 ms]
+
+Sub-folder FIX-TRX · open S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=0&fromAccountId=22557 [200 OK, 328 B, 226 ms]
+  -
+  | '{"kind":"RECORD","case":"FIX-TRX","label":"fixture","detail":{"S":27996}}'
+  -
+
+Sub-folder FIX-TRX · snapshot
+
+  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts [200 OK, 432 B, 218 ms]
+  Pass  FIX-TRX [C1] account list readable (got 200)
+  Pass  FIX-TRX [C1] fixture accounts listed
+
+Sub-folder FIX-TRX · deposit 10.00 into S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=27996&amount=10 [200 OK, 285 B, 223 ms]
+
+Sub-folder FIX-TRX · withdraw 5.00 from S
+
+  POST https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=27996&amount=5 [200 OK, 285 B, 229 ms]
+
+Sub-folder HIST-01 · unfiltered list of S
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions [200 OK, 432 B, 230 ms]
+  Pass  HIST-01 [C1] HTTP 200 (got 200)
+  Pass  HIST-01 [C1] list of transaction
+ 50. HIST-01 [C1] Transaction.date is a date-time string (got number)
+  -
+  | '{"kind":"RECORD","case":"HIST-01","label":"rows","detail":3}'`{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:20:06.306Z","case":"HIST-01","request":"HIST-01 · unfiltered list of S","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions","requestBody":"","status":200,"ms":230,"response":"[{\\"id\\":43003,\\"accountId\\":27996,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":100.00,\\"description\\":\\"Funds Transfer Received\\"},{\\"id\\":43114,\\"accountId\\":27996,\\"type\\":\\"Credit\\",\\"date\\":1795478400000,\\"amount\\":10.00,\\"description\\":\\"Deposit via Web Service\\"},{\\"id\\":43225,\\"accountId\\":27996,\\"type\\":\\"Debit\\",\\"date\\":1795478400000,\\"amount\\":5.00,\\"description\\":\\"Withdraw via Web Service\\"}]","failures":["[C1] Transaction.date is a date-time string (got number): expected 'number' to deeply equal 'string'"],"snapPrev":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":-1000,"27663":50000,"27774":1000,"27885":14000},"snapCur":{"22557":142550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":0,"27663":50000,"27774":1000,"27885":14000,"27996":10000}}`
+  -
+
+Sub-folder HIST-02 · filter by amount 10
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/amount/10 [200 OK, 380 B, 220 ms]
+  Pass  HIST-02 [C1] HTTP 200 (got 200)
+  Pass  HIST-02 [C2] result = rows of the unfiltered list with amount 10.00 (want [43114], got [43114])
+
+Sub-folder HIST-03 · filter onDate today
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/onDate/11-24-2026 [200 OK, 432 B, 226 ms]
+  Pass  HIST-03 [C1] HTTP 200 (got 200)
+  Pass  HIST-03 [C2] result = rows of the unfiltered list dated today (want [43003,43114,43225], got [43003,43114,43225])
+
+Sub-folder HIST-03 · filter fromDate today toDate today
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/fromDate/11-24-2026/toDate/11-24-2026 [200 OK, 432 B, 228 ms]
+  Pass  HIST-03 [C1] HTTP 200 (got 200)
+  Pass  HIST-03 [C2] result = rows of the unfiltered list dated today (want [43003,43114,43225], got [43003,43114,43225])
+  Pass  HIST-03 [C2] same rows as onDate
+
+Sub-folder HIST-04 · month name, type Credit
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/month/November/type/Credit [200 OK, 410 B, 222 ms]
+  Pass  HIST-04 [C1] HTTP 200 (got 200)
+  Pass  HIST-04 [C2] result = rows of the unfiltered list in this month with type Credit (want [43003,43114], got [43003,43114])
+
+Sub-folder HIST-04 · month name, type Debit
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/month/November/type/Debit [200 OK, 379 B, 226 ms]
+  Pass  HIST-04 [C1] HTTP 200 (got 200)
+  Pass  HIST-04 [C2] result = rows of the unfiltered list in this month with type Debit (want [43225], got [43225])
+
+Sub-folder HIST-04 · month name, type All
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/month/November/type/All [200 OK, 432 B, 244 ms]
+  Pass  HIST-04 [C1] HTTP 200 (got 200)
+  Pass  HIST-04 [C2] result = rows of the unfiltered list in this month (any type) (want [43003,43114,43225], got [43003,43114,43225])
+
+Sub-folder HIST-04 · month number, type All
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/month/11/type/All [200 OK, 432 B, 284 ms]
+  Pass  HIST-04 [C1] HTTP 200 (got 200)
+  Pass  HIST-04 [C2] result = rows of the unfiltered list in this month (any type) (want [43003,43114,43225], got [43003,43114,43225])
+
+Sub-folder HIST-04 · type CREDIT (wrong case)
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/month/November/type/CREDIT [500 Internal Server Error, 3.47 KB, 374 ms]
+ 51. HIST-04 [A8] no server error (got 500)
+ 52. HIST-04 [A8] rejected with 4xx (got 500)
+  -
+  | '{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:20:20.539Z","case":"HIST-04","request":"HIST-04 · type CREDIT (wrong case)","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/month/November/type/CREDIT","requestBody":"","status":500,"ms":374,"response":"\\n\\r\\n\\n\\n<!-- <!DOCTYPE html PUBLIC \\"-//W3C//DTD XHTML 1.0 Transitional//EN\\" \\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\\">\\n<html xmlns=\\"http://www.w3.org/1999/xhtml\\">\\n -->\\n<!DOCTYPE html>\\n<html>\\n\\t<head>\\n\\t\\t<meta charset=\\"UTF-8\\">\\n\\t\\t<meta http-equiv=\\"Content-Type\\" content=\\"text/html; charset=UTF-8\\" />\\n\\t\\t<title>ParaBank | Error</title>\\n\\t\\t<link href=\\"template.css\\" rel=\\"stylesheet\\"\\n\\t\\t\\ttype=\\"text/css\\" />\\n\\t\\t<link href=\\"style.css\\" rel=\\"stylesheet\\"\\n\\t\\t\\ttype=\\"text/css\\" />\\n\\t\\t<script src=\\"webjars/jquery/4.1.0/jquery.min.js\\"></script>\\n\\t</head>\\n\\n\\t<body\\n\\t\\t\\n\\t    onload=\\"document.login.username.focus();\\"\\n\\t  >\\n\\t\\t<div id=\\"mainPanel\\">\\n\\t\\t\\t\\n\\t\\t\\t\\t\\n\\t\\t\\t\\t\\t\\r\\n\\r\\n\\r\\n\\r\\n<div id=\\"topPanel\\">\\r\\n  <a href=\\"admin.htm\\"><img src=\\"images/clear.gif\\" width=\\"56\\" height=\\"42\\" border=\\"0\\" class=\\"admin\\"/></a>\\r\\n  <a href=\\"index.htm\\"><img src=\\"images/logo.gif\\" alt=\\"ParaBank\\" width=\\"136\\" height=\\"31\\" border=\\"0\\" class=\\"logo\\" title=\\"ParaBank\\"/></a>\\r\\n  <p class=\\"caption\\">Experience the difference</p>\\r\\n</div>\\r\\n<div id=\\"headerPanel\\" style=\\"background: url(images/header-main.jpg) 0 0 no-repeat;\\">\\r\\n  \\r\\n\\r\\n\\r\\n<ul class=\\"leftmenu\\">\\r\\n  <li class=\\"Solutions\\">Solutions</li>\\r\\n  <li><a href=\\"about.htm\\">About Us</a></li>\\r\\n  <li><a href=\\"services.htm\\">Services</a></li>\\r\\n  <li><a href=\\"http://www.parasoft.com/jsp/products.jsp\\">Products</a></li>\\r\\n  <li><a href=\\"http://www.parasoft.com/jsp/pr/contacts.jsp\\">Locations</a></li>\\r\\n  <li><a href=\\"admin.htm\\">Admin Page</a></li>\\r\\n  \\r\\n</ul>\\r\\n  \\r\\n\\r\\n\\r\\n<ul class=\\"button\\">\\r\\n  <li class=\\"home\\"><a href=\\"inde","failures":["[A8] no server error (got 500): expected 500 to be below 500","[A8] rejected with 4xx (got 500): expected 500 to be within 400..499"],"snapPrev":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":-1000,"27663":50000,"27774":1000,"27885":14000},"snapCur":{"22557":142550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":0,"27663":50000,"27774":1000,"27885":14000,"27996":10000}}'
+  -
+
+Sub-folder HIST-05 · onDate in ISO format
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/onDate/2026-11-23 [200 OK, 277 B, 245 ms]
+ 53. HIST-05 [A8] rejected with 4xx (got 200)
+  -
+  | '{"kind":"RECORD","case":"HIST-05","label":"body","detail":"[]"}''{"kind":"FAILED","runId":"2026-11-24T11-16-34-073Z","at":"2026-11-24T11:20:22.314Z","case":"HIST-05","request":"HIST-05 · onDate in ISO format","method":"GET","url":"https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/onDate/2026-11-23","requestBody":"","status":200,"ms":245,"response":"[]","failures":["[A8] rejected with 4xx (got 200): expected 200 to be within 400..499"],"snapPrev":{"22557":122550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":-1000,"27663":50000,"27774":1000,"27885":14000},"snapCur":{"22557":142550,"22779":10000,"26886":0,"26997":119900,"27108":9500,"27219":0,"27330":0,"27441":10000,"27552":0,"27663":50000,"27774":1000,"27885":14000,"27996":10000}}'
+  -
+
+Sub-folder HIST-05 · onDate not-a-date
+
+  GET https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/onDate/not-a-date [400 Bad Request, 289 B, 260 ms]
+  Pass  HIST-05 [A8] no server error (got 400)
+  Pass  HIST-05 [A8] rejected with 4xx (got 400)
+
+Sub-folder HIST-06 · one transaction by id
+
+  GET https://parabank.parasoft.com/parabank/services/bank/transactions/43003 [200 OK, 375 B, 224 ms]
+  Pass  HIST-06 [C1] HTTP 200 (got 200)
+  Pass  HIST-06 [A7] same fields as in the list
+
+-------------------------------------------------------------------------
+|                         |             executed |               failed |
+--------------------------+----------------------+-----------------------
+|              iterations |                    1 |                    0 |
+--------------------------+----------------------+-----------------------
+|                requests |                  131 |                    0 |
+--------------------------+----------------------+-----------------------
+|            test-scripts |                  131 |                    0 |
+--------------------------+----------------------+-----------------------
+|      prerequest-scripts |                  145 |                    0 |
+--------------------------+----------------------+-----------------------
+|              assertions |                  221 |                   53 |
+-------------------------------------------------------------------------
+| total run duration: 3 m 53.2s                                         |
+-------------------------------------------------------------------------
+| total data received: 20.18 KB (approx)                                |
+-------------------------------------------------------------------------
+| average response time: 244 ms [min: 217 ms, max: 764 ms, s.d.: 54 ms] |
+-------------------------------------------------------------------------
+
+   #  failure         detail                                                                   
+                                                                                               
+ 01.  AssertionError  CUST-03 [A6] rejected with 401 or 403 (got 200)                          
+                      expected [ 401, 403 ] to include 200                                     
+                      at assertion:0 in test-script                                            
+                      inside "12 CUS Customer / CUST-03 · profile without logging in"          
+                                                                                               
+ 02.  AssertionError  CUST-03 [A6] no SSN in the response                                      
+                      expected '{"id":18317,"firstName":"<FIRST_NAME>","lastNa…' to not include '****'  
+                      at assertion:1 in test-script                                            
+                      inside "12 CUS Customer / CUST-03 · profile without logging in"          
+                                                                                               
+ 03.  AssertionError  ACCT-04 [A6] rejected with 401 or 403 (got 200)                          
+                      expected [ 401, 403 ] to include 200                                     
+                      at assertion:0 in test-script                                            
+                      inside "13 ACC Accounts / ACCT-04 · account without logging in"          
+                                                                                               
+ 04.  AssertionError  ACCT-04 [A6] no balance data returned                                    
+                      expected true to deeply equal false                                      
+                      at assertion:1 in test-script                                            
+                      inside "13 ACC Accounts / ACCT-04 · account without logging in"          
+                                                                                               
+ 05.  AssertionError  TRF-02 [A4] rejected with 4xx (got 200)                                  
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "14 TRF Transfer / TRF-02 · transfer more than the balance"       
+                                                                                               
+ 06.  AssertionError  TRF-02 [A4] account 26886 balance unchanged (0 -> -100000 cents)         
+                      expected -100000 to deeply equal +0                                      
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-02 · balances after"                       
+                                                                                               
+ 07.  AssertionError  TRF-02 [A4] account 26997 balance unchanged (20000 -> 120000 cents)      
+                      expected 120000 to deeply equal 20000                                    
+                      at assertion:2 in test-script                                            
+                      inside "14 TRF Transfer / TRF-02 · balances after"                       
+                                                                                               
+ 08.  AssertionError  TRF-02 [A4] no transaction added to S (new: ["Debit 100000"])            
+                      expected [ { id: 38452, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-02 · ledger after (S)"                     
+                                                                                               
+ 09.  AssertionError  TRF-02 [A4] no transaction added to T (new: ["Credit 100000"])           
+                      expected [ { id: 38563, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-02 · ledger after (T)"                     
+                                                                                               
+ 10.  AssertionError  TRF-03 [A3] rejected with 4xx (got 200)                                  
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "14 TRF Transfer / TRF-03 · transfer -1.00"                       
+                                                                                               
+ 11.  AssertionError  TRF-03 [A3] account 26886 balance unchanged (-100000 -> -99900 cents)    
+                      expected -99900 to deeply equal -100000                                  
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-03 · balances after"                       
+                                                                                               
+ 12.  AssertionError  TRF-03 [A3] account 26997 balance unchanged (120000 -> 119900 cents)     
+                      expected 119900 to deeply equal 120000                                   
+                      at assertion:2 in test-script                                            
+                      inside "14 TRF Transfer / TRF-03 · balances after"                       
+                                                                                               
+ 13.  AssertionError  TRF-03 [A3] no transaction added to S (new: ["Debit -100"])              
+                      expected [ { id: 38674, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-03 · ledger after (S)"                     
+                                                                                               
+ 14.  AssertionError  TRF-03 [A3] no transaction added to T (new: ["Credit -100"])             
+                      expected [ { id: 38785, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-03 · ledger after (T)"                     
+                                                                                               
+ 15.  AssertionError  TRF-04 [A3] rejected with 4xx (got 200)                                  
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "14 TRF Transfer / TRF-04 · transfer 0.00"                        
+                                                                                               
+ 16.  AssertionError  TRF-04 [A3] no transaction added to S (new: ["Debit 0"])                 
+                      expected [ { id: 38896, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-04 · ledger after (S)"                     
+                                                                                               
+ 17.  AssertionError  TRF-04 [A3] no transaction added to T (new: ["Credit 0"])                
+                      expected [ { id: 39007, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-04 · ledger after (T)"                     
+                                                                                               
+ 18.  AssertionError  TRF-05 [A10] rejected with 4xx (got 200)                                 
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "14 TRF Transfer / TRF-05 · transfer to the same account"         
+                                                                                               
+ 19.  AssertionError  TRF-05 [A10] no transaction added to S (new: ["Credit 100","Debit 100"]) 
+                      expected [ { id: 39118, …(5) }, …(1) ] to deeply equal []                
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-05 · ledger after (S)"                     
+                                                                                               
+ 20.  AssertionError  TRF-07 [C1] rejected with 4xx (got 500)                                  
+                      expected 500 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "14 TRF Transfer / TRF-07 · transfer without amount"              
+                                                                                               
+ 21.  AssertionError  TRF-07 [A8] no server error (got 500)                                    
+                      expected 500 to be below 500                                             
+                      at assertion:1 in test-script                                            
+                      inside "14 TRF Transfer / TRF-07 · transfer without amount"              
+                                                                                               
+ 22.  AssertionError  DEP-02 [A3] rejected with 4xx (got 200)                                  
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "15 DEP Deposit / DEP-02 · deposit 0.00"                          
+                                                                                               
+ 23.  AssertionError  DEP-02 [A3] no transaction added to S (new: ["Credit 0"])                
+                      expected [ { id: 39784, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "15 DEP Deposit / DEP-02 · ledger after (S)"                      
+                                                                                               
+ 24.  AssertionError  DEP-03 [A3] rejected with 4xx (got 200)                                  
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "15 DEP Deposit / DEP-03 · deposit -5.00"                         
+                                                                                               
+ 25.  AssertionError  DEP-03 [A3] account 27108 balance unchanged (10000 -> 9500 cents)        
+                      expected 9500 to deeply equal 10000                                      
+                      at assertion:1 in test-script                                            
+                      inside "15 DEP Deposit / DEP-03 · balances after"                        
+                                                                                               
+ 26.  AssertionError  DEP-03 [A3] no transaction added to S (new: ["Credit -500"])             
+                      expected [ { id: 39895, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "15 DEP Deposit / DEP-03 · ledger after (S)"                      
+                                                                                               
+ 27.  AssertionError  WDR-02 [A4] rejected with 4xx (got 200)                                  
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "16 WDR Withdraw / WDR-02 · withdraw more than the balance"       
+                                                                                               
+ 28.  AssertionError  WDR-02 [A4] account 27219 balance unchanged (9500 -> -100000 cents)      
+                      expected -100000 to deeply equal 9500                                    
+                      at assertion:1 in test-script                                            
+                      inside "16 WDR Withdraw / WDR-02 · balances after"                       
+                                                                                               
+ 29.  AssertionError  WDR-02 [A4] no transaction added to S (new: ["Debit 109500"])            
+                      expected [ { id: 40450, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "16 WDR Withdraw / WDR-02 · ledger after (S)"                     
+                                                                                               
+ 30.  AssertionError  WDR-03 [A3] rejected with 4xx (got 200)                                  
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "16 WDR Withdraw / WDR-03 · withdraw -5.00"                       
+                                                                                               
+ 31.  AssertionError  WDR-03 [A3] account 27219 balance unchanged (-100000 -> -99500 cents)    
+                      expected -99500 to deeply equal -100000                                  
+                      at assertion:1 in test-script                                            
+                      inside "16 WDR Withdraw / WDR-03 · balances after"                       
+                                                                                               
+ 32.  AssertionError  WDR-03 [A3] no transaction added to S (new: ["Debit -500"])              
+                      expected [ { id: 40561, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "16 WDR Withdraw / WDR-03 · ledger after (S)"                     
+                                                                                               
+ 33.  AssertionError  WDR-04 [A3] rejected with 4xx (got 200)                                  
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "16 WDR Withdraw / WDR-04 · withdraw 0.00"                        
+                                                                                               
+ 34.  AssertionError  WDR-04 [A3] no transaction added to S (new: ["Debit 0"])                 
+                      expected [ { id: 40672, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "16 WDR Withdraw / WDR-04 · ledger after (S)"                     
+                                                                                               
+ 35.  AssertionError  BILL-02 [A4] rejected with 4xx (got 200)                                 
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-02 · pay more than the balance"           
+                                                                                               
+ 36.  AssertionError  BILL-02 [A4] account 27330 balance unchanged (9500 -> -100000 cents)     
+                      expected -100000 to deeply equal 9500                                    
+                      at assertion:1 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-02 · balances after"                      
+                                                                                               
+ 37.  AssertionError  BILL-02 [A4] no transaction added to S (new: ["Debit 109500"])           
+                      expected [ { id: 41560, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-02 · ledger after (S)"                    
+                                                                                               
+ 38.  AssertionError  BILL-03 [A11] rejected with 4xx (got 200)                                
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-03 · pay with an empty payee"             
+                                                                                               
+ 39.  AssertionError  BILL-03 [A11] account 27330 balance unchanged (-100000 -> -100100 cents) 
+                      expected -100100 to deeply equal -100000                                 
+                      at assertion:1 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-03 · balances after"                      
+                                                                                               
+ 40.  AssertionError  BILL-03 [A11] no transaction added to S (new: ["Debit 100"])             
+                      expected [ { id: 41671, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-03 · ledger after (S)"                    
+                                                                                               
+ 41.  AssertionError  BILL-04 [A3] rejected with 4xx (got 200)                                 
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-04 · pay -5.00"                           
+                                                                                               
+ 42.  AssertionError  BILL-04 [A3] account 27330 balance unchanged (-100100 -> -99600 cents)   
+                      expected -99600 to deeply equal -100100                                  
+                      at assertion:1 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-04 · balances after"                      
+                                                                                               
+ 43.  AssertionError  BILL-04 [A3] no transaction added to S (new: ["Debit -500"])             
+                      expected [ { id: 41782, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "17 BIL Bill pay / BILL-04 · ledger after (S)"                    
+                                                                                               
+ 44.  AssertionError  LOAN-01 [C1] loanResponse schema (data.responseDate should be string)    
+                      expected false to deeply equal true                                      
+                      at assertion:1 in test-script                                            
+                      inside "18 LON Loan / LOAN-01 · request loan 500, down payment 50"       
+                                                                                               
+ 45.  AssertionError  LOAN-01 [A12] the loan is recorded in the loan account history (found 0) 
+                      expected +0 to be above +0                                               
+                      at assertion:1 in test-script                                            
+                      inside "18 LON Loan / LOAN-01 · transactions of the loan account"        
+                                                                                               
+ 46.  AssertionError  LOAN-04 [A4] denied (got 200, approved true)                             
+                      expected false to deeply equal true                                      
+                      at assertion:0 in test-script                                            
+                      inside "18 LON Loan / LOAN-04 · down payment larger than the balance"    
+                                                                                               
+ 47.  AssertionError  LOAN-04 [A4] account 27552 balance unchanged (3000 -> -1000 cents)       
+                      expected -1000 to deeply equal 3000                                      
+                      at assertion:1 in test-script                                            
+                      inside "18 LON Loan / LOAN-04 · balances after"                          
+                                                                                               
+ 48.  AssertionError  LOAN-04 [A4] no loan account opened                                      
+                      expected [ '27885' ] to deeply equal []                                  
+                      at assertion:2 in test-script                                            
+                      inside "18 LON Loan / LOAN-04 · balances after"                          
+                                                                                               
+ 49.  AssertionError  LOAN-04 [A4] no transaction added to S (new: ["Debit 4000"])             
+                      expected [ { id: 42559, …(5) } ] to deeply equal []                      
+                      at assertion:1 in test-script                                            
+                      inside "18 LON Loan / LOAN-04 · ledger after (S)"                        
+                                                                                               
+ 50.  AssertionError  HIST-01 [C1] Transaction.date is a date-time string (got number)         
+                      expected 'number' to deeply equal 'string'                               
+                      at assertion:2 in test-script                                            
+                      inside "19 TRX Transactions / HIST-01 · unfiltered list of S"            
+                                                                                               
+ 51.  AssertionError  HIST-04 [A8] no server error (got 500)                                   
+                      expected 500 to be below 500                                             
+                      at assertion:0 in test-script                                            
+                      inside "19 TRX Transactions / HIST-04 · type CREDIT (wrong case)"        
+                                                                                               
+ 52.  AssertionError  HIST-04 [A8] rejected with 4xx (got 500)                                 
+                      expected 500 to be within 400..499                                       
+                      at assertion:1 in test-script                                            
+                      inside "19 TRX Transactions / HIST-04 · type CREDIT (wrong case)"        
+                                                                                               
+ 53.  AssertionError  HIST-05 [A8] rejected with 4xx (got 200)                                 
+                      expected 200 to be within 400..499                                       
+                      at assertion:0 in test-script                                            
+                      inside "19 TRX Transactions / HIST-05 · onDate in ISO format"            
+
+✓ Output generated
+  Folder: results/runs/2026-11-24T11-16-14Z-api/reports/suites
+    ↳ parabank-qa-2026-11-24-13-16-32.collection-run-summary.yaml
+    ↳ parabank-qa-2026-11-24-13-16-32.collection-run-executions.yaml

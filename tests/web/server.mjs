@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 // Load .env before importing common.mjs: it reads the secrets to redact when it loads.
 const ROOT_DIR = fileURLToPath(new URL('../../', import.meta.url));
 if (existsSync(join(ROOT_DIR, '.env'))) process.loadEnvFile(join(ROOT_DIR, '.env'));
-const { ROOT, allRuns, redact } = await import('../scripts/lib/common.mjs');
+const { ROOT, allRuns, redact, RUN_TYPES } = await import('../scripts/lib/common.mjs');
 const { marked } = await import('marked');
 
 const portArg = process.argv.indexOf('--port');
@@ -38,9 +38,16 @@ const STEPS = [
     minutes: 0.5,
   },
   {
+    id: 'explore',
+    label: 'Stage 1 exploration',
+    desc: 'Journey walk + edge probes on a new throwaway customer; refreshes evidence/exploration/ (the documents cite it).',
+    args: ['explore'],
+    minutes: 5,
+  },
+  {
     id: 'smoke',
     label: 'API smoke',
-    desc: '5 cases that prove the API is usable at all.',
+    desc: '6 cases that prove the API is usable at all.',
     args: ['smoke'],
     minutes: 1,
     userOpt: true,
@@ -105,9 +112,18 @@ const STEPS = [
     kind: 'load',
   },
   {
+    id: 'isolate',
+    label: 'Concurrency isolation',
+    desc: 'Only after a load run in this job that failed reconciliation (else skipped): 5 sequential, then 3 × 5 simultaneous transfers on a fresh customer.',
+    args: ['isolate'],
+    minutes: 1.5,
+    keepOpt: true,
+    kind: 'load',
+  },
+  {
     id: 'report',
     label: 'Test Summary Report (STR)',
-    desc: 'STR.md + STR.pdf from the latest runs, with a GO / NO-GO recommendation.',
+    desc: "Two-page STR + detailed annex (Markdown and PDF), with a GO / NO-GO recommendation. With test steps in the same job, only that job's runs are used.",
     args: ['report'],
     minutes: 1,
     kind: 'report',
@@ -117,14 +133,16 @@ const STEP = Object.fromEntries(STEPS.map((s) => [s.id, s]));
 
 // Root documents and folders shown under "Deliverables" (only those that exist are listed).
 const DELIVERABLES = [
-  ['STR.pdf', 'Test Summary Report, 2 pages (PDF)'],
-  ['STR_Detailed.pdf', 'STR detailed annex (PDF)'],
+  ['deliverables', 'All deliverables (folder)'],
+  ['deliverables/STR.pdf', 'Test Summary Report, 2 pages (PDF)'],
+  ['deliverables/STR_Detailed.pdf', 'STR detailed annex (PDF)'],
   ['SUBMISSION.md', 'Submission guide'],
-  ['STD.md', 'Software Test Description'],
-  ['Bug_Reports.md', 'Bug reports'],
-  ['Business_Rules.md', 'Business rules'],
-  ['tests/postman/ParaBank_QA.postman_collection.json', 'Postman collection'],
-  ['tests/load/load_test_plan.md', 'Load test plan'],
+  ['deliverables/STD.md', 'Software Test Description'],
+  ['deliverables/Bug_Reports.md', 'Bug reports'],
+  ['deliverables/Business_Rules.md', 'Business rules'],
+  ['deliverables/postman/ParaBank_QA.postman_collection.json', 'Postman collection'],
+  ['deliverables/postman/ParaBank_QA.postman_environment.json', 'Postman environment'],
+  ['deliverables/load_test_plan.md', 'Load test plan'],
   ['tests/automation/README.md', 'Coded tests (README)'],
   ['plan.md', 'Test plan and execution status'],
   ['README.md', 'Project README'],
@@ -133,14 +151,17 @@ const DELIVERABLES = [
 // Exit codes of the run scripts → step status shown on the page.
 const STATUS = { 0: 'PASS', 1: 'FAIL', 2: 'ERROR', 3: 'BLOCKED', 130: 'STOPPED' };
 
-// Command line for one step, given the options chosen on the page.
-function argsFor(step, o) {
+// Command line for one step, given the options chosen on the page. `since` = the job's start time when
+// the job also runs test steps: the report then uses only this job's runs (a crashed layer shows as
+// not run instead of being replaced by an older run).
+function argsFor(step, o, since) {
   const a = [...step.args];
   if (step.userOpt && o.user !== 'PARABANK') a.push('--user', o.user);
   if (step.keepOpt && o.keep) a.push('--keep');
   if (step.id === 'manual' && !o.showBrowser) a.push('--headless');
   if (step.id === 'repro' && o.publish) a.push('--publish');
   if (step.id === 'report' && o.publish) a.push('--kept', '--publish');
+  if (step.id === 'report' && since) a.push('--since', since);
   return a;
 }
 
@@ -206,8 +227,10 @@ function runStep(step, s) {
 // Runs the selected steps in order. A failing step does not stop the job (FAIL = defects found);
 // only Stop ends it early. At the end the overall verdict is computed.
 async function runJob(ids, options) {
+  const startIso = new Date().toISOString();
+  const testSteps = ids.some((id) => !['setup', 'report'].includes(id));
   job = {
-    id: new Date().toISOString(),
+    id: startIso,
     options,
     started: Date.now(),
     finished: null,
@@ -218,7 +241,7 @@ async function runJob(ids, options) {
       id,
       label: STEP[id].label,
       minutes: STEP[id].minutes,
-      args: argsFor(STEP[id], options),
+      args: argsFor(STEP[id], options, testSteps ? startIso : null),
       status: 'pending',
     })),
   };
@@ -229,6 +252,17 @@ async function runJob(ids, options) {
       continue;
     }
     const step = STEP[s.id];
+    // As in ./run.sh cycle: the isolation runs only when this job's load run failed reconciliation.
+    const loadRun = job.steps.find((x) => x.id === 'load')?.run;
+    if (s.id === 'isolate' && loadRun?.reconciliation !== 'FAIL') {
+      s.status = 'SKIPPED';
+      addLine(
+        s.id,
+        `Skipped: ${loadRun ? `reconciliation ${loadRun.reconciliation || 'not judged'}` : 'no load run in this job'}, nothing to isolate.`,
+      );
+      emit('job', publicJob());
+      continue;
+    }
     const before = lastRun();
     s.status = 'running';
     s.started = Date.now();
@@ -259,6 +293,8 @@ function runInfo(id) {
     kept: r.kept,
     counts: r.counts || null,
     recommendation: r.recommendation || null,
+    reconciliation: r.reconciliation || null,
+    label: RUN_TYPES.find((t) => t.test(r))?.label || `${r.kind} (partial)`,
     files: files.map((f) => join(r.dir, f)),
   };
 }
@@ -283,18 +319,20 @@ function verdictOf(j) {
   else if (failed.length)
     [result, why] = [
       'FAIL',
-      `Failures found in: ${failed.join(', ')}. Check whether they are known defects (Bug_Reports.md) or new.`,
+      `Failures found in: ${failed.join(', ')}. Check whether they are known defects (deliverables/Bug_Reports.md) or new.`,
     ];
   return { result, why, recommendation: rec };
 }
 
 // ---------------------------------------------------------------- state for the page
 
-// Latest run of each kind (shown before any job, so the page is useful straight away).
+// Latest complete run of each type (the runs the report is built from), newest first: shown before
+// any job, so the page is useful straight away. Partial runs (smoke gates, single manual cases) are
+// in results/index.md.
 function latestRuns() {
-  const out = {};
-  for (const r of allRuns()) out[r.kind] = r;
-  return Object.values(out)
+  const runs = allRuns();
+  return RUN_TYPES.map((t) => runs.filter(t.test).at(-1))
+    .filter(Boolean)
     .sort((a, b) => b.id.localeCompare(a.id))
     .map((r) => runInfo(r.id));
 }

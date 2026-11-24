@@ -1,0 +1,52 @@
+{
+  "sourceRun": "results/kept/2026-11-24T11-16-14Z-api",
+  "records": [
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:20:20.539Z",
+      "case": "HIST-04",
+      "request": "HIST-04 · type CREDIT (wrong case)",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/27996/transactions/month/November/type/CREDIT",
+      "requestBody": "",
+      "status": 500,
+      "ms": 374,
+      "response": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm\"><img src=\"images/clear.gif\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm\"><img src=\"images/logo.gif\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"about.htm\">About Us</a></li>\r\n  <li><a href=\"services.htm\">Services</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/products.jsp\">Products</a></li>\r\n  <li><a href=\"http://www.parasoft.com/jsp/pr/contacts.jsp\">Locations</a></li>\r\n  <li><a href=\"admin.htm\">Admin Page</a></li>\r\n  \r\n</ul>\r\n  \r\n\r\n\r\n<ul class=\"button\">\r\n  <li class=\"home\"><a href=\"inde",
+      "failures": [
+        "[A8] no server error (got 500): expected 500 to be below 500",
+        "[A8] rejected with 4xx (got 500): expected 500 to be within 400..499"
+      ],
+      "snapPrev": {
+        "22557": 122550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 0,
+        "27441": 10000,
+        "27552": -1000,
+        "27663": 50000,
+        "27774": 1000,
+        "27885": 14000
+      },
+      "snapCur": {
+        "22557": 142550,
+        "22779": 10000,
+        "26886": 0,
+        "26997": 119900,
+        "27108": 9500,
+        "27219": 0,
+        "27330": 0,
+        "27441": 10000,
+        "27552": 0,
+        "27663": 50000,
+        "27774": 1000,
+        "27885": 14000,
+        "27996": 10000
+      }
+    }
+  ]
+}

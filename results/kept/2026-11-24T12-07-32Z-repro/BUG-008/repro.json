@@ -1,0 +1,19 @@
+{
+  "users": {
+    "R": "qa_s4_mwungyju",
+    "L": "qa_s4_mwunlevw"
+  },
+  "steps": [
+    {
+      "label": "Login with a wrong password: the server parses the password from the URL path",
+      "kind": "fail",
+      "at": "2026-11-24T12:07:54.900Z",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/login/qa_s4_mwungyju/NotMyRealPassword-123",
+      "status": 400,
+      "ms": 258,
+      "response": "Invalid username and/or password",
+      "expect": "credentials not in the URL (POST body or header)"
+    }
+  ]
+}

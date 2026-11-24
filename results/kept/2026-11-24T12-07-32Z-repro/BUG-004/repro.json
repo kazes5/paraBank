@@ -1,0 +1,81 @@
+{
+  "users": {
+    "R": "qa_s4_mwungyju",
+    "L": "qa_s4_mwunlevw"
+  },
+  "steps": [
+    {
+      "label": "Control: transfer the exact balance of T to S",
+      "kind": "control",
+      "at": "2026-11-24T12:10:04.918Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=22668&toAccountId=22557&amount=102.00",
+      "status": 200,
+      "ms": 292,
+      "response": "Successfully transferred $102.00 from account #22668 to account #22557",
+      "before": {
+        "22557": 101,
+        "22668": 102
+      },
+      "after": {
+        "22557": 203,
+        "22668": 0
+      },
+      "expect": "T = 0.00"
+    },
+    {
+      "label": "Transfer 0.01 more than T holds (T = 0.00)",
+      "kind": "fail",
+      "at": "2026-11-24T12:10:13.561Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=22668&toAccountId=22557&amount=0.01",
+      "status": 200,
+      "ms": 231,
+      "response": "Successfully transferred $0.01 from account #22668 to account #22557",
+      "before": {
+        "22557": 203,
+        "22668": 0
+      },
+      "after": {
+        "22557": 203.01,
+        "22668": -0.01
+      },
+      "expect": "4xx, nothing moves"
+    },
+    {
+      "label": "Withdraw 1000.00 from T",
+      "kind": "fail",
+      "at": "2026-11-24T12:10:18.746Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=22668&amount=1000",
+      "status": 200,
+      "ms": 224,
+      "response": "Successfully withdrew $1000 from account #22668",
+      "before": {
+        "22668": -0.01
+      },
+      "after": {
+        "22668": -1000.01
+      },
+      "expect": "4xx, nothing moves"
+    },
+    {
+      "label": "Bill pay 1000.00 from T",
+      "kind": "fail",
+      "at": "2026-11-24T12:10:23.939Z",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=22668&amount=1000",
+      "requestBody": "{\"name\":\"City Utilities\",\"address\":{\"street\":\"1 Main St\",\"city\":\"Springfield\",\"state\":\"IL\",\"zipCode\":\"62701\"},\"phoneNumber\":\"5550100\",\"accountNumber\":22557}",
+      "status": 200,
+      "ms": 232,
+      "response": "{\"payeeName\":\"City Utilities\",\"amount\":1000,\"accountId\":22668}",
+      "before": {
+        "22668": -1000.01
+      },
+      "after": {
+        "22668": -2000.01
+      },
+      "expect": "4xx, nothing moves"
+    }
+  ]
+}

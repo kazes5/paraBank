@@ -1,0 +1,35 @@
+{
+  "sourceRun": "results/kept/2026-11-24T11-16-14Z-api",
+  "records": [
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:17:49.125Z",
+      "case": "TRF-07",
+      "request": "TRF-07 · transfer without amount",
+      "method": "POST",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=26886&toAccountId=26997",
+      "requestBody": "",
+      "status": 500,
+      "ms": 234,
+      "response": "\n\r\n\n\n<!-- <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n -->\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\t\t<title>ParaBank | Error</title>\n\t\t<link href=\"template.css;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<link href=\"style.css;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\" rel=\"stylesheet\"\n\t\t\ttype=\"text/css\" />\n\t\t<script src=\"webjars/jquery/4.1.0/jquery.min.js;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\"></script>\n\t</head>\n\n\t<body\n\t\t\n\t    onload=\"document.login.username.focus();\"\n\t  >\n\t\t<div id=\"mainPanel\">\n\t\t\t\n\t\t\t\t\n\t\t\t\t\t\r\n\r\n\r\n\r\n<div id=\"topPanel\">\r\n  <a href=\"admin.htm;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\"><img src=\"images/clear.gif;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\" width=\"56\" height=\"42\" border=\"0\" class=\"admin\"/></a>\r\n  <a href=\"index.htm;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\"><img src=\"images/logo.gif;jsessionid=29AEBEAD235E0E3245610C3EDF424C86\" alt=\"ParaBank\" width=\"136\" height=\"31\" border=\"0\" class=\"logo\" title=\"ParaBank\"/></a>\r\n  <p class=\"caption\">Experience the difference</p>\r\n</div>\r\n<div id=\"headerPanel\" style=\"background: url(images/header-main.jpg;jsessionid=29AEBEAD235E0E3245610C3EDF424C86) 0 0 no-repeat;\">\r\n  \r\n\r\n\r\n<ul class=\"leftmenu\">\r\n  <li class=\"Solutions\">Solutions</li>\r\n  <li><a href=\"a",
+      "failures": [
+        "[C1] rejected with 4xx (got 500): expected 500 to be within 400..499",
+        "[A8] no server error (got 500): expected 500 to be below 500"
+      ],
+      "snapPrev": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": -99900,
+        "26997": 119900
+      },
+      "snapCur": {
+        "22557": 52550,
+        "22779": 10000,
+        "26886": -99900,
+        "26997": 119900
+      }
+    }
+  ]
+}

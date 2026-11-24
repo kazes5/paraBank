@@ -41,7 +41,8 @@ export function readRaw(file) {
         r.lastAt = at;
         break;
       case 'errors':
-        r.errors.push(v);
+        // Error flags keep their endpoint and step, so a mixed test (L5) is judged per endpoint.
+        r.errors.push({ v, name: t.name, step: Number(t.step || 1) });
         break;
       case 'checks':
         r.checks.push({ check: t.check, ok: v === 1 });
@@ -96,10 +97,14 @@ export function analyse(test, raw, baseline) {
       const st = stats(rs);
       const checks = raw.checks;
       const failedChecks = checks.filter((c) => !c.ok).length;
-      const errRate =
-        label === test && raw.errors.length
-          ? raw.errors.filter(Boolean).length / raw.errors.length
-          : st.httpErrors / Math.max(1, st.n);
+      // Error rate per endpoint (and per step for step rows) from the tagged error flags: HTTP errors,
+      // timeouts and failed body checks. Untagged flags (runs before the tag existed) count for the test
+      // row only when the test has one endpoint; otherwise HTTP errors are the fallback.
+      const stepOf = label === test ? null : Number(label.split(' step ')[1]);
+      const tagged = raw.errors.filter((e) => e.name === name && (stepOf === null || e.step === stepOf));
+      const untagged = names.length === 1 && label === test ? raw.errors.filter((e) => !e.name) : [];
+      const flags = tagged.length ? tagged : untagged;
+      const errRate = flags.length ? flags.filter((e) => e.v).length / flags.length : st.httpErrors / Math.max(1, st.n);
       const target = SLA[name];
       // Verdict: PASS when p95 meets the target and errors < 1 %; fewer than 20 requests is too few to judge.
       let verdict;
@@ -123,28 +128,53 @@ export function analyse(test, raw, baseline) {
 
 // L6 reconciliation: S must drop and T must rise by exactly the confirmed transfers × 1.00, the total
 // must not change, and each side gains one transaction per transfer. "Unsure" transfers (timeouts / 5xx)
-// allow a tolerance, except for the total: money may never be created or destroyed.
+// may or may not have gone through, so they widen the range in ONE direction only: every confirmed
+// transfer must be there, plus 0 to `unsure` more. A missing confirmed transfer is always a MISMATCH.
+// The total has no tolerance: money may never be created or destroyed.
 export function reconcile(before, after, transfers) {
   const { ok, unsure } = transfers;
   const dS = after.S.cents - before.S.cents;
   const dT = after.T.cents - before.T.cents;
-  const rows = [
-    { check: 'S decreased by successful transfers × 1.00', expected: -ok * 100, actual: dS },
-    { check: 'T increased by successful transfers × 1.00', expected: ok * 100, actual: dT },
-    { check: 'S + T unchanged', expected: 0, actual: dS + dT },
-    { check: 'S transactions added', expected: ok, actual: after.S.transactions - before.S.transactions },
-    { check: 'T transactions added', expected: ok, actual: after.T.transactions - before.T.transactions },
-  ].map((r) => ({
-    ...r,
-    result:
-      r.actual === r.expected
-        ? 'MATCH'
-        : unsure &&
-            Math.abs(r.actual - r.expected) <= unsure * (r.check.includes('transactions') ? 1 : 100) &&
-            r.check !== 'S + T unchanged'
-          ? 'MATCH (within unsure)'
-          : 'MISMATCH',
-  }));
+  // Each check: the confirmed expectation, plus how many cents/rows the unsure transfers may add on top
+  // (dir = the direction in which they would move the value: S goes down, T and the row counts go up).
+  const checks = [
+    {
+      check: 'S decreased by successful transfers × 1.00',
+      expected: -ok * 100,
+      actual: dS,
+      slack: unsure * 100,
+      dir: -1,
+    },
+    {
+      check: 'T increased by successful transfers × 1.00',
+      expected: ok * 100,
+      actual: dT,
+      slack: unsure * 100,
+      dir: 1,
+    },
+    { check: 'S + T unchanged', expected: 0, actual: dS + dT, slack: 0, dir: 1 },
+    {
+      check: 'S transactions added',
+      expected: ok,
+      actual: after.S.transactions - before.S.transactions,
+      slack: unsure,
+      dir: 1,
+    },
+    {
+      check: 'T transactions added',
+      expected: ok,
+      actual: after.T.transactions - before.T.transactions,
+      slack: unsure,
+      dir: 1,
+    },
+  ];
+  const rows = checks.map(({ slack, dir, ...r }) => {
+    const beyond = (r.actual - r.expected) * dir; // how far past the confirmed value, in the unsure direction
+    return {
+      ...r,
+      result: beyond === 0 ? 'MATCH' : beyond > 0 && beyond <= slack ? 'MATCH (within unsure)' : 'MISMATCH',
+    };
+  });
   return { rows, verdict: rows.every((r) => r.result.startsWith('MATCH')) ? 'PASS' : 'FAIL' };
 }
 
@@ -158,7 +188,7 @@ export function writeSummary(dir, { runId, fixture, results, recon, smokeAfter, 
   const md = [
     `# Load test — run ${runId}`,
     '',
-    `Plan: \`tests/load/load_test_plan.md\` · customer \`${fixture.username}\` (throwaway, ${fixture.customerId}) · S ${fixture.S} → T ${fixture.T} · k6 from one client, latency = \`http_req_duration\` (client side, includes network and Cloudflare).`,
+    `Plan: \`deliverables/load_test_plan.md\` · customer \`${fixture.username}\` (throwaway, ${fixture.customerId}) · S ${fixture.S} → T ${fixture.T} · k6 from one client, latency = \`http_req_duration\` (client side, includes network and Cloudflare).`,
     '',
     '## Results per test',
     '',

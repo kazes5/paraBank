@@ -1,0 +1,51 @@
+{
+  "sourceRun": "results/kept/2026-11-24T11-16-14Z-api",
+  "records": [
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:16:43.754Z",
+      "case": "CUST-03",
+      "request": "CUST-03 · profile without logging in",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/customers/18317",
+      "requestBody": "",
+      "status": 200,
+      "ms": 223,
+      "response": "{\"id\":18317,\"firstName\":\"<FIRST_NAME>\",\"lastName\":\"<LAST_NAME>\",\"address\":{\"street\":\"<STREET>\",\"city\":\"<CITY>\",\"state\":\"<STATE>\",\"zipCode\":\"<ZIP>\"},\"phoneNumber\":\"<PHONE>\",\"ssn\":\"<REDACTED>\"}",
+      "failures": [
+        "[A6] rejected with 401 or 403 (got 200): expected [ 401, 403 ] to include 200",
+        "[A6] no SSN in the response: expected '{\"id\":18317,\"firstName\":\"<FIRST_NAME>\",\"lastNa…' to not include '<REDACTED>'"
+      ],
+      "snapPrev": {},
+      "snapCur": {
+        "22557": 42550,
+        "22779": 10000
+      }
+    },
+    {
+      "phase": "suites",
+      "kind": "FAILED",
+      "runId": "2026-11-24T11-16-34-073Z",
+      "at": "2026-11-24T11:16:49.157Z",
+      "case": "ACCT-04",
+      "request": "ACCT-04 · account without logging in",
+      "method": "GET",
+      "url": "https://parabank.parasoft.com/parabank/services/bank/accounts/22557",
+      "requestBody": "",
+      "status": 200,
+      "ms": 278,
+      "response": "{\"id\":22557,\"customerId\":18317,\"type\":\"CHECKING\",\"balance\":425.50}",
+      "failures": [
+        "[A6] rejected with 401 or 403 (got 200): expected [ 401, 403 ] to include 200",
+        "[A6] no balance data returned: expected true to deeply equal false"
+      ],
+      "snapPrev": {},
+      "snapCur": {
+        "22557": 42550,
+        "22779": 10000
+      }
+    }
+  ]
+}

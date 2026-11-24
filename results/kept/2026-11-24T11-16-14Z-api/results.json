@@ -1,0 +1,1098 @@
+{
+  "smokeFailed": false,
+  "rows": [
+    {
+      "id": "AUTH-01",
+      "verdict": "PASS",
+      "checks": "3/3",
+      "note": ""
+    },
+    {
+      "id": "AUTH-02",
+      "verdict": "PASS",
+      "checks": "2/2",
+      "note": "recorded: [Open] status code"
+    },
+    {
+      "id": "AUTH-03",
+      "verdict": "NOT RUN",
+      "note": "Manual: design issue, noted once"
+    },
+    {
+      "id": "AUTH-04",
+      "verdict": "PASS",
+      "checks": "2/2",
+      "note": ""
+    },
+    {
+      "id": "AUTH-05",
+      "verdict": "NOT RUN",
+      "note": "Manual: the site firewall blocks it first"
+    },
+    {
+      "id": "CUST-01",
+      "verdict": "PASS",
+      "checks": "3/3",
+      "note": ""
+    },
+    {
+      "id": "CUST-02",
+      "verdict": "PASS",
+      "checks": "3/3",
+      "note": "recorded: [Open] status code"
+    },
+    {
+      "id": "CUST-03",
+      "verdict": "FAIL",
+      "checks": "0/2",
+      "note": "candidate defect [A6]; [A6] rejected with 401 or 403 (got 200); [A6] no SSN in the response"
+    },
+    {
+      "id": "ACCT-01",
+      "verdict": "PASS",
+      "checks": "4/4",
+      "note": ""
+    },
+    {
+      "id": "ACCT-02",
+      "verdict": "PASS",
+      "checks": "3/3",
+      "note": ""
+    },
+    {
+      "id": "ACCT-03",
+      "verdict": "PASS",
+      "checks": "6/6",
+      "note": "recorded: [Open] status code; recorded: [Open] status code"
+    },
+    {
+      "id": "ACCT-04",
+      "verdict": "FAIL",
+      "checks": "0/2",
+      "note": "candidate defect [A6]; [A6] rejected with 401 or 403 (got 200); [A6] no balance data returned"
+    },
+    {
+      "id": "ACCT-05",
+      "verdict": "PASS",
+      "checks": "2/2",
+      "note": ""
+    },
+    {
+      "id": "TRF-01",
+      "verdict": "PASS",
+      "checks": "9/9",
+      "note": ""
+    },
+    {
+      "id": "TRF-02",
+      "verdict": "FAIL",
+      "checks": "5/10",
+      "note": "candidate defect [A4]; [A4] rejected with 4xx (got 200); [A4] account 26886 balance unchanged (0 -> -100000 cents); [A4] account 26997 balance unchanged (20000 -> 120000 cents); [A4] no transaction added to S (new: [\"Debit 100000\"]); [A4] no transaction added to T (new: [\"Credit 100000\"])"
+    },
+    {
+      "id": "TRF-03",
+      "verdict": "FAIL",
+      "checks": "3/8",
+      "note": "candidate defect [A3]; [A3] rejected with 4xx (got 200); [A3] account 26886 balance unchanged (-100000 -> -99900 cents); [A3] account 26997 balance unchanged (120000 -> 119900 cents); [A3] no transaction added to S (new: [\"Debit -100\"]); [A3] no transaction added to T (new: [\"Credit -100\"])"
+    },
+    {
+      "id": "TRF-04",
+      "verdict": "FAIL",
+      "checks": "5/8",
+      "note": "candidate defect [A3]; [A3] rejected with 4xx (got 200); [A3] no transaction added to S (new: [\"Debit 0\"]); [A3] no transaction added to T (new: [\"Credit 0\"])"
+    },
+    {
+      "id": "TRF-05",
+      "verdict": "FAIL",
+      "checks": "6/8",
+      "note": "candidate defect [A10]; [A10] rejected with 4xx (got 200); [A10] no transaction added to S (new: [\"Credit 100\",\"Debit 100\"])"
+    },
+    {
+      "id": "TRF-06",
+      "verdict": "PASS",
+      "checks": "9/9",
+      "note": "recorded: [Open] status code"
+    },
+    {
+      "id": "TRF-07",
+      "verdict": "FAIL",
+      "checks": "7/9",
+      "note": "defect [C1] [A8]; [C1] rejected with 4xx (got 500); [A8] no server error (got 500)"
+    },
+    {
+      "id": "TRF-08",
+      "verdict": "NOT RUN",
+      "note": "Manual: exploratory"
+    },
+    {
+      "id": "TRF-09",
+      "verdict": "NOT RUN",
+      "note": "Manual: breaks accounts (reproduced in Stage 1, E1)"
+    },
+    {
+      "id": "TRF-10",
+      "verdict": "PASS",
+      "checks": "4/4",
+      "note": ""
+    },
+    {
+      "id": "DEP-01",
+      "verdict": "PASS",
+      "checks": "4/4",
+      "note": ""
+    },
+    {
+      "id": "DEP-02",
+      "verdict": "FAIL",
+      "checks": "4/6",
+      "note": "candidate defect [A3]; [A3] rejected with 4xx (got 200); [A3] no transaction added to S (new: [\"Credit 0\"])"
+    },
+    {
+      "id": "DEP-03",
+      "verdict": "FAIL",
+      "checks": "2/5",
+      "note": "candidate defect [A3]; [A3] rejected with 4xx (got 200); [A3] account 27108 balance unchanged (10000 -> 9500 cents); [A3] no transaction added to S (new: [\"Credit -500\"])"
+    },
+    {
+      "id": "WDR-01",
+      "verdict": "PASS",
+      "checks": "5/5",
+      "note": ""
+    },
+    {
+      "id": "WDR-02",
+      "verdict": "FAIL",
+      "checks": "3/6",
+      "note": "candidate defect [A4]; [A4] rejected with 4xx (got 200); [A4] account 27219 balance unchanged (9500 -> -100000 cents); [A4] no transaction added to S (new: [\"Debit 109500\"])"
+    },
+    {
+      "id": "WDR-03",
+      "verdict": "FAIL",
+      "checks": "2/5",
+      "note": "candidate defect [A3]; [A3] rejected with 4xx (got 200); [A3] account 27219 balance unchanged (-100000 -> -99500 cents); [A3] no transaction added to S (new: [\"Debit -500\"])"
+    },
+    {
+      "id": "WDR-04",
+      "verdict": "FAIL",
+      "checks": "3/5",
+      "note": "candidate defect [A3]; [A3] rejected with 4xx (got 200); [A3] no transaction added to S (new: [\"Debit 0\"])"
+    },
+    {
+      "id": "BILL-01",
+      "verdict": "PASS",
+      "checks": "7/7",
+      "note": ""
+    },
+    {
+      "id": "BILL-02",
+      "verdict": "FAIL",
+      "checks": "7/10",
+      "note": "candidate defect [A4]; [A4] rejected with 4xx (got 200); [A4] account 27330 balance unchanged (9500 -> -100000 cents); [A4] no transaction added to S (new: [\"Debit 109500\"])"
+    },
+    {
+      "id": "BILL-03",
+      "verdict": "FAIL",
+      "checks": "6/9",
+      "note": "candidate defect [A11]; [A11] rejected with 4xx (got 200); [A11] account 27330 balance unchanged (-100000 -> -100100 cents); [A11] no transaction added to S (new: [\"Debit 100\"])"
+    },
+    {
+      "id": "BILL-04",
+      "verdict": "FAIL",
+      "checks": "5/8",
+      "note": "candidate defect [A3]; [A3] rejected with 4xx (got 200); [A3] account 27330 balance unchanged (-100100 -> -99600 cents); [A3] no transaction added to S (new: [\"Debit -500\"])"
+    },
+    {
+      "id": "LOAN-01",
+      "verdict": "FAIL",
+      "checks": "9/11",
+      "note": "defect [C1] [A12]; [C1] loanResponse schema (data.responseDate should be string); [A12] the loan is recorded in the loan account history (found 0)"
+    },
+    {
+      "id": "LOAN-02",
+      "verdict": "PASS",
+      "checks": "7/7",
+      "note": ""
+    },
+    {
+      "id": "LOAN-03",
+      "verdict": "NEEDS-CLARIFICATION",
+      "checks": "2/2",
+      "note": "recorded: [Open] behavior; recorded: [Open] S change (cents)"
+    },
+    {
+      "id": "LOAN-04",
+      "verdict": "FAIL",
+      "checks": "3/7",
+      "note": "candidate defect [A4]; [A4] denied (got 200, approved true); [A4] account 27552 balance unchanged (3000 -> -1000 cents); [A4] no loan account opened; [A4] no transaction added to S (new: [\"Debit 4000\"])"
+    },
+    {
+      "id": "HIST-01",
+      "verdict": "FAIL",
+      "checks": "6/7",
+      "note": "defect [C1]; [C1] Transaction.date is a date-time string (got number)"
+    },
+    {
+      "id": "HIST-02",
+      "verdict": "PASS",
+      "checks": "2/2",
+      "note": ""
+    },
+    {
+      "id": "HIST-03",
+      "verdict": "PASS",
+      "checks": "5/5",
+      "note": ""
+    },
+    {
+      "id": "HIST-04",
+      "verdict": "FAIL",
+      "checks": "8/10",
+      "note": "candidate defect [A8]; [A8] no server error (got 500); [A8] rejected with 4xx (got 500)"
+    },
+    {
+      "id": "HIST-05",
+      "verdict": "FAIL",
+      "checks": "2/3",
+      "note": "candidate defect [A8]; [A8] rejected with 4xx (got 200)"
+    },
+    {
+      "id": "HIST-06",
+      "verdict": "PASS",
+      "checks": "2/2",
+      "note": ""
+    },
+    {
+      "id": "JRN-01",
+      "verdict": "FAIL",
+      "checks": "91/94",
+      "note": "defect [A7] [C1] [A12]; J06b [A7] create response balance = account balance (0 vs 10000 cents); J13a [C1] loanResponse schema (data.responseDate should be string); J13e [A12] the loan is recorded in the loan account history (found 0)"
+    },
+    {
+      "id": "NFR-02",
+      "verdict": "NOT RUN",
+      "note": "Stage 5 (k6)"
+    }
+  ],
+  "nfr": [
+    {
+      "endpoint": "GET /accounts/{id}",
+      "cls": "Read",
+      "n": 17,
+      "p50": 246,
+      "p95": 326,
+      "max": 326,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /accounts/{id}/transactions",
+      "cls": "Read",
+      "n": 47,
+      "p50": 225,
+      "p95": 302,
+      "max": 344,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "PASS"
+    },
+    {
+      "endpoint": "GET /accounts/{id}/transactions/amount/{x}",
+      "cls": "Read",
+      "n": 2,
+      "p50": 220,
+      "p95": 235,
+      "max": 235,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /accounts/{id}/transactions/fromDate/{f}/toDate/{t}",
+      "cls": "Read",
+      "n": 2,
+      "p50": 228,
+      "p95": 279,
+      "max": 279,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /accounts/{id}/transactions/month/{m}/type/{t}",
+      "cls": "Read",
+      "n": 6,
+      "p50": 244,
+      "p95": 374,
+      "max": 374,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /accounts/{id}/transactions/onDate/{x}",
+      "cls": "Read",
+      "n": 4,
+      "p50": 245,
+      "p95": 260,
+      "max": 260,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /customers/{id}",
+      "cls": "Read",
+      "n": 6,
+      "p50": 236,
+      "p95": 311,
+      "max": 311,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /customers/{id}/accounts",
+      "cls": "Read",
+      "n": 35,
+      "p50": 230,
+      "p95": 322,
+      "max": 342,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "PASS"
+    },
+    {
+      "endpoint": "GET /customers/{id}/positions",
+      "cls": "Read",
+      "n": 1,
+      "p50": 317,
+      "p95": 317,
+      "max": 317,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /login/{u}/{p}",
+      "cls": "Read",
+      "n": 6,
+      "p50": 277,
+      "p95": 819,
+      "max": 819,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /positions/{id}",
+      "cls": "Read",
+      "n": 2,
+      "p50": 229,
+      "p95": 266,
+      "max": 266,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "GET /transactions/{id}",
+      "cls": "Read",
+      "n": 2,
+      "p50": 224,
+      "p95": 235,
+      "max": 235,
+      "target": 1000,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /billpay",
+      "cls": "Write",
+      "n": 5,
+      "p50": 223,
+      "p95": 266,
+      "max": 266,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /createAccount",
+      "cls": "Write",
+      "n": 9,
+      "p50": 228,
+      "p95": 290,
+      "max": 290,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /customers/update/{id}",
+      "cls": "Write",
+      "n": 2,
+      "p50": 232,
+      "p95": 283,
+      "max": 283,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /customers/{id}/buyPosition",
+      "cls": "Write",
+      "n": 1,
+      "p50": 234,
+      "p95": 234,
+      "max": 234,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /customers/{id}/sellPosition",
+      "cls": "Write",
+      "n": 1,
+      "p50": 235,
+      "p95": 235,
+      "max": 235,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /deposit",
+      "cls": "Write",
+      "n": 15,
+      "p50": 226,
+      "p95": 305,
+      "max": 305,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /requestLoan",
+      "cls": "Write",
+      "n": 5,
+      "p50": 343,
+      "p95": 352,
+      "max": 352,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /transfer",
+      "cls": "Write",
+      "n": 9,
+      "p50": 226,
+      "p95": 275,
+      "max": 275,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    },
+    {
+      "endpoint": "POST /withdraw",
+      "cls": "Write",
+      "n": 6,
+      "p50": 222,
+      "p95": 244,
+      "max": 244,
+      "target": 1500,
+      "outliers": 0,
+      "verdict": "info (n < 20)"
+    }
+  ],
+  "nfr01": "PASS",
+  "timeouts": 0,
+  "cases": {
+    "AUTH-01": {
+      "pass": 3,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "session"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "CUST-01": {
+      "pass": 3,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "ACCT-01": {
+      "pass": 4,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "ACCT-02": {
+      "pass": 3,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "DEP-01": {
+      "pass": 4,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": [
+        "[O5] success text"
+      ]
+    },
+    "HIST-01": {
+      "pass": 6,
+      "fail": [
+        "[C1] Transaction.date is a date-time string (got number)"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "rows"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "FIX": {
+      "pass": 0,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "session"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "AUTH-02": {
+      "pass": 2,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "[Open] status code"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "AUTH-04": {
+      "pass": 2,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "CUST-02": {
+      "pass": 3,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "[Open] status code"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "CUST-03": {
+      "pass": 0,
+      "fail": [
+        "[A6] rejected with 401 or 403 (got 200)",
+        "[A6] no SSN in the response"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "ACCT-03": {
+      "pass": 6,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "[Open] status code",
+        "[Open] status code"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "ACCT-04": {
+      "pass": 0,
+      "fail": [
+        "[A6] rejected with 401 or 403 (got 200)",
+        "[A6] no balance data returned"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "ACCT-05": {
+      "pass": 2,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "FIX-TRF": {
+      "pass": 0,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "fixture",
+        "fixture",
+        "cleanup"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "TRF-01": {
+      "pass": 9,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": [
+        "[O5] success text"
+      ]
+    },
+    "TRF-10": {
+      "pass": 4,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "amount"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "TRF-02": {
+      "pass": 5,
+      "fail": [
+        "[A4] rejected with 4xx (got 200)",
+        "[A4] account 26886 balance unchanged (0 -> -100000 cents)",
+        "[A4] account 26997 balance unchanged (20000 -> 120000 cents)",
+        "[A4] no transaction added to S (new: [\"Debit 100000\"])",
+        "[A4] no transaction added to T (new: [\"Credit 100000\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "amount"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "TRF-03": {
+      "pass": 3,
+      "fail": [
+        "[A3] rejected with 4xx (got 200)",
+        "[A3] account 26886 balance unchanged (-100000 -> -99900 cents)",
+        "[A3] account 26997 balance unchanged (120000 -> 119900 cents)",
+        "[A3] no transaction added to S (new: [\"Debit -100\"])",
+        "[A3] no transaction added to T (new: [\"Credit -100\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "TRF-04": {
+      "pass": 5,
+      "fail": [
+        "[A3] rejected with 4xx (got 200)",
+        "[A3] no transaction added to S (new: [\"Debit 0\"])",
+        "[A3] no transaction added to T (new: [\"Credit 0\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "TRF-05": {
+      "pass": 6,
+      "fail": [
+        "[A10] rejected with 4xx (got 200)",
+        "[A10] no transaction added to S (new: [\"Credit 100\",\"Debit 100\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "TRF-06": {
+      "pass": 9,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "[Open] status code"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "TRF-07": {
+      "pass": 7,
+      "fail": [
+        "[C1] rejected with 4xx (got 500)",
+        "[A8] no server error (got 500)"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "FIX-DEP": {
+      "pass": 0,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "fixture"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "DEP-02": {
+      "pass": 4,
+      "fail": [
+        "[A3] rejected with 4xx (got 200)",
+        "[A3] no transaction added to S (new: [\"Credit 0\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "DEP-03": {
+      "pass": 2,
+      "fail": [
+        "[A3] rejected with 4xx (got 200)",
+        "[A3] account 27108 balance unchanged (10000 -> 9500 cents)",
+        "[A3] no transaction added to S (new: [\"Credit -500\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "FIX-WDR": {
+      "pass": 0,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "fixture",
+        "cleanup"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "WDR-01": {
+      "pass": 5,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": [
+        "[O5] success text"
+      ]
+    },
+    "WDR-02": {
+      "pass": 3,
+      "fail": [
+        "[A4] rejected with 4xx (got 200)",
+        "[A4] account 27219 balance unchanged (9500 -> -100000 cents)",
+        "[A4] no transaction added to S (new: [\"Debit 109500\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "amount"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "WDR-03": {
+      "pass": 2,
+      "fail": [
+        "[A3] rejected with 4xx (got 200)",
+        "[A3] account 27219 balance unchanged (-100000 -> -99500 cents)",
+        "[A3] no transaction added to S (new: [\"Debit -500\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "WDR-04": {
+      "pass": 3,
+      "fail": [
+        "[A3] rejected with 4xx (got 200)",
+        "[A3] no transaction added to S (new: [\"Debit 0\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "FIX-BIL": {
+      "pass": 0,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "fixture",
+        "fixture",
+        "cleanup"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "BILL-01": {
+      "pass": 7,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "payee account T change (cents)"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "BILL-02": {
+      "pass": 7,
+      "fail": [
+        "[A4] rejected with 4xx (got 200)",
+        "[A4] account 27330 balance unchanged (9500 -> -100000 cents)",
+        "[A4] no transaction added to S (new: [\"Debit 109500\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "amount"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "BILL-03": {
+      "pass": 6,
+      "fail": [
+        "[A11] rejected with 4xx (got 200)",
+        "[A11] account 27330 balance unchanged (-100000 -> -100100 cents)",
+        "[A11] no transaction added to S (new: [\"Debit 100\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "[Open] status code"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "BILL-04": {
+      "pass": 5,
+      "fail": [
+        "[A3] rejected with 4xx (got 200)",
+        "[A3] account 27330 balance unchanged (-100100 -> -99600 cents)",
+        "[A3] no transaction added to S (new: [\"Debit -500\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "FIX-LON": {
+      "pass": 0,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "fixture",
+        "cleanup"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "LOAN-01": {
+      "pass": 9,
+      "fail": [
+        "[C1] loanResponse schema (data.responseDate should be string)",
+        "[A12] the loan is recorded in the loan account history (found 0)"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "[Open] approval decision",
+        "accounts added",
+        "loan account transactions"
+      ],
+      "changed": [],
+      "same": [
+        "[O4] loan account holds 500.00"
+      ]
+    },
+    "LOAN-02": {
+      "pass": 7,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "accounts added"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "LOAN-03": {
+      "pass": 2,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "[Open] behavior",
+        "accounts added",
+        "[Open] S change (cents)"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "LOAN-04": {
+      "pass": 3,
+      "fail": [
+        "[A4] denied (got 200, approved true)",
+        "[A4] account 27552 balance unchanged (3000 -> -1000 cents)",
+        "[A4] no loan account opened",
+        "[A4] no transaction added to S (new: [\"Debit 4000\"])"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "request",
+        "accounts added"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "FIX-TRX": {
+      "pass": 0,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "fixture"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "HIST-02": {
+      "pass": 2,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "HIST-03": {
+      "pass": 5,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "HIST-04": {
+      "pass": 8,
+      "fail": [
+        "[A8] no server error (got 500)",
+        "[A8] rejected with 4xx (got 500)"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "HIST-05": {
+      "pass": 2,
+      "fail": [
+        "[A8] rejected with 4xx (got 200)"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "body"
+      ],
+      "changed": [],
+      "same": []
+    },
+    "HIST-06": {
+      "pass": 2,
+      "fail": [],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [],
+      "changed": [],
+      "same": []
+    },
+    "JRN-01": {
+      "pass": 91,
+      "fail": [
+        "J06b [A7] create response balance = account balance (0 vs 10000 cents)",
+        "J13a [C1] loanResponse schema (data.responseDate should be string)",
+        "J13e [A12] the loan is recorded in the loan account history (found 0)"
+      ],
+      "smokeFail": [],
+      "blocked": [],
+      "records": [
+        "J02 session",
+        "J06b [O1] opening amount moved into the new account (cents)",
+        "J13a [Open] approval decision",
+        "J17 loan account balance (reported, not judged; Q9)",
+        "J17 ids"
+      ],
+      "changed": [],
+      "same": [
+        "J13d [O4] loan account is LOAN with 500.00"
+      ]
+    }
+  }
+}

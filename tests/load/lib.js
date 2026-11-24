@@ -1,4 +1,4 @@
-// Shared k6 helpers for the load tests (tests/load/load_test_plan.md).
+// Shared k6 helpers for the load tests (deliverables/load_test_plan.md).
 // Every request: 5 s timeout, Accept JSON, tagged with the test ID (L1…L5) and step.
 // HTTP 429 (Cloudflare rate limit) is counted separately and aborts the scenario (plan §5);
 // it never counts as an SLA error.
@@ -64,7 +64,7 @@ export function getAccount(id, step = 1, extra = {}) {
     },
     { test: TEST, step: String(step) },
   );
-  errors.add(!ok, { test: TEST });
+  errors.add(!ok, { test: TEST, name: 'GET /accounts/{id}', step: String(step) }); // tagged per endpoint and step
   return body;
 }
 
@@ -83,7 +83,7 @@ export function transfer(from, to, step = 1) {
     },
     { test: TEST, step: String(step) },
   );
-  errors.add(!ok, { test: TEST });
+  errors.add(!ok, { test: TEST, name: 'POST /transfer', step: String(step) }); // tagged per endpoint and step
   if (ok) transferOk.add(1, { test: TEST });
   else if (res.status === 0 || res.status >= 500) transferUnsure.add(1, { test: TEST });
   return ok;

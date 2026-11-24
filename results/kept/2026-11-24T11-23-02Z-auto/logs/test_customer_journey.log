@@ -1,0 +1,423 @@
+test_journey.py::test_customer_journey — XFAIL (reason: known defects: BUG-009: J06b create response balance = account balance, BUG-015: J13a responseDate is a date-time string, BUG-006: J13e loan recorded in the loan account history — 39/42 checks passed)
+
+api = <conftest.ApiClient object at 0x106a08460>
+customer = {'A': 22557, 'id': 18317, 'login': {'address': {'city': '<CITY>', 'state': '<STATE>', 'street': '<STREET>', 'zipCode': '<ZIP>'}, 'firstName': '<FIRST_NAME>', 'id': 18317, 'lastName': '<LAST_NAME>', ...}}
+
+    def test_customer_journey(api, customer):
+        # Run context: the customer, today's UTC date in the MM-dd-yyyy form the date filters use,
+        # and the login path with the credentials URL-encoded.
+        j = Journey()
+        cid = customer["id"]
+        today = datetime.now(timezone.utc).date()
+        today_param = today.strftime("%m-%d-%Y")
+        login_path = "/login/%s/%s" % (quote(USER["username"], safe=""), quote(USER["password"], safe=""))
+    
+        # J02–J05 onboarding
+        r = api.get(login_path)
+        assert r.status_code == 200, "J02 login failed: journey stops"
+        me = r.json()
+        j.check(
+            "J02 profile = registration",
+            [
+                me["firstName"],
+                me["lastName"],
+                me["address"]["street"],
+                me["address"]["city"],
+                me["address"]["state"],
+                me["address"]["zipCode"],
+                me["phoneNumber"],
+                me["ssn"],
+            ]
+            == [
+                USER["firstName"],
+                USER["lastName"],
+                USER["street"],
+                USER["city"],
+                USER["state"],
+                USER["zipCode"],
+                USER["phoneNumber"],
+                USER["ssn"],
+            ],
+        )
+        j.check("J03 customer = login", api.get("/customers/%s" % cid).json() == me)
+        r = api.get("/customers/%s/accounts" % cid)
+        assert r.status_code == 200 and r.json(), "J04 no accounts: journey stops"
+        start = {a["id"]: a for a in r.json()}
+        j.check("J04 every account belongs to the customer", all(a["customerId"] == cid for a in start.values()))
+        A = min(start)
+        acc_a = api.get("/accounts/%s" % A).json()
+        j.check(
+            "J05a account A = list entry",
+            [acc_a["id"], acc_a["type"], acc_a["balance"], acc_a["customerId"]]
+            == [start[A]["id"], start[A]["type"], start[A]["balance"], start[A]["customerId"]],
+        )
+        a0 = cents(acc_a["balance"])
+        # Starting point of the ledger: A's balance in cents and its existing transactions (from earlier runs).
+        baseline = {t["id"] for t in api.transactions(A)}
+    
+        # J06 open savings account B
+        r = api.post("/createAccount", params={"customerId": cid, "newAccountType": 1, "fromAccountId": A})
+        assert r.status_code == 200, "J06a createAccount failed: journey stops"
+        created = r.json()
+        B = created["id"]
+        j.check(
+            "J06a new account is SAVINGS of the customer", created["type"] == "SAVINGS" and created["customerId"] == cid
+        )
+        b0 = api.balance_cents(B)
+        j.check(
+            "J06b create response balance = account balance",
+            cents(created["balance"]) == b0,
+            "response %s, account %s" % (created["balance"], b0 / 100),
+        )
+        # Expected-state ledger in cents: B's opening amount comes out of A. Every later step updates
+        # exp_a / exp_b, and J17 compares them with the real balances.
+        exp_a, exp_b = a0 - b0, b0
+        j.check("J06c A = A0 − B0", api.balance_cents(A) == exp_a)
+        j.check(
+            "J06d account list = start + B",
+            sorted(a["id"] for a in api.get("/customers/%s/accounts" % cid).json()) == sorted(list(start) + [B]),
+        )
+    
+        # J07–J09 manage money
+        r = api.post("/deposit", params={"accountId": B, "amount": 200})
+        j.check("J07a deposit 200 to B", r.status_code == 200 and "Successfully deposited" in r.text)
+        exp_b += 20000
+        j.check("J07b B = B0 + 200", api.balance_cents(B) == exp_b)
+        r = api.post("/withdraw", params={"accountId": B, "amount": 20})
+        j.check("J08a withdraw 20 from B", r.status_code == 200 and "Successfully withdrew" in r.text)
+        exp_b -= 2000
+        j.check("J08b B = B0 + 180", api.balance_cents(B) == exp_b)
+        r = api.post("/transfer", params={"fromAccountId": B, "toAccountId": A, "amount": 50})
+        j.check("J09a transfer 50 B → A", r.status_code == 200 and "Successfully transferred" in r.text)
+        exp_a, exp_b = exp_a + 5000, exp_b - 5000
+        a_now, b_now = api.balance_cents(A), api.balance_cents(B)
+        j.check(
+            "J09b A and B after transfer",
+            (a_now, b_now) == (exp_a, exp_b),
+            "A %s/%s B %s/%s" % (a_now, exp_a, b_now, exp_b),
+        )
+    
+        # J10 pay a bill
+        r = api.post("/billpay", params={"accountId": A, "amount": 30}, body=dict(PAYEE, accountNumber=B))
+        bill = r.json() if r.status_code == 200 else {}
+        j.check(
+            "J10a bill pay result",
+            [bill.get("payeeName"), cents(bill.get("amount", 0)), bill.get("accountId")] == ["City Utilities", 3000, A],
+        )
+        exp_a -= 3000
+        j.check("J10b A after bill", api.balance_cents(A) == exp_a)
+    
+        # J11–J12 statement and filters
+        full_a = api.transactions(A)
+        new_a = [t for t in full_a if t["id"] not in baseline]
+        j.check(
+            "J11a new rows on A = debit B0, credit 50, debit 30",
+            sorted((t["type"], cents(t["amount"])) for t in new_a)
+            == sorted([("Debit", b0), ("Credit", 5000), ("Debit", 3000)]),
+        )
+        trx_in = next((t for t in new_a if t["type"] == "Credit" and cents(t["amount"]) == 5000), None)
+        full_b = api.transactions(B)
+        j.check(
+            "J11b rows on B = credit B0, credit 200, debit 20, debit 50",
+            sorted((t["type"], cents(t["amount"])) for t in full_b)
+            == sorted([("Credit", b0), ("Credit", 20000), ("Debit", 2000), ("Debit", 5000)]),
+        )
+        if trx_in:
+            j.check("J11c transaction by id = statement row", api.get("/transactions/%s" % trx_in["id"]).json() == trx_in)
+        # Each filter must return exactly the subset of the full statement that matches it (compared by ID).
+        ids = lambda rows: sorted(t["id"] for t in rows)  # noqa: E731
+        j.check(
+            "J12a filter amount 50 = subset",
+            ids(api.get("/accounts/%s/transactions/amount/50" % A).json())
+            == ids([t for t in full_a if cents(t["amount"]) == 5000]),
+        )
+        todays = ids([t for t in full_a if utc_day(t["date"]) == today])
+        j.check(
+            "J12b filter onDate today = subset",
+            ids(api.get("/accounts/%s/transactions/onDate/%s" % (A, today_param)).json()) == todays,
+        )
+        j.check(
+            "J12c filter fromDate/toDate today = subset",
+            ids(api.get("/accounts/%s/transactions/fromDate/%s/toDate/%s" % (A, today_param, today_param)).json())
+            == todays,
+        )
+        month_debits = ids(
+            [t for t in full_a if t["type"] == "Debit" and utc_day(t["date"]).replace(day=1) == today.replace(day=1)]
+        )
+        j.check(
+            "J12d filter month + Debit = subset",
+            ids(api.get("/accounts/%s/transactions/month/%s/type/Debit" % (A, MONTHS[today.month - 1])).json())
+            == month_debits,
+        )
+    
+        # J13 loan (approval depends on the customer's total balance, spec question S7)
+        # Loan: an approved loan opens account L and takes the 50.00 down payment from A;
+        # a denied loan must change nothing. Both branches are valid outcomes.
+        accounts_before_loan = sorted(list(start) + [B])
+        r = api.post("/requestLoan", params={"customerId": cid, "amount": 500, "downPayment": 50, "fromAccountId": A})
+        loan = r.json() if r.status_code == 200 else {}
+        j.check("J13a loan response shape", bool(loan.get("loanProviderName")) and isinstance(loan.get("approved"), bool))
+        j.check(
+            "J13a responseDate is a date-time string",
+            isinstance(loan.get("responseDate"), str),
+            "got %r" % type(loan.get("responseDate")).__name__,
+        )
+        L = loan.get("accountId") if loan.get("approved") else None
+        if L:
+            exp_a -= 5000
+            j.check(
+                "J13b account list = J06d + L",
+                sorted(a["id"] for a in api.get("/customers/%s/accounts" % cid).json())
+                == sorted(accounts_before_loan + [L]),
+            )
+            j.check("J13c A − down payment 50", api.balance_cents(A) == exp_a)
+            j.check(
+                "J13e down payment debit on A",
+                any(
+                    t["type"] == "Debit" and cents(t["amount"]) == 5000 and "Down Payment" in t["description"]
+                    for t in api.transactions(A)
+                ),
+            )
+            j.check("J13e loan recorded in the loan account history", len(api.transactions(L)) > 0)
+        else:
+            j.check(
+                "J13b denied: account list unchanged",
+                sorted(a["id"] for a in api.get("/customers/%s/accounts" % cid).json()) == accounts_before_loan,
+            )
+            j.check("J13c denied: A unchanged", api.balance_cents(A) == exp_a)
+    
+        # J14–J15 invest (extended)
+        r = api.post(
+            "/customers/%s/buyPosition" % cid,
+            params={"accountId": A, "name": "QA Test Stock", "symbol": "QATS", "shares": 2, "pricePerShare": 10},
+        )
+        if j.check("J14a buy 2 QATS at 10", r.status_code == 200 and any(p["symbol"] == "QATS" for p in r.json())):
+            # The newest QATS position is the one just bought (earlier runs may have left others).
+            pos_id = max(p["positionId"] for p in r.json() if p["symbol"] == "QATS")
+            exp_a -= 2000
+            j.check(
+                "J14b position listed with 2 shares",
+                any(
+                    p["positionId"] == pos_id and p["shares"] == 2 for p in api.get("/customers/%s/positions" % cid).json()
+                ),
+            )
+            pos = api.get("/positions/%s" % pos_id).json()
+            j.check(
+                "J14c position details", [pos["shares"], cents(pos["purchasePrice"]), pos["customerId"]] == [2, 1000, cid]
+            )
+            j.check("J14d A − 20", api.balance_cents(A) == exp_a)
+            r = api.post(
+                "/customers/%s/sellPosition" % cid,
+                params={"accountId": A, "positionId": pos_id, "shares": 1, "pricePerShare": 12},
+            )
+            j.check("J15a sell 1 QATS at 12", r.status_code == 200)
+            exp_a += 1200
+            j.check("J15b position has 1 share", api.get("/positions/%s" % pos_id).json()["shares"] == 1)
+            j.check("J15c A + 12", api.balance_cents(A) == exp_a)
+    
+        # J16 update profile, then restore it (extended)
+        # Original profile from .env: sent with the changed street and phone, then again to restore it.
+        profile = {
+            k: USER[k]
+            for k in (
+                "firstName",
+                "lastName",
+                "street",
+                "city",
+                "state",
+                "zipCode",
+                "phoneNumber",
+                "ssn",
+                "username",
+                "password",
+            )
+        }
+        r = api.post("/customers/update/%s" % cid, params=dict(profile, street="QA Street 1", phoneNumber="5550199"))
+        if j.check("J16a update street and phone", r.status_code == 200):
+            c = api.get("/customers/%s" % cid).json()
+            j.check(
+                "J16b new street and phone, rest unchanged",
+                [c["address"]["street"], c["phoneNumber"], c["firstName"], c["ssn"]]
+                == ["QA Street 1", "5550199", me["firstName"], me["ssn"]],
+            )
+            j.check(
+                "J16c login returns the updated profile", api.get(login_path).json()["address"]["street"] == "QA Street 1"
+            )
+            api.post("/customers/update/%s" % cid, params=profile)
+            j.check("J16d profile restored", api.get("/customers/%s" % cid).json() == me)
+    
+        # J17 reconciliation
+        final = sorted(a["id"] for a in api.get("/customers/%s/accounts" % cid).json())
+        j.check("J17 account list = start + B (+ L)", final == sorted(list(start) + [B] + ([L] if L else [])))
+        a_end, b_end = api.balance_cents(A), api.balance_cents(B)
+        j.check(
+            "J17 A and B = expected ledger",
+            (a_end, b_end) == (exp_a, exp_b),
+            "A %.2f/%.2f B %.2f/%.2f" % (a_end / 100, exp_a / 100, b_end / 100, exp_b / 100),
+        )
+    
+        # PASS, XFAIL (only known defects) or FAIL, see Journey.verdict().
+>       j.verdict()
+
+test_journey.py:337: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_journey.Journey object at 0x106a30100>
+
+    def verdict(self):
+        new = ["%s (%s)" % (k, d) for k, ok, d in self.results if not ok and k not in KNOWN]
+        fixed = ["%s: %s" % (KNOWN[k], k) for k, ok, _ in self.results if ok and k in KNOWN]
+        known = ["%s: %s" % (KNOWN[k], k) for k, ok, _ in self.results if not ok and k in KNOWN]
+        passed = sum(ok for _, ok, _ in self.results)
+        summary = "%d/%d checks passed" % (passed, len(self.results))
+        if new or fixed:
+            pytest.fail(
+                "; ".join(["new failures: " + ", ".join(new)] if new else [])
+                + ("; " if new and fixed else "")
+                + ("known defects no longer reproduce (retest and close): " + ", ".join(fixed) if fixed else "")
+                + " — "
+                + summary
+            )
+        if known:
+>           pytest.xfail("known defects: " + ", ".join(known) + " — " + summary)
+E           _pytest.outcomes.XFailed: known defects: BUG-009: J06b create response balance = account balance, BUG-015: J13a responseDate is a date-time string, BUG-006: J13e loan recorded in the loan account history — 39/42 checks passed
+
+test_journey.py:75: XFailed
+
+Requests:
+
+2026-11-24T11:23:11.367+00:00  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>  -> 200 (306 ms)
+  response: {"id":18317,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}
+
+2026-11-24T11:23:13.125+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317  -> 200 (253 ms)
+  response: {"id":18317,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}
+
+2026-11-24T11:23:14.899+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts  -> 200 (269 ms)
+  response: [{"id":22557,"customerId":18317,"type":"CHECKING","balance":1285.50},{"id":22779,"customerId":18317,"type":"CHECKING","balance":102.00},{"id":26886,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":26997,"customerId":18317,"type":"CHECKING","balance":1199.00},{"id":27108,"customerId":18317,"type":"CHECKING","balance":95.00},{"id":27219,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27330,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27441,"customerId":18317,"type":"CHECKING","balance":100.00},{"id":27552,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27663,"customerId":18317,"type":"LOAN","balance":500.00},{"id":27774,"customerId":18317,"type":"LOAN","balance":10.00},{"id":27885,"customerId":18317,"type":"LOAN","balance":140.00},{"id":27996,"customerId":18317,"type":"CHECKING","balance":105.00},{"id":28218,"customerId":18317,"type":"SAVINGS","balance":230.00},{"id":28329,"customerId":18317,"type":"LOAN","balance":500.00}]
+
+2026-11-24T11:23:16.683+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557  -> 200 (281 ms)
+  response: {"id":22557,"customerId":18317,"type":"CHECKING","balance":1285.50}
+
+2026-11-24T11:23:18.469+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions  -> 200 (281 ms)
+  response: [{"id":28129,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37342,"accountId":22557,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":37453,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":37564,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37786,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":39451,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":39562,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":40006,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":40117,"accountId":2255
+
+2026-11-24T11:23:20.282+00:00  POST https://parabank.parasoft.com/parabank/services/bank/createAccount?customerId=18317&newAccountType=1&fromAccountId=22557  -> 200 (308 ms)
+  response: {"id":29106,"customerId":18317,"type":"SAVINGS","balance":0}
+
+2026-11-24T11:23:22.140+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29106  -> 200 (353 ms)
+  response: {"id":29106,"customerId":18317,"type":"SAVINGS","balance":100.00}
+
+2026-11-24T11:23:23.954+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557  -> 200 (313 ms)
+  response: {"id":22557,"customerId":18317,"type":"CHECKING","balance":1185.50}
+
+2026-11-24T11:23:25.706+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts  -> 200 (247 ms)
+  response: [{"id":22557,"customerId":18317,"type":"CHECKING","balance":1185.50},{"id":22779,"customerId":18317,"type":"CHECKING","balance":102.00},{"id":26886,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":26997,"customerId":18317,"type":"CHECKING","balance":1199.00},{"id":27108,"customerId":18317,"type":"CHECKING","balance":95.00},{"id":27219,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27330,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27441,"customerId":18317,"type":"CHECKING","balance":100.00},{"id":27552,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27663,"customerId":18317,"type":"LOAN","balance":500.00},{"id":27774,"customerId":18317,"type":"LOAN","balance":10.00},{"id":27885,"customerId":18317,"type":"LOAN","balance":140.00},{"id":27996,"customerId":18317,"type":"CHECKING","balance":105.00},{"id":28218,"customerId":18317,"type":"SAVINGS","balance":230.00},{"id":28329,"customerId":18317,"type":"LOAN","balance":500.00},{"id":29106,"custom
+
+2026-11-24T11:23:27.460+00:00  POST https://parabank.parasoft.com/parabank/services/bank/deposit?accountId=29106&amount=200  -> 200 (249 ms)
+  response: Successfully deposited $200 to account #29106
+
+2026-11-24T11:23:29.211+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29106  -> 200 (248 ms)
+  response: {"id":29106,"customerId":18317,"type":"SAVINGS","balance":300.00}
+
+2026-11-24T11:23:31.054+00:00  POST https://parabank.parasoft.com/parabank/services/bank/withdraw?accountId=29106&amount=20  -> 200 (343 ms)
+  response: Successfully withdrew $20 from account #29106
+
+2026-11-24T11:23:32.863+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29106  -> 200 (307 ms)
+  response: {"id":29106,"customerId":18317,"type":"SAVINGS","balance":280.00}
+
+2026-11-24T11:23:34.614+00:00  POST https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=29106&toAccountId=22557&amount=50  -> 200 (249 ms)
+  response: Successfully transferred $50 from account #29106 to account #22557
+
+2026-11-24T11:23:36.368+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557  -> 200 (251 ms)
+  response: {"id":22557,"customerId":18317,"type":"CHECKING","balance":1235.50}
+
+2026-11-24T11:23:38.120+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29106  -> 200 (247 ms)
+  response: {"id":29106,"customerId":18317,"type":"SAVINGS","balance":230.00}
+
+2026-11-24T11:23:39.876+00:00  POST https://parabank.parasoft.com/parabank/services/bank/billpay?accountId=22557&amount=30  -> 200 (251 ms)
+  body: {"name": "City Utilities", "address": {"street": "1 Main St", "city": "Springfield", "state": "IL", "zipCode": "62701"}, "phoneNumber": "5550100", "accountNumber": 29106}
+  response: {"payeeName":"City Utilities","amount":30,"accountId":22557}
+
+2026-11-24T11:23:41.659+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557  -> 200 (278 ms)
+  response: {"id":22557,"customerId":18317,"type":"CHECKING","balance":1205.50}
+
+2026-11-24T11:23:43.412+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions  -> 200 (248 ms)
+  response: [{"id":28129,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37342,"accountId":22557,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":37453,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":37564,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37786,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":39451,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":39562,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":40006,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":40117,"accountId":2255
+
+2026-11-24T11:23:45.211+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29106/transactions  -> 200 (294 ms)
+  response: [{"id":46555,"accountId":29106,"type":"Credit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Received"},{"id":46666,"accountId":29106,"type":"Credit","date":1795478400000,"amount":200.00,"description":"Deposit via Web Service"},{"id":46777,"accountId":29106,"type":"Debit","date":1795478400000,"amount":20.00,"description":"Withdraw via Web Service"},{"id":46888,"accountId":29106,"type":"Debit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Sent"}]
+
+2026-11-24T11:23:47.050+00:00  GET https://parabank.parasoft.com/parabank/services/bank/transactions/46999  -> 200 (339 ms)
+  response: {"id":46999,"accountId":22557,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"}
+
+2026-11-24T11:23:48.881+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/amount/50  -> 200 (328 ms)
+  response: [{"id":43891,"accountId":22557,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"},{"id":44113,"accountId":22557,"type":"Debit","date":1795478400000,"amount":50.00,"description":"Down Payment for Loan # 28329"},{"id":46999,"accountId":22557,"type":"Credit","date":1795478400000,"amount":50.00,"description":"Funds Transfer Received"}]
+
+2026-11-24T11:23:50.696+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/onDate/11-24-2026  -> 200 (310 ms)
+  response: [{"id":28129,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37342,"accountId":22557,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":37453,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":37564,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37786,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":39451,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":39562,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":40006,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":40117,"accountId":2255
+
+2026-11-24T11:23:52.602+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/fromDate/11-24-2026/toDate/11-24-2026  -> 200 (406 ms)
+  response: [{"id":28129,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37342,"accountId":22557,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":37453,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":37564,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37786,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":39451,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":39562,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":40006,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":40117,"accountId":2255
+
+2026-11-24T11:23:54.357+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions/month/November/type/Debit  -> 200 (249 ms)
+  response: [{"id":28129,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37564,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37786,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":39562,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":40117,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":41005,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":41227,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":42115,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":42892,"accountId":22557,"type":"Debit","d
+
+2026-11-24T11:23:56.216+00:00  POST https://parabank.parasoft.com/parabank/services/bank/requestLoan?customerId=18317&amount=500&downPayment=50&fromAccountId=22557  -> 200 (354 ms)
+  response: {"responseDate":1795519436100,"loanProviderName":"Wealth Securities Dynamic Loans (WSDL)","approved":true,"accountId":29217}
+
+2026-11-24T11:23:58.063+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts  -> 200 (342 ms)
+  response: [{"id":22557,"customerId":18317,"type":"CHECKING","balance":1155.50},{"id":22779,"customerId":18317,"type":"CHECKING","balance":102.00},{"id":26886,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":26997,"customerId":18317,"type":"CHECKING","balance":1199.00},{"id":27108,"customerId":18317,"type":"CHECKING","balance":95.00},{"id":27219,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27330,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27441,"customerId":18317,"type":"CHECKING","balance":100.00},{"id":27552,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27663,"customerId":18317,"type":"LOAN","balance":500.00},{"id":27774,"customerId":18317,"type":"LOAN","balance":10.00},{"id":27885,"customerId":18317,"type":"LOAN","balance":140.00},{"id":27996,"customerId":18317,"type":"CHECKING","balance":105.00},{"id":28218,"customerId":18317,"type":"SAVINGS","balance":230.00},{"id":28329,"customerId":18317,"type":"LOAN","balance":500.00},{"id":29106,"custom
+
+2026-11-24T11:23:59.892+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557  -> 200 (327 ms)
+  response: {"id":22557,"customerId":18317,"type":"CHECKING","balance":1155.50}
+
+2026-11-24T11:24:01.717+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557/transactions  -> 200 (320 ms)
+  response: [{"id":28129,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37342,"accountId":22557,"type":"Credit","date":1795478400000,"amount":10.00,"description":"Deposit via Web Service"},{"id":37453,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":37564,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":37786,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":39451,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":39562,"accountId":22557,"type":"Debit","date":1795478400000,"amount":100.00,"description":"Funds Transfer Sent"},{"id":40006,"accountId":22557,"type":"Credit","date":1795478400000,"amount":300.00,"description":"Deposit via Web Service"},{"id":40117,"accountId":2255
+
+2026-11-24T11:24:03.556+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29217/transactions  -> 200 (336 ms)
+  response: []
+
+2026-11-24T11:24:05.384+00:00  POST https://parabank.parasoft.com/parabank/services/bank/customers/18317/buyPosition?accountId=22557&name=QA+Test+Stock&symbol=QATS&shares=2&pricePerShare=10  -> 200 (323 ms)
+  response: [{"positionId":13128,"customerId":18317,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000},{"positionId":13239,"customerId":18317,"name":"QA Test Stock","symbol":"QATS","shares":2,"purchasePrice":10.0000}]
+
+2026-11-24T11:24:07.138+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/positions  -> 200 (251 ms)
+  response: [{"positionId":13128,"customerId":18317,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000},{"positionId":13239,"customerId":18317,"name":"QA Test Stock","symbol":"QATS","shares":2,"purchasePrice":10.0000}]
+
+2026-11-24T11:24:08.895+00:00  GET https://parabank.parasoft.com/parabank/services/bank/positions/13239  -> 200 (254 ms)
+  response: {"positionId":13239,"customerId":18317,"name":"QA Test Stock","symbol":"QATS","shares":2,"purchasePrice":10.0000}
+
+2026-11-24T11:24:10.695+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557  -> 200 (298 ms)
+  response: {"id":22557,"customerId":18317,"type":"CHECKING","balance":1135.50}
+
+2026-11-24T11:24:12.474+00:00  POST https://parabank.parasoft.com/parabank/services/bank/customers/18317/sellPosition?accountId=22557&positionId=13239&shares=1&pricePerShare=12  -> 200 (278 ms)
+  response: [{"positionId":13128,"customerId":18317,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000},{"positionId":13239,"customerId":18317,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000}]
+
+2026-11-24T11:24:14.319+00:00  GET https://parabank.parasoft.com/parabank/services/bank/positions/13239  -> 200 (340 ms)
+  response: {"positionId":13239,"customerId":18317,"name":"QA Test Stock","symbol":"QATS","shares":1,"purchasePrice":10.0000}
+
+2026-11-24T11:24:16.140+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557  -> 200 (316 ms)
+  response: {"id":22557,"customerId":18317,"type":"CHECKING","balance":1147.50}
+
+2026-11-24T11:24:17.960+00:00  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/18317?firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=QA+Street+1&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=5550199&ssn=<REDACTED>&username=<USERNAME>&password=<REDACTED>  -> 200 (316 ms)
+  response: Successfully updated customer profile
+
+2026-11-24T11:24:19.718+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317  -> 200 (253 ms)
+  response: {"id":18317,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"QA Street 1","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"5550199","ssn":"<REDACTED>"}
+
+2026-11-24T11:24:21.466+00:00  GET https://parabank.parasoft.com/parabank/services/bank/login/<USERNAME>/<REDACTED>  -> 200 (244 ms)
+  response: {"id":18317,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"QA Street 1","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"5550199","ssn":"<REDACTED>"}
+
+2026-11-24T11:24:23.232+00:00  POST https://parabank.parasoft.com/parabank/services/bank/customers/update/18317?firstName=<FIRST_NAME>&lastName=<LAST_NAME>&street=<STREET>&city=<CITY>&state=<STATE>&zipCode=<ZIP>&phoneNumber=<PHONE>&ssn=<REDACTED>&username=<USERNAME>&password=<REDACTED>  -> 200 (261 ms)
+  response: Successfully updated customer profile
+
+2026-11-24T11:24:25.058+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317  -> 200 (320 ms)
+  response: {"id":18317,"firstName":"<FIRST_NAME>","lastName":"<LAST_NAME>","address":{"street":"<STREET>","city":"<CITY>","state":"<STATE>","zipCode":"<ZIP>"},"phoneNumber":"<PHONE>","ssn":"<REDACTED>"}
+
+2026-11-24T11:24:26.866+00:00  GET https://parabank.parasoft.com/parabank/services/bank/customers/18317/accounts  -> 200 (304 ms)
+  response: [{"id":22557,"customerId":18317,"type":"CHECKING","balance":1147.50},{"id":22779,"customerId":18317,"type":"CHECKING","balance":102.00},{"id":26886,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":26997,"customerId":18317,"type":"CHECKING","balance":1199.00},{"id":27108,"customerId":18317,"type":"CHECKING","balance":95.00},{"id":27219,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27330,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27441,"customerId":18317,"type":"CHECKING","balance":100.00},{"id":27552,"customerId":18317,"type":"CHECKING","balance":0.00},{"id":27663,"customerId":18317,"type":"LOAN","balance":500.00},{"id":27774,"customerId":18317,"type":"LOAN","balance":10.00},{"id":27885,"customerId":18317,"type":"LOAN","balance":140.00},{"id":27996,"customerId":18317,"type":"CHECKING","balance":105.00},{"id":28218,"customerId":18317,"type":"SAVINGS","balance":230.00},{"id":28329,"customerId":18317,"type":"LOAN","balance":500.00},{"id":29106,"custom
+
+2026-11-24T11:24:28.623+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/22557  -> 200 (255 ms)
+  response: {"id":22557,"customerId":18317,"type":"CHECKING","balance":1147.50}
+
+2026-11-24T11:24:30.378+00:00  GET https://parabank.parasoft.com/parabank/services/bank/accounts/29106  -> 200 (250 ms)
+  response: {"id":29106,"customerId":18317,"type":"SAVINGS","balance":230.00}

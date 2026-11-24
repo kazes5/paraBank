@@ -1,0 +1,48 @@
+{
+  "id": "2026-11-24T11-16-14Z-api",
+  "kind": "api",
+  "started": "2026-11-24T11:16:14.100Z",
+  "commit": "44f050a",
+  "user": "<USERNAME>",
+  "phases": [
+    "smoke",
+    "suites",
+    "journey"
+  ],
+  "scope": "all",
+  "finished": "2026-11-24T11:21:47.036Z",
+  "phaseResults": [
+    {
+      "phase": "smoke",
+      "exitCode": 0,
+      "seconds": 18
+    },
+    {
+      "phase": "suites",
+      "exitCode": 1,
+      "seconds": 235
+    },
+    {
+      "phase": "journey",
+      "exitCode": 1,
+      "seconds": 81
+    }
+  ],
+  "counts": {
+    "PASS": 19,
+    "FAIL": 21,
+    "NEEDS-CLARIFICATION": 1,
+    "BLOCKED": 0,
+    "NOT RUN": 5
+  },
+  "smokeFailed": false,
+  "accounts": {
+    "S": 26886,
+    "T": 26997,
+    "A": 22557,
+    "B": 28218,
+    "L": 28329
+  },
+  "nfr01": "PASS",
+  "requests": 183
+}

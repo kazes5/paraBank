@@ -1,12 +1,13 @@
 {
+  "run": "2026-11-24T11-55-56Z-load",
   "fixture": {
-    "username": "qa_load_mwuer4fg",
-    "customerId": 42959,
-    "A": 57744,
-    "S": 58521,
-    "T": 58632,
+    "username": "qa_load_mwun213d",
+    "customerId": 14543,
+    "A": 17340,
+    "S": 17451,
+    "T": 17562,
     "before": {
-      "at": "2026-11-24T08:03:47.635Z",
+      "at": "2026-11-24T11:56:13.166Z",
       "S": {
         "balance": 600,
         "cents": 60000,
@@ -63,7 +64,7 @@
       "sent": 5,
       "ok": 5,
       "S": {
-        "balance": 58500,
+        "balance": 58600,
         "historySum": 58500,
         "transactions": 17
       },
@@ -72,10 +73,10 @@
         "historySum": 11500,
         "transactions": 16
       },
-      "dS": -500,
+      "dS": -400,
       "dT": 500,
-      "lost": 0,
-      "totalDrift": 0
+      "lost": 1,
+      "totalDrift": 1
     },
     {
       "label": "round 3",
@@ -91,7 +92,7 @@
         "historySum": 12000,
         "transactions": 21
       },
-      "dS": -400,
+      "dS": -500,
       "dT": 500,
       "lost": 1,
       "totalDrift": 1

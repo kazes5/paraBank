@@ -15,7 +15,7 @@ import { spawnSync } from 'node:child_process';
 import { writeFileSync, readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { API, readUser, redact, redactTree, newRun } from './lib/common.mjs';
+import { API, readUser, redact, redactTree, newRun, unwrapCli } from './lib/common.mjs';
 import { summarize } from './summarize.mjs';
 
 // Arguments: an optional .env user prefix (all caps), then the phases to run (default: all three).
@@ -88,7 +88,7 @@ for (const sig of ['SIGINT', 'SIGTERM'])
     cleanup();
     process.exit(130);
   });
-const base = JSON.parse(readFileSync('tests/postman/ParaBank_QA.postman_environment.json', 'utf8'));
+const base = JSON.parse(readFileSync('deliverables/postman/ParaBank_QA.postman_environment.json', 'utf8'));
 const values = { ...vars, runId: run.id };
 const known = new Set(base.values.map((v) => v.key));
 base.values = [
@@ -107,7 +107,7 @@ for (const phase of phases) {
   const cliArgs = [
     'collection',
     'run',
-    'tests/postman/ParaBank_QA.postman_collection.json',
+    'deliverables/postman/ParaBank_QA.postman_collection.json',
     '-e',
     envFile,
     ...PHASE_ITEMS[phase].flatMap((i) => ['-i', i]),
@@ -126,7 +126,8 @@ for (const phase of phases) {
     env: { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' },
   });
   // Save the console output and the reports with every secret redacted.
-  writeFileSync(join(logs, `${phase}.log`), redact(`${r.stdout || ''}${r.stderr || ''}`));
+  // Wrapped console lines are joined first, so no secret or profile value is split where redact() can't see it.
+  writeFileSync(join(logs, `${phase}.log`), redact(unwrapCli(`${r.stdout || ''}${r.stderr || ''}`)));
   redactTree(reportDir);
   const seconds = Math.round((Date.now() - started) / 1000);
   summary.push({ phase, exitCode: r.status, seconds });

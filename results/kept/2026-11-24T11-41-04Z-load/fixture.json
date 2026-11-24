@@ -1,0 +1,20 @@
+{
+  "username": "qa_load_mwumixkk",
+  "customerId": 12656,
+  "A": 13899,
+  "S": 14010,
+  "T": 14121,
+  "before": {
+    "at": "2026-11-24T11:41:21.554Z",
+    "S": {
+      "balance": 600,
+      "cents": 60000,
+      "transactions": 2
+    },
+    "T": {
+      "balance": 100,
+      "cents": 10000,
+      "transactions": 1
+    }
+  }
+}

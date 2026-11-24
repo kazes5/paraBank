@@ -83,17 +83,40 @@ const profileRe = profileForms.size
 
 // Replaces every secret, in every encoding, with <REDACTED>, then every profile value with its placeholder.
 export const redact = (t) => {
+  // Absolute local paths (printed by the Postman CLI, Playwright, pytest) reveal the user's home folder
+  // name: the repo path becomes relative, any other home path becomes ~.
+  const home = process.env.HOME;
+  const local = String(t ?? '')
+    .split(ROOT)
+    .join('')
+    .split(ROOT.replace(/\/$/, ''))
+    .join('.');
   const out = secrets.reduce(
     (acc, s) => encodings(s).reduce((u, e) => u.split(e).join('<REDACTED>'), acc),
-    String(t ?? ''),
+    home && home.length > 1 ? local.split(home).join('~') : local,
   );
   return profileRe ? out.replace(profileRe, (m) => profileForms.get(m)) : out;
 };
 
+// The Postman CLI prints console output wrapped over many "  | " lines, cutting words (and so secrets or
+// profile values) in two, where redact() cannot see them. unwrapCli() joins each wrapped block into one
+// "  | " line first; the parsers (summarize, failures) concatenate those lines anyway, so they read the
+// same content. Always redact CLI output as redact(unwrapCli(text)).
+export const unwrapCli = (text) =>
+  String(text ?? '')
+    .split('\n')
+    .reduce((out, line) => {
+      if (line.startsWith('  | ') && out.length && out.at(-1).startsWith('  | ')) out[out.length - 1] += line.slice(4);
+      else out.push(line);
+      return out;
+    }, [])
+    .join('\n');
+
 // Redacts one text file in place. In XML (e.g. JUnit reports) the placeholders are escaped (&lt;…&gt;)
 // so the file stays valid XML.
 export function redactFile(p) {
-  let t = redact(readFileSync(p, 'utf8'));
+  let t = readFileSync(p, 'utf8');
+  t = redact(/\.log$/i.test(p) ? unwrapCli(t) : t); // CLI logs: rejoin wrapped lines first
   if (/\.xml$/i.test(p))
     t = t.replace(/<(REDACTED|[A-Z_]+)>/g, (m, k) =>
       k === 'REDACTED' || PROFILE_FIELDS.includes(k) ? `&lt;${k}&gt;` : m,
@@ -278,6 +301,35 @@ export function allRuns() {
   return out.sort((a, b) => a.id.localeCompare(b.id));
 }
 
+// The run types a test cycle is reported from, each with the test that picks a *complete* run of that
+// type: the load session's smoke gates are API runs too (smoke only), the isolation run is a load run,
+// and a manual run may cover only some cases. The STR and the web page both use this list, so the page
+// shows exactly the runs the report is built from.
+export const MANUAL_CASES = ['AUTH-03', 'AUTH-05', 'TRF-08', 'TRF-09'];
+const hasResults = (r) => existsSync(join(r.dir, 'results.json'));
+export const RUN_TYPES = [
+  { key: 'api', label: 'API tests', test: (r) => r.kind === 'api' && (r.phases || []).length === 3 && hasResults(r) },
+  { key: 'ui', label: 'Web UI cross-check', test: (r) => r.kind === 'ui' && hasResults(r) },
+  {
+    key: 'manual',
+    label: 'Manual cases',
+    test: (r) => r.kind === 'manual' && MANUAL_CASES.every((id) => (r.scope || '').includes(id)),
+  },
+  { key: 'auto', label: 'Coded tests (pytest)', test: (r) => r.kind === 'auto' && hasResults(r) },
+  {
+    key: 'load',
+    label: 'Load test L1–L6',
+    test: (r) => r.kind === 'load' && !r.dry && r.scope === 'L1–L6' && hasResults(r),
+  },
+  {
+    key: 'isolation',
+    label: 'Concurrency isolation',
+    test: (r) => r.kind === 'load' && r.scope === 'concurrency isolation',
+  },
+  { key: 'repro', label: 'Defect reproduction', test: (r) => r.kind === 'repro' },
+  { key: 'report', label: 'Test Summary Report', test: (r) => r.kind === 'report' },
+];
+
 // 'latest' | runId -> run; kind filters, keptOnly prefers committed evidence
 export function findRun(ref = 'latest', { kind, keptOnly = false } = {}) {
   const runs = allRuns().filter((r) => (!kind || r.kind === kind) && (!keptOnly || r.kept));
@@ -342,7 +394,7 @@ export function rebuildIndex() {
   );
   // Rows of the history table: every case that appears in any of those runs, in STD order.
   const ids = [...new Set(verdicts.flatMap((v) => Object.keys(v)))];
-  const stdLines = readFileSync('STD.md', 'utf8').split('\n');
+  const stdLines = readFileSync('deliverables/STD.md', 'utf8').split('\n');
   const order = (id) => {
     const i = stdLines.findIndex((l) => l.startsWith(`| ${id} | `));
     return i < 0 ? 1e9 : i;

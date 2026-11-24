@@ -1,0 +1,16 @@
+{
+  "id": "2026-11-24T11-55-56Z-load",
+  "kind": "load",
+  "started": "2026-11-24T11:55:56.029Z",
+  "commit": "44f050a",
+  "scope": "concurrency isolation",
+  "finished": "2026-11-24T11:57:14.422Z",
+  "counts": {
+    "lost updates (1.00 each)": 1
+  },
+  "fixture": {
+    "customerId": 14543,
+    "S": 17451,
+    "T": 17562
+  }
+}
