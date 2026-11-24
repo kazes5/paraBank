@@ -7,19 +7,23 @@ import exec from 'k6/execution';
 import { sleep } from 'k6';
 import { transfer, safety, S, T, TEST } from './lib.js';
 
+// L4 round length: 5 transfers every 7.5 s keeps the average rate at a safe 0.67 req/s.
 const SLOT_MS = 7500;
 const scenarios = {
   // 1 VU, 1 transfer every 2 s, 60 s → 30 transfers
   L3: { executor: 'constant-arrival-rate', rate: 1, timeUnit: '2s', duration: '60s', preAllocatedVUs: 1, maxVUs: 1 },
+  // L4: 5 VUs, 16 iterations each; the timing below lines them up into simultaneous rounds.
   L4: { executor: 'per-vu-iterations', vus: 5, iterations: 16, maxDuration: '3m' },
 };
 
+// Run only the scenario named by -e TEST, with the shared safety thresholds.
 export const options = {
   scenarios: scenarios[TEST] ? { [TEST]: scenarios[TEST] } : undefined,
   thresholds: safety,
   summaryTrendStats: ['min', 'med', 'p(90)', 'p(95)', 'max', 'count'],
 };
 
+// One iteration = one 1.00 transfer S → T, tagged with its round (L4) for per-round stats.
 export default function () {
   let round = 1;
   if (TEST === 'L4') {

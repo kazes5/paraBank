@@ -11,6 +11,7 @@ if [[ ! -f .env ]]; then
   echo "No .env found. Copy .env.example to .env and fill it in." >&2
   exit 2
 fi
+# Export every .env variable to the commands below (credentials never appear on the command line in scripts).
 set -a; source .env; set +a
 
 echo "== Step 1: ensure test user exists (login, else register)"

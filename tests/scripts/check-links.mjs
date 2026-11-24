@@ -7,20 +7,37 @@ import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, normalize } from 'node:path';
 import { ROOT } from './lib/common.mjs';
 
+// A path counts as a repo path when it starts with one of these top-level folders.
 const ROOTS = /^(evidence|results|tests|docs|scripts|postman)\//;
-const docs = ['README.md', 'STR.md', 'plan.md', 'STD.md', 'Bug_Reports.md', 'Business_Rules.md', 'parabank_test_approach.md'];
-const walk = (d) => readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; });
+// Documents to check: the root deliverables plus every Markdown file under evidence/ and results/.
+const docs = [
+  'README.md',
+  'STR.md',
+  'plan.md',
+  'STD.md',
+  'Bug_Reports.md',
+  'Business_Rules.md',
+  'parabank_test_approach.md',
+];
+const walk = (d) =>
+  readdirSync(d).flatMap((f) => {
+    const p = join(d, f);
+    return statSync(p).isDirectory() ? walk(p) : [p];
+  });
 for (const d of ['evidence', 'results']) docs.push(...walk(d).filter((f) => f.endsWith('.md')));
 
 const missing = [];
 let checked = 0;
 for (const doc of docs.filter((d) => existsSync(d))) {
   const text = readFileSync(doc, 'utf8');
+  // Candidate paths: `backticked` text (repo-root relative) and markdown link targets
+  // (relative to the document unless they start with a repo folder).
   const refs = [
     ...[...text.matchAll(/`([^`\s]+)`/g)].map((m) => ({ path: m[1], rel: false })),
     ...[...text.matchAll(/\]\(([^)\s#]+)(?:#[^)]*)?\)/g)].map((m) => ({ path: m[1], rel: true })),
   ];
   for (const { path, rel } of refs) {
+    // Skip URLs and placeholders, resolve the path, ignore trailing punctuation, record what is missing.
     if (/^https?:|[<>*{}]|BUG-0NN|NN-/.test(path)) continue;
     const resolved = rel && !ROOTS.test(path) ? normalize(join(dirname(doc), path)) : path.replace(/^\.\//, '');
     if (!rel && !ROOTS.test(resolved)) continue;
@@ -28,6 +45,7 @@ for (const doc of docs.filter((d) => existsSync(d))) {
     if (!existsSync(join(ROOT, resolved.replace(/[.,:;]+$/, '')))) missing.push(`${doc}: ${path}`);
   }
 }
+// Report; exit 1 if anything is missing.
 console.log(`Checked ${checked} path references in ${docs.length} documents; missing: ${missing.length}`);
 for (const m of [...new Set(missing)]) console.log(`  ${m}`);
 process.exit(missing.length ? 1 : 0);

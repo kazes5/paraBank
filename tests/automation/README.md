@@ -54,6 +54,16 @@ Every run writes `results/runs/<UTC time>-auto/`, like the other test kinds:
 
 `--keep` moves the run to `results/kept/` (committed).
 
+## Code style
+
+The code is formatted with Prettier (JavaScript, `.prettierrc.json`) and Black (Python, `pyproject.toml`, line length 120). Every function and logical block has a comment that says what it does and why.
+
+```bash
+tests/automation/.venv/bin/pip install -r tests/automation/requirements-dev.txt   # Black, once
+npm run format          # reformat everything
+npm run format:check    # check only
+```
+
 ## Design notes
 
 - **`conftest.py`:**

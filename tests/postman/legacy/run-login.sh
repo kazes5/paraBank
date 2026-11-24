@@ -3,6 +3,7 @@
 # Usage: ./postman/run-login.sh
 set -euo pipefail
 cd "$(dirname "$0")"
+# Export every .env variable to the commands below (credentials never appear on the command line in scripts).
 set -a; source ../.env; set +a
 npx --yes newman@6 run ParaBank_Login.postman_collection.json \
   -e ParaBank.postman_environment.json \

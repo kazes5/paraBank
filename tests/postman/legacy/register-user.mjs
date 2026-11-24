@@ -13,10 +13,19 @@
 
 import { chromium } from 'playwright';
 
+// Every .env value the registration form needs; stop with a list of what is missing.
 const REQUIRED = [
-  'WEB_UI_URL', 'PARABANK_USERNAME', 'PARABANK_PASSWORD', 'PARABANK_SSN',
-  'PARABANK_FIRST_NAME', 'PARABANK_LAST_NAME', 'PARABANK_STREET', 'PARABANK_CITY',
-  'PARABANK_STATE', 'PARABANK_ZIP', 'PARABANK_PHONE',
+  'WEB_UI_URL',
+  'PARABANK_USERNAME',
+  'PARABANK_PASSWORD',
+  'PARABANK_SSN',
+  'PARABANK_FIRST_NAME',
+  'PARABANK_LAST_NAME',
+  'PARABANK_STREET',
+  'PARABANK_CITY',
+  'PARABANK_STATE',
+  'PARABANK_ZIP',
+  'PARABANK_PHONE',
 ];
 const missing = REQUIRED.filter((k) => !process.env[k]);
 if (missing.length) {
@@ -32,6 +41,7 @@ const browser = await chromium.launch({ headless: !process.env.HEADED });
 const context = await browser.newContext(); // fresh profile: no saved logins or autofill
 const page = await context.newPage();
 
+// Fills and submits the web registration form; success = the "created successfully" page.
 async function register() {
   await page.goto(new URL('register.htm', base).href);
   const fields = {
@@ -54,14 +64,17 @@ async function register() {
   const body = await page.locator('#rightPanel').innerText();
   if (/created successfully/i.test(body)) return;
   if (/username already exists/i.test(body)) {
-    throw new Error(`Login failed, but "${user}" already exists, so it can't be re-created. ` +
-      'The password in .env is probably wrong: fix PARABANK_PASSWORD, or use a new PARABANK_USERNAME.');
+    throw new Error(
+      `Login failed, but "${user}" already exists, so it can't be re-created. ` +
+        'The password in .env is probably wrong: fix PARABANK_PASSWORD, or use a new PARABANK_USERNAME.',
+    );
   }
   const errors = await page.locator('#rightPanel .error').allInnerTexts();
   throw new Error(`Registration failed: ${errors.join('; ') || 'unexpected page'}`);
 }
 
 // Returns true if the .env credentials log in through the web UI.
+// Logs in through the web form; true when the account overview appears.
 async function canLogin() {
   await context.clearCookies(); // start logged out
   await page.goto(new URL('index.htm', base).href);
@@ -73,6 +86,7 @@ async function canLogin() {
   return ok;
 }
 
+// Main: log in, register only if that fails, then confirm the login works. Always closes the browser.
 try {
   if (await canLogin()) {
     console.log(`"${user}" exists; login works. No registration needed.`);

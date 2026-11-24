@@ -1,0 +1,4 @@
+node_modules/
+results/
+tests/postman/*.json
+tests/automation/.venv/

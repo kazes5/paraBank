@@ -11,10 +11,13 @@
     "test:manual": "./run.sh manual",
     "test:ui": "./run.sh ui",
     "test:repro": "./run.sh repro",
-    "results": "./run.sh list"
+    "results": "./run.sh list",
+    "format": "prettier --write \"tests/**/*.{mjs,js}\" && tests/automation/.venv/bin/black -q tests/automation",
+    "format:check": "prettier --check \"tests/**/*.{mjs,js}\" && tests/automation/.venv/bin/black -q --check tests/automation"
   },
   "devDependencies": {
     "marked": "^15.0.12",
-    "playwright": "1.49.1"
+    "playwright": "1.49.1",
+    "prettier": "3.3.3"
   }
 }
